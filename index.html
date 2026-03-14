@@ -364,7 +364,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-slot.blocked{background:rgba(160,64,64,.2);border-color:rgba(160,64,64,.5);color:rgba(160,64,64,.9);text-decoration:line-through}
 .adm-slot.booked{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
 .adm-slot-status{position:absolute;top:2px;right:4px;font-size:10px}
-.adm-dayoff-btn{width:100%;margin-top:12px;padding:14px;font-size:13px;letter-spacing:1px;transition:all .2s}
 .adm-dayoff-banner{display:flex;align-items:center;gap:14px;padding:20px;background:rgba(224,80,80,.12);border:1px solid rgba(224,80,80,.3);border-radius:8px;margin-top:12px}
 .adm-dayoff-icon{font-size:32px}
 .adm-dayoff-text{display:flex;flex-direction:column;gap:4px}
@@ -998,7 +997,6 @@ function initTabs() {
   addClickHandler('calNextBtn', () => { calNext(); });
   addClickHandler('bkSub', () => { bkSubmit(); });
   addClickHandler('revSubmit', () => { submitReview(); });
-  addClickHandler('admDayOffBtn', () => { admToggleDayOff(); });
   addClickHandler('admAddDayOffBtn', () => { admAddDayOff(); });
   addClickHandler('admRemoveDayOffBtn', () => { admRemoveDayOff(); });
   
@@ -2257,8 +2255,7 @@ function admRenderSlotGrid(masterId, dateStr) {
           '<span>Слоты недоступны для записи</span>' +
         '</div>' +
       '</div>';
-    updateDayOffButton(true);
-    return;
+      return;
   }
   
   let html = '<div class="adm-slot-grid">';
@@ -2280,19 +2277,9 @@ function admRenderSlotGrid(masterId, dateStr) {
   });
   html += '</div>';
   container.innerHTML = html;
-  updateDayOffButton(false);
 }
 
-function updateDayOffButton(isDayOff) {
-  const btn = ge('admDayOffBtn');
-  if (isDayOff) {
-    btn.textContent = '✅ Применить (снять выходной)';
-    btn.className = 'adm-btn adm-dayoff-btn success';
-  } else {
-    btn.textContent = '✅ Применить';
-    btn.className = 'adm-btn adm-dayoff-btn danger';
-  }
-}
+
 
 function admToggleSlot(slot) {
   const masterId = ge('admSlotMaster').value;
@@ -2317,20 +2304,6 @@ function admToggleSlot(slot) {
     .catch(e => { console.error('admToggleSlot error:', e); });
 }
 
-function admToggleDayOff() {
-  const masterId = ge('admSlotMaster').value;
-  const dateStr = ge('admSlotDate').value;
-  if (!masterId || !dateStr) {
-    alert('Выберите мастера и дату');
-    return;
-  }
-  
-  if (admIsDayOff) {
-    admRemoveDayOffAction(masterId, dateStr);
-  } else {
-    admSetDayOffAction(masterId, dateStr);
-  }
-}
 
 function admSetDayOffAction(masterId, dateStr) {
   const master = getMaster(masterId);

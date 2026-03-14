@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1687,8 +1688,8 @@ function myBkRender() {
       const bks = d.bookings || [];
       const tabsHtml =
         '<div class="my-tabs">' +
-        '<button class="my-tab' + (myBkTab === 'upcoming' ? ' active' : '') + '" onclick="myBkSwitchTab('upcoming')">Предстоящие</button>' +
-        '<button class="my-tab' + (myBkTab === 'history' ? ' active' : '') + '" onclick="myBkSwitchTab('history')">История</button>' +
+        '<button class="my-tab' + (myBkTab === 'upcoming' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;upcoming&quot;)">Предстоящие</button>' +
+        '<button class="my-tab' + (myBkTab === 'history' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;history&quot;)">История</button>' +
         '</div>';
 
       if (bks.length === 0) {
@@ -1723,11 +1724,11 @@ function myBkRender() {
 
         html += '<div class="my-card-btns">';
         if (!isPast) {
-          html += '<button class="my-btn-repeat" onclick="myBkRepeat('' + masterId + '');return false;">&#8617; Снова</button>';
-          html += '<button class="my-btn-cancel" onclick="myBkCancel('' + masterId + '','' + dateOnly + '','' + timeOnly + '','' + escapeHtml(b.master || '') + '');return false;">&#10005; Отменить</button>';
-          html += '<button class="my-btn-resched" onclick="myBkReschedule('' + masterId + '','' + dateOnly + '','' + timeOnly + '','' + escapeHtml(b.master || '') + '');return false;">&#128197; Перенести</button>';
+          html += '<button class="my-btn-repeat" onclick="myBkRepeat(' + masterId + ');return false;">&#8617; Снова</button>';
+          html += '<button class="my-btn-cancel" onclick="myBkCancel(' + masterId + ',&quot;' + dateOnly + '&quot;,&quot;' + timeOnly + '&quot;,&quot;' + escapeHtml(b.master || '') + '&quot;);return false;">&#10005; Отменить</button>';
+          html += '<button class="my-btn-resched" onclick="myBkReschedule(' + masterId + ',&quot;' + dateOnly + '&quot;,&quot;' + timeOnly + '&quot;,&quot;' + escapeHtml(b.master || '') + '&quot;);return false;">&#128197; Перенести</button>';
         } else {
-          html += '<button class="my-btn-repeat" style="flex:1" onclick="myBkRepeat('' + masterId + '');return false;">&#8617; Записаться снова к этому мастеру</button>';
+          html += '<button class="my-btn-repeat" style="flex:1" onclick="myBkRepeat(' + masterId + ');return false;">&#8617; Записаться снова к этому мастеру</button>';
         }
         html += '</div></div>';
       });
@@ -1737,8 +1738,8 @@ function myBkRender() {
     .catch(e => {
       console.error('myBkRender error:', e);
       container.innerHTML = '<div class="my-tabs">' +
-        '<button class="my-tab' + (myBkTab === 'upcoming' ? ' active' : '') + '" onclick="myBkSwitchTab('upcoming')">Предстоящие</button>' +
-        '<button class="my-tab' + (myBkTab === 'history' ? ' active' : '') + '" onclick="myBkSwitchTab('history')">История</button>' +
+        '<button class="my-tab' + (myBkTab === 'upcoming' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;upcoming&quot;)">Предстоящие</button>' +
+        '<button class="my-tab' + (myBkTab === 'history' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;history&quot;)">История</button>' +
         '</div><div class="my-empty">Ошибка загрузки. Попробуйте позже.</div>';
     });
 }
@@ -1818,7 +1819,7 @@ function myBkCancel(masterId, date, time, masterName) {
         const cards = ge('myBkContent').querySelectorAll('.my-card');
         let visible = 0;
         cards.forEach(c => { if (c.style.display !== 'none') visible++; });
-        if (visible === 0) ge('myBkContent').innerHTML = '<div class="my-tabs"><button class="my-tab active" onclick="myBkSwitchTab('upcoming')">Предстоящие</button><button class="my-tab" onclick="myBkSwitchTab('history')">История</button></div><div class="my-empty">У вас нет предстоящих записей</div>';
+        if (visible === 0) ge('myBkContent').innerHTML = '<div class="my-tabs"><button class="my-tab active" onclick="myBkSwitchTab(&quot;upcoming&quot;)">Предстоящие</button><button class="my-tab" onclick="myBkSwitchTab(&quot;history&quot;)">История</button></div><div class="my-empty">У вас нет предстоящих записей</div>';
       } else if (d.error === 'too_late') {
         alert('⚠️ ' + d.message);
       } else {

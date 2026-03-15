@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -142,6 +141,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .m-sp{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin:3px 0 5px}
 .m-desc{font-size:12px;color:var(--gray);font-style:italic}
 .m-arr{color:rgba(201,168,76,.35);font-size:20px;margin-left:auto}
+.m-rating{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:12px}
+.m-rating-num{color:var(--gray);font-size:11px;margin-left:2px}
+.ms-rating{font-size:10px;color:var(--gold);margin-top:3px;letter-spacing:.5px}
 
 /* PRICE */
 .ptabs{display:flex;padding:14px 16px 0;gap:8px}
@@ -462,8 +464,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="home-btns">
-    <button class="btn-g" id="btnToBooking">✦ Записаться</button>
-    <button class="btn-o" id="btnToPrice">Наши услуги</button>
+    <button class="btn-g" id="btnToBooking" style="flex:unset;width:100%;max-width:280px;margin:0 auto">✦ Записаться</button>
   </div>
   <div class="info-block">
     <div class="info-row">
@@ -598,7 +599,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="bk-form" style="padding-top:14px">
       <div class="bk-fg"><label class="bk-lbl">Ваше имя</label><input class="bk-inp" type="text" id="bkName" placeholder="Иван Иванов"></div>
       <div class="bk-fg"><label class="bk-lbl">Телефон</label><input class="bk-inp" type="tel" id="bkPhone" placeholder="+7 (___) ___-__-__"></div>
-      <div class="bk-fg"><label class="bk-lbl">Telegram (необязательно)</label><input class="bk-inp" type="text" id="bkTelegram" placeholder="@username"></div>
       <button class="bk-sub" id="bkSub" disabled>Записаться</button>
     </div>
   </div>
@@ -757,7 +757,11 @@ const CONFIG = {
   CANCEL_DEADLINE_HOURS: 2  /* запрет отмены менее чем за 2 часа */
 };
 
-const MASTERS = [
+/* ================================================================================
+   МАСТЕРА И ЦЕНЫ — загружаются из Google Sheets
+   Резервные значения используются пока не загрузятся данные
+   ================================================================================ */
+let MASTERS = [
   {id: 0, name: "Саркис", spec: "Стрижки и фейды", photo: ""},
   {id: 1, name: "Лиза", spec: "Мужские стрижки", photo: ""},
   {id: 2, name: "Нарек", spec: "Современные техники", photo: ""},
@@ -767,13 +771,39 @@ const MASTERS = [
   {id: 6, name: "Никита", spec: "Классические стрижки", photo: ""}
 ];
 
-const PRICES = {
+let PRICES = {
   "head": [["Насадка (триммер) 1–2", 500], ["Удлинённая стрижка", 1300], ["Стрижка", 1000], ["Укладка", 300], ["Шейвер", 600], ["Рисунок", 400], ["Тонировка", 1000], ["Королевское бритьё + скрабирование", 1000], ["Окантовка", 200], ["Тонировка бровей", 100]],
   "face": [["Шейвер", 600], ["Насадка (триммер)", 300], ["Тонировка", 900], ["Королевское бритьё + скрабирование", 1000], ["Оформление бороды", 800], ["Чёрная маска", 400], ["Скраб", 300]],
   "wax": [["Коррекция бровей", 300], ["Уши или нос", 200], ["Кончик носа", 100], ["Между бровями", 100], ["Виски в районе бровей", 200], ["Щёки", 400], ["Шея", 500], ["Кадык", 500]]
 };
 
+let MASTER_RATINGS = {}; /* chatId → {avg, count} — рейтинги мастеров из отзывов */
+
 const CAT_LABELS = {"head":"✂ Голова","face":"🪒 Лицо","wax":"🕯 Воск"};
+
+/* Загружаем мастеров, цены и рейтинги с сервера при старте */
+function loadAppData() {
+  fetchWithTimeout(CONFIG.GS + '?action=getAppData')
+    .then(r => r.json())
+    .then(d => {
+      if (d.masters && d.masters.length > 0) {
+        MASTERS = d.masters;
+      }
+      if (d.prices && Object.keys(d.prices).length > 0) {
+        PRICES = d.prices;
+      }
+      if (d.ratings) {
+        MASTER_RATINGS = d.ratings;
+      }
+      /* Перерисовываем после загрузки */
+      renderMasters();
+      renderPrices();
+      renderMsGrid();
+    })
+    .catch(e => {
+      console.warn('loadAppData: используем резервные данные', e);
+    });
+}
 const SLOTS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
 const MN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const MNS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -812,6 +842,7 @@ function initApp() {
   renderPrices();
   bkInit();
   initReviews();
+  loadAppData(); /* загружаем актуальные мастера и цены из таблицы */
   console.log('App initialized successfully');
 }
 
@@ -988,7 +1019,6 @@ function initTabs() {
   }
   
   addClickHandler('btnToBooking', () => { goPage('booking'); });
-  addClickHandler('btnToPrice', () => { goPage('price'); });
   addClickHandler('phoneLink', () => { makeCall(); });
   addClickHandler('succPhoneLink', () => { makeCall(); });
   addClickHandler('callFab', () => { makeCall(); });
@@ -1058,12 +1088,33 @@ function goPage(id) {
    РЕНДЕРИНГ МАСТЕРОВ И ЦЕН
    ================================================================================ */
 
+function getMasterRatingHtml(masterName) {
+  const r = MASTER_RATINGS[masterName];
+  if (!r || r.count === 0) return '';
+  const stars = Math.round(r.avg);
+  let html = '<div class="m-rating">';
+  for (let i = 1; i <= 5; i++) {
+    html += '<span style="color:' + (i <= stars ? 'var(--gold)' : 'rgba(201,168,76,.2)') + '">★</span>';
+  }
+  html += '<span class="m-rating-num">' + r.avg.toFixed(1) + ' (' + r.count + ')</span></div>';
+  return html;
+}
+
 function renderMasters() {
   const g = ge('mastersList');
+  g.innerHTML = '';
   MASTERS.forEach(function(m) {
     const d = document.createElement('div');
     d.className = 'm-item';
-    d.innerHTML = '<div style="flex:1"><div class="m-nm">' + m.name + '</div><div class="m-sp">' + m.spec + '</div></div><div class="m-arr">›</div>';
+    const ratingHtml = getMasterRatingHtml(m.name);
+    d.innerHTML =
+      (m.photo ? '<div class="m-thumb"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '"></div>' : '') +
+      '<div style="flex:1">' +
+        '<div class="m-nm">' + escapeHtml(m.name) + '</div>' +
+        '<div class="m-sp">' + escapeHtml(m.spec) + '</div>' +
+        ratingHtml +
+      '</div>' +
+      '<div class="m-arr">›</div>';
     d.onclick = function() { goPage('booking'); setTimeout(() => { bkSelMaster(m.id); }, 80); };
     g.appendChild(d);
   });
@@ -1172,7 +1223,11 @@ function renderMsGrid() {
   MASTERS.forEach(function(m) {
     const b = document.createElement('button');
     b.className = 'ms-btn' + (S.mid === m.id ? ' sel' : '');
-    b.innerHTML = '<div><div class="ms-n">' + m.name + '</div><div class="ms-s">' + m.spec.split(' ')[0] + '</div></div>';
+    const r = MASTER_RATINGS[m.name];
+    const ratingStr = r && r.count > 0 ? '<div class="ms-rating">★ ' + r.avg.toFixed(1) + '</div>' : '';
+    b.innerHTML =
+      (m.photo ? '<div class="ms-mini"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '"></div>' : '') +
+      '<div><div class="ms-n">' + escapeHtml(m.name) + '</div><div class="ms-s">' + escapeHtml(m.spec.split(' ')[0]) + '</div>' + ratingStr + '</div>';
     b.onclick = function(e) { e.preventDefault(); bkSelMaster(m.id); };
     g.appendChild(b);
   });
@@ -1545,7 +1600,9 @@ function bkSubmit() {
   btn.disabled = true;
   btn.textContent = 'Отправка...';
   
-  const tgUsername = (ge('bkTelegram').value || '').trim();
+  /* Автоматически берём username из Telegram WebApp */
+  const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+  const tgUsername = tgUser && tgUser.username ? '@' + tgUser.username : '';
   const services = getCartNames().join(', ');
   const total = getCartTotal();
   let clientChatId = getChatId();
@@ -1641,7 +1698,6 @@ function bkReset() {
   ge('bkSucc').classList.remove('show');
   ge('bkName').value = '';
   ge('bkPhone').value = '';
-  ge('bkTelegram').value = '';
   ge('bkPhone').classList.remove('invalid');
   S.date = '';
   S.slot = '';

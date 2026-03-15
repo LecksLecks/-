@@ -187,8 +187,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* MASTERS */
 .m-list{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.m-item{border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer;transition:border-color .25s,transform .15s;display:flex;flex-direction:column;position:relative}
+.m-item{border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .15s;display:flex;flex-direction:column;position:relative}
 .m-item:active{border-color:var(--gold);transform:scale(.97)}
+.m-item.free-now{border-color:rgba(76,175,125,.7);box-shadow:0 0 10px rgba(76,175,125,.2)}
+.m-free-badge{position:absolute;top:8px;left:8px;z-index:10;background:rgba(76,175,125,.9);color:#fff;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 7px;font-family:'Cormorant Garamond',serif;font-weight:700;pointer-events:none}
 .m-thumb{width:100%;aspect-ratio:3/4;overflow:hidden;flex-shrink:0;position:relative}
 .m-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform .4s ease}
 .m-item:active .m-thumb img{transform:scale(1.03)}
@@ -775,9 +777,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .btn-g-ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:liquidRipple .6s ease forwards}
 
 /* П.4 TYPEWRITER */
-@keyframes typewriterCursor{0%,100%{opacity:1}50%{opacity:0}}
 .h-t1-typed{display:inline}
-.h-t1-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);vertical-align:middle;margin-left:2px;animation:typewriterCursor .7s step-end infinite}
+.h-t1-cursor{display:none}
 
 /* П.5 ЗОЛОТОЕ КОНФЕТТИ */
 @keyframes confettiFall{
@@ -1743,6 +1744,7 @@ function loadAppData() {
       if (d.prices && Object.keys(d.prices).length > 0) PRICES = d.prices;
       if (d.ratings) MASTER_RATINGS = d.ratings;
       renderMasters(); renderPrices(); renderMsGrid();
+      updateMasterFreeHighlight();
     })
     .catch(e => console.warn('loadAppData: резервные данные', e));
 }
@@ -1860,6 +1862,48 @@ function renderMasters() {
   });
 }
 
+/* Проверка: нет записи в ближайший час */
+function isMasterFreeNow(masterName) {
+  const data = allMastersData[masterName];
+  if (!data) return false;
+  const now = new Date();
+  // Московское время UTC+3 — как на сервере
+  const msk = new Date(now.getTime() + (now.getTimezoneOffset() + 180) * 60000);
+  const today = msk.getFullYear() + '-' +
+    String(msk.getMonth()+1).padStart(2,'0') + '-' +
+    String(msk.getDate()).padStart(2,'0');
+  if (data.dayoffs && data.dayoffs.indexOf(today) >= 0) return false;
+  const nowMin = msk.getHours() * 60 + msk.getMinutes();
+  const busy    = (data.slots  || {})[today] || [];
+  const blocked = (data.blocks || {})[today] || [];
+  for (let i = 0; i < SLOTS.length; i++) {
+    const s = SLOTS[i];
+    const slMin = parseInt(s.split(':')[0]) * 60;
+    if (slMin < nowMin || slMin > nowMin + 60) continue;
+    if (busy.indexOf(s) < 0 && blocked.indexOf(s) < 0) return true;
+  }
+  return false;
+}
+
+function updateMasterFreeHighlight() {
+  const items = document.querySelectorAll('#mastersList .m-item');
+  items.forEach(function(el, idx) {
+    const m = MASTERS[idx];
+    if (!m) return;
+    const free = isMasterFreeNow(m.name);
+    el.classList.toggle('free-now', free);
+    let badge = el.querySelector('.m-free-badge');
+    if (free && !badge) {
+      badge = document.createElement('div');
+      badge.className = 'm-free-badge';
+      badge.textContent = 'Свободен';
+      el.insertBefore(badge, el.firstChild);
+    } else if (!free && badge) {
+      badge.remove();
+    }
+  });
+}
+
 function renderPrices() {
   const map = {head:'pt-head', face:'pt-face', wax:'pt-wax'};
   Object.keys(map).forEach(k => {
@@ -1893,7 +1937,7 @@ function loadAllMastersData() {
   fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
     .then(r => r.json())
     .then(d => {
-      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); updateHomeSlotCount(); }
+      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); updateHomeSlotCount(); updateMasterFreeHighlight(); }
     })
     .catch(e => console.error('loadAllMastersData:', e));
 }

@@ -984,10 +984,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .tab.active svg{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
 .tab.bounce-once svg{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
 
-/* П.10 СЧЁТЧИК ПРОСМОТРОВ */
-.home-views{display:flex;align-items:center;gap:6px;padding:4px 24px 12px;font-size:11px;color:rgba(138,125,107,.5);letter-spacing:.5px}
-.home-views-eye{font-size:13px;opacity:.5}
-.home-views strong{color:rgba(201,168,76,.7)}
 
 /* РЕФЕРАЛЬНАЯ ПРОГРАММА */
 .ref-block{margin:0 16px 16px;border:1px solid rgba(201,168,76,.25);background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));padding:18px}
@@ -1114,7 +1110,6 @@ setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.displ
     </div>
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
-  <div class="home-views"><span class="home-views-eye">👁</span>Открыли сегодня: <strong id="homeViewCount">...</strong></div>
   <div class="live-counter"><span class="live-counter-ico">👁</span><span class="live-counter-num" id="liveViewCount">0</span><span class="live-counter-lbl">открыли приложение сегодня</span></div>
   <div class="promo-block" id="promoBlock" style="display:none">
     <div class="promo-ttl">✦ Акции и предложения</div>
@@ -3940,23 +3935,6 @@ function initMagneticMasters() {
   setTimeout(updateMagnetic, 500);
 }
 
-function initFingerTrail() {
-  let lastTrail = 0;
-  document.addEventListener('touchmove', function(e) {
-    const now = Date.now();
-    if (now - lastTrail < 40) return; // не чаще 25fps
-    lastTrail = now;
-    const t = e.touches[0];
-    const trail = document.createElement('div');
-    trail.className = 'finger-trail';
-    trail.style.left = t.clientX + 'px';
-    trail.style.top  = t.clientY + 'px';
-    document.body.appendChild(trail);
-    setTimeout(() => trail.remove(), 520);
-  }, {passive: true});
-}
-
-/* П.9: Морфинг иконок меню */
 function initTabBounce() {
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('touchstart', function() {
@@ -4000,28 +3978,6 @@ function initLiveCounter() {
   }, 30);
 }
 
-function initSplashFire() {
-  const logo = document.querySelector('.splash-logo');
-  if (!logo) return;
-  const text = logo.textContent;
-  const colors = ['#c9a84c','#e8c97a','#f5d070','#ffaa00','#ff6600'];
-  const container = document.createElement('div');
-  container.style.cssText = 'position:absolute;bottom:-2px;left:0;right:0;height:40px;pointer-events:none';
-  for (let i = 0; i < 18; i++) {
-    const span = document.createElement('span');
-    const size = 4 + Math.random() * 8;
-    const left = 5 + Math.random() * 90;
-    const dur  = 0.6 + Math.random() * 0.8;
-    const delay = Math.random() * 1.2;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    span.style.cssText = 'position:absolute;bottom:0;left:' + left + '%;width:' + size + 'px;height:' + (size * 1.6) + 'px;background:' + color + ';border-radius:50% 50% 20% 20%;opacity:0;animation:flameRise ' + dur + 's ease-in-out ' + delay + 's infinite';
-    container.appendChild(span);
-  }
-  logo.style.position = 'relative';
-  logo.appendChild(container);
-}
-
-/* П.4: Typewriter эффект */
 function initTypewriter() {
   var el = ge('h-typewriter');
   if (!el) return;
@@ -4048,20 +4004,6 @@ function initTypewriter() {
   }
   setTimeout(typeNext, 1400);
 }
-function initFingerTrail() {
-  let trailActive = false;
-  document.addEventListener('touchmove', function(e) {
-    const t = e.touches[0];
-    const trail = document.createElement('div');
-    trail.className = 'finger-trail';
-    trail.style.left = t.clientX + 'px';
-    trail.style.top  = t.clientY + 'px';
-    document.body.appendChild(trail);
-    setTimeout(() => trail.remove(), 420);
-  }, {passive: true});
-}
-
-/* П.7: Карусель мастеров с инерцией */
 function convertMastersToCarousel() {
   const list = ge('mastersList');
   if (!list || list.classList.contains('m-carousel')) return;
@@ -4115,37 +4057,11 @@ function initTabMorph() {
   });
 }
 
-/* П.10: Счётчик просмотров */
-function initViewCounter() {
-  const el = ge('homeViewCount');
-  if (!el) return;
-  // Берём из localStorage и увеличиваем
-  try {
-    const today = new Date().toDateString();
-    const key = 'bs_views_' + today;
-    let views = parseInt(localStorage.getItem(key) || '0');
-    views += Math.floor(Math.random() * 3) + 1; // имитируем других пользователей
-    if (views < 15) views += Math.floor(Math.random() * 20) + 10; // минимальная база
-    localStorage.setItem(key, views);
-    // Анимируем число
-    let current = 0;
-    const target = views;
-    const step = Math.ceil(target / 30);
-    const interval = setInterval(() => {
-      current = Math.min(current + step, target);
-      el.textContent = current;
-      if (current >= target) clearInterval(interval);
-    }, 40);
-  } catch(e) { el.textContent = '—'; }
-}
-
-/* ЗАПУСК ВСЕХ WOW2 */
 function initWow2Effects() {
   initSplashFire();
   initTypewriter();
   initFingerTrail();
   initTabMorph();
-  initViewCounter();
   // Карусель после загрузки мастеров
   setTimeout(convertMastersToCarousel, 800);
 }
@@ -4188,9 +4104,7 @@ function refShare() {
   const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
   const botUser = 'barber_style_bot';
   const url = 'https://t.me/' + botUser + '?start=ref_' + refCode;
-  const text = '✂️ Записался в BARBER STYLE — классный барбершоп в Батайске!
-
-По моей ссылке получишь скидку 20% на первый визит 🎁';
+  const text = 'Записался в BARBER STYLE - барбершоп в Батайске! По ссылке скидка 20% на первый визит';
 
   if (tg && tg.shareMessage) {
     try { tg.shareMessage(text + ' ' + url); return; } catch(e) {}

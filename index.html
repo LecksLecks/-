@@ -493,7 +493,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-dayoff-reason{font-size:11px;color:var(--gray);margin-top:4px;font-style:italic}
 
 /* МОДАЛЬНОЕ ОКНО */
-.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;pointer-events:none}
+.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;pointer-events:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
 .adm-modal.show{display:flex;pointer-events:auto}
 .adm-modal-content{background:var(--dark);border:1px solid rgba(201,168,76,.3);padding:24px;max-width:400px;width:100%;border-radius:8px;max-height:80vh;overflow-y:auto}
 .adm-modal-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:16px}
@@ -621,7 +621,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .works-more:active{background:rgba(201,168,76,.06)}
 
 /* ЛАЙТБОКС */
-.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;pointer-events:none}
+.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;pointer-events:none;align-items:center;justify-content:center;padding:20px}
 .works-lightbox.open{display:flex;pointer-events:auto}
 .works-lightbox img{max-width:100%;max-height:85vh;object-fit:contain;border:1px solid rgba(201,168,76,.2)}
 .works-lightbox-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.8);color:var(--gold);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%}
@@ -664,7 +664,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* СТРАНИЦА ПРОФИЛЯ МАСТЕРА */
 @keyframes profileIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 #masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px;pointer-events:none}
-#masterProfile.open{display:block;animation:profileIn .25s ease;pointer-events:auto}
+#masterProfile.open{display:block;animation:profileIn .25s ease}
 .mp-hero{position:relative;width:100%;aspect-ratio:3/4;max-height:65vh;overflow:hidden}
 .mp-hero img{width:100%;height:100%;object-fit:cover;object-position:top center}
 .mp-hero-gradient{position:absolute;bottom:0;left:0;right:0;padding:40px 20px 20px;background:linear-gradient(0deg,rgba(10,8,5,1) 0%,rgba(10,8,5,.7) 50%,transparent 100%)}
@@ -775,9 +775,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .btn-g-ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:liquidRipple .6s ease forwards}
 
 /* П.4 TYPEWRITER */
-@keyframes typewriterCursor{0%,100%{opacity:1}50%{opacity:0}}
+
 .h-t1-typed{display:inline}
-.h-t1-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);vertical-align:middle;margin-left:2px;animation:typewriterCursor .7s step-end infinite}
+.h-t1-cursor{display:none}
 
 /* П.5 ЗОЛОТОЕ КОНФЕТТИ */
 @keyframes confettiFall{
@@ -866,10 +866,18 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 </head>
 <body>
 <script>
+// Скрываем splash надёжно — выполняется до основного JS
 (function(){
-  function hs(){var e=document.getElementById('splash');if(e){e.style.display='none';e.style.pointerEvents='none';}}
-  setTimeout(hs,1500);setTimeout(hs,2500);setTimeout(hs,4000);
-  window.addEventListener('load',function(){setTimeout(hs,500);});
+  function hs(){
+    var e=document.getElementById('splash');
+    if(e){e.style.display='none';e.style.pointerEvents='none';}
+  }
+  // Множество таймеров для надёжности
+  setTimeout(hs, 1500);
+  setTimeout(hs, 2500);
+  setTimeout(hs, 4000);
+  window.addEventListener('load', function(){ setTimeout(hs, 300); });
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(hs, 1000); });
 })();
 </script>
 
@@ -1637,10 +1645,13 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', function(){
-  try { initApp(); } catch(e) {
-    console.error('initApp:', e);
-    var s=document.getElementById('splash');
-    if(s){s.style.display='none';s.style.pointerEvents='none';}
+  try {
+    initApp();
+  } catch(e) {
+    console.error('initApp error:', e);
+    // Скрываем splash даже при ошибке
+    var s = document.getElementById('splash');
+    if (s) { s.style.display = 'none'; s.style.pointerEvents = 'none'; }
   }
 });
 
@@ -1686,6 +1697,12 @@ function initTabs() {
   }
 
   addClickHandler('btnToBooking', () => goPage('booking'));
+  const _lqBtn = ge('btnToBooking');
+  if (_lqBtn) {
+    _lqBtn.addEventListener('touchstart', function(e){
+      try { addLiquidRipple(e); } catch(x){}
+    }, {passive:true});
+  }
   addClickHandler('phoneLink', makeCall);
   addClickHandler('succPhoneLink', makeCall);
   addClickHandler('callFab', makeCall);
@@ -3494,13 +3511,7 @@ function initWowEffects() {
     btn.appendChild(r);
     setTimeout(() => r.remove(), 650);
   }
-  document.addEventListener('DOMContentLoaded', function() {
-    const btn = ge('btnToBooking');
-    if (btn) {
-      btn.addEventListener('touchstart', addLiquidRipple, {passive:true});
-      btn.addEventListener('mousedown',  addLiquidRipple);
-    }
-  });
+  // Liquid ripple добавляется в initTabs
 })();
 
 /* П.4: Typewriter эффект для главного слогана */
@@ -3510,7 +3521,7 @@ function initTypewriter() {
   const text1 = 'Место, где рождается';
   const text2 = 'настоящий мужской образ.';
   let i = 0, line = 1;
-  el.innerHTML = '<span class="h-t1-typed" id="typedLine1"></span><span class="h-t1-cursor">|</span>';
+  el.innerHTML = '<span class="h-t1-typed" id="typedLine1"></span>';
   const typed1 = ge('typedLine1');
 
   function typeChar() {
@@ -3521,7 +3532,7 @@ function initTypewriter() {
       } else {
         // Переходим на вторую строку
         line = 2; i = 0;
-        el.innerHTML = '<span class="h-t1-typed">' + text1 + '</span><br><span class="h-t1-typed" id="typedLine2"></span><span class="h-t1-cursor">|</span>';
+        el.innerHTML = '<span class="h-t1-typed">' + text1 + '</span><br><span class="h-t1-typed" id="typedLine2"></span>';
         setTimeout(typeChar, 180);
       }
     } else {

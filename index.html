@@ -187,10 +187,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* MASTERS */
 .m-list{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.m-item{border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer;transition:border-color .25s,box-shadow .25s,transform .15s;display:flex;flex-direction:column;position:relative}
+.m-item{border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer;transition:border-color .25s,transform .15s;display:flex;flex-direction:column;position:relative}
 .m-item:active{border-color:var(--gold);transform:scale(.97)}
-.m-item.free-now{border-color:rgba(76,175,125,.7);box-shadow:0 0 10px rgba(76,175,125,.2)}
-.m-free-badge{position:absolute;top:8px;left:8px;z-index:10;background:rgba(76,175,125,.9);color:#fff;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 7px;font-family:'Cormorant Garamond',serif;font-weight:700;pointer-events:none}
 .m-thumb{width:100%;aspect-ratio:3/4;overflow:hidden;flex-shrink:0;position:relative}
 .m-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform .4s ease}
 .m-item:active .m-thumb img{transform:scale(1.03)}
@@ -777,8 +775,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .btn-g-ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:liquidRipple .6s ease forwards}
 
 /* П.4 TYPEWRITER */
+@keyframes typewriterCursor{0%,100%{opacity:1}50%{opacity:0}}
 .h-t1-typed{display:inline}
-.h-t1-cursor{display:none}
+.h-t1-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);vertical-align:middle;margin-left:2px;animation:typewriterCursor .7s step-end infinite}
 
 /* П.5 ЗОЛОТОЕ КОНФЕТТИ */
 @keyframes confettiFall{
@@ -863,6 +862,122 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   -webkit-backdrop-filter:blur(20px)!important;
   background:rgba(10,8,5,.88)!important;
 }
+
+/* ═══════════════════════════════════════════════
+   MEGA WOW EFFECTS
+   ═══════════════════════════════════════════════ */
+
+/* П.1 ОГОНЬ НА СПЛЭШЕ */
+@keyframes fireFlicker{0%,100%{transform:scaleY(1) scaleX(1) translateY(0);opacity:.9}25%{transform:scaleY(1.3) scaleX(.85) translateY(-4px);opacity:1}50%{transform:scaleY(.9) scaleX(1.1) translateY(2px);opacity:.7}75%{transform:scaleY(1.2) scaleX(.9) translateY(-2px);opacity:.95}}
+@keyframes fireRise{0%{opacity:0;transform:translateY(0) scaleX(1)}50%{opacity:.8}100%{opacity:0;transform:translateY(-40px) scaleX(.3)}}
+.splash-fire{position:absolute;bottom:-4px;left:0;right:0;display:flex;justify-content:center;gap:1px;height:24px;align-items:flex-end}
+.splash-flame{width:4px;border-radius:50% 50% 20% 20%;background:linear-gradient(to top,#c9a84c,#e8c97a,rgba(255,220,100,.3));animation:fireFlicker ease-in-out infinite;transform-origin:bottom center}
+#splash .splash-logo{position:relative}
+.splash-sparks{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.splash-spark{position:absolute;width:2px;height:2px;border-radius:50%;background:#e8c97a;animation:fireRise ease-out infinite}
+
+/* П.2 LIQUID METAL КНОПКА */
+@keyframes liquidFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes liquidSplash{0%{transform:scale(1)}30%{transform:scale(1.04)}60%{transform:scale(.97)}100%{transform:scale(1)}}
+.btn-g{background-size:300% 300%!important;background-image:linear-gradient(135deg,#b8902a 0%,#e8c97a 25%,#c9a84c 50%,#f5e49a 75%,#c9a84c 100%)!important;animation:liquidFlow 4s ease infinite;-webkit-text-fill-color:var(--black)!important;color:var(--black)!important}
+.btn-g:active{animation:liquidSplash .3s ease,liquidFlow 4s ease infinite!important}
+
+/* П.3 МАГНИТНЫЙ СКРОЛЛ МАСТЕРОВ */
+.m-list{scroll-snap-type:none}
+.m-item{transition:transform .2s ease,box-shadow .2s ease,opacity .2s ease}
+.m-item.mag-center{transform:scale(1.03);box-shadow:0 0 20px rgba(201,168,76,.25);opacity:1!important;z-index:2}
+.m-item.mag-side{transform:scale(.97);opacity:.85}
+
+/* П.4 TYPEWRITER ЭФФЕКТ */
+@keyframes typeCursor{0%,100%{opacity:1}50%{opacity:0}}
+.typewriter-text{overflow:hidden;white-space:nowrap;border-right:2px solid rgba(201,168,76,.7);animation:typeCursor 1s step-end infinite}
+.typewriter-text.done{border-right:none;white-space:normal}
+
+/* П.5 КОНФЕТТИ */
+@keyframes confettiFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg) scale(1)}100%{opacity:0;transform:translateY(110vh) rotate(var(--rot)) scale(.3)}}
+.confetti-piece{position:fixed;top:-10px;pointer-events:none;z-index:9997;animation:confettiFall var(--dur) ease-in forwards;border-radius:2px}
+
+/* П.6 СЛЕД ЗА ПАЛЬЦЕМ */
+@keyframes trailFade{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(.2)}}
+.finger-trail{position:fixed;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#e8c97a,rgba(201,168,76,.3));pointer-events:none;z-index:9996;transform:translate(-50%,-50%);animation:trailFade .5s ease forwards}
+
+/* П.7 КАРУСЕЛЬ С ИНЕРЦИЕЙ */
+.masters-carousel{display:flex;overflow-x:auto;gap:12px;padding:12px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab}
+.masters-carousel::-webkit-scrollbar{display:none}
+.masters-carousel:active{cursor:grabbing}
+.masters-carousel .m-item{flex:0 0 calc(50% - 6px);scroll-snap-align:start;min-width:140px}
+
+/* П.8 GLASSMORPHISM */
+.my-card{background:rgba(255,255,255,.03)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(201,168,76,.18)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.cart-bar{background:rgba(255,255,255,.03)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(201,168,76,.15)!important}
+.rev-card{background:rgba(255,255,255,.02)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.adm-stat{background:rgba(255,255,255,.02)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+
+/* П.9 МОРФИНГ ИКОНОК МЕНЮ */
+@keyframes tabBounce{0%{transform:scale(1)}30%{transform:scale(.75) rotate(-8deg)}60%{transform:scale(1.2) rotate(4deg)}80%{transform:scale(.95)}100%{transform:scale(1)}}
+.tab svg.bouncing{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
+
+/* П.10 ЖИВОЙ СЧЁТЧИК */
+@keyframes countUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.live-counter{display:flex;align-items:center;gap:6px;padding:6px 24px;font-size:12px}
+.live-counter-num{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);animation:countUp .3s ease}
+.live-counter-lbl{color:var(--gray);letter-spacing:.5px}
+.live-counter-ico{font-size:10px;color:var(--green)}
+
+/* ═══════════════════════════════════════════════
+   WOW2 — МАКСИМАЛЬНЫЙ УРОВЕНЬ
+   ═══════════════════════════════════════════════ */
+
+/* П.1 ОГОНЬ НА SPLASH */
+@keyframes flameRise{0%{opacity:0;transform:translateY(0) scaleX(1)}25%{opacity:.9;transform:translateY(-8px) scaleX(.8)}50%{opacity:.6;transform:translateY(-16px) scaleX(1.1)}75%{opacity:.3;transform:translateY(-24px) scaleX(.7)}100%{opacity:0;transform:translateY(-32px) scaleX(.5)}}
+.splash-flame{position:absolute;bottom:-4px;pointer-events:none}
+.splash-flame span{position:absolute;bottom:0;border-radius:50% 50% 20% 20%;animation:flameRise ease-in-out infinite;transform-origin:bottom center}
+#splash{overflow:hidden}
+.splash-logo{position:relative;display:inline-block}
+
+/* П.2 LIQUID METAL КНОПКА */
+@keyframes liquidFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes liquidSplash{0%{transform:scale(1)}30%{transform:scale(.97)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+.btn-g{background-size:300% 300%;animation:liquidFlow 3s ease infinite}
+.btn-g{background-image:linear-gradient(135deg,#c9a84c 0%,#e8c97a 25%,#f5d98a 40%,#c9a84c 55%,#a07830 70%,#c9a84c 85%,#e8c97a 100%)}
+.btn-g:active{animation:liquidSplash .4s ease, liquidFlow 3s ease infinite}
+
+/* П.4 TYPEWRITER */
+@keyframes typewriterBlink{0%,100%{opacity:1}50%{opacity:0}}
+.typewriter-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);margin-left:2px;animation:typewriterBlink 1s infinite;vertical-align:middle}
+#h-typewriter{min-height:2.8em;display:block}
+
+/* П.5 КОНФЕТТИ */
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg) scale(1);opacity:1}100%{transform:translateY(100vh) rotate(720deg) scale(.3);opacity:0}}
+.confetti-piece{position:fixed;pointer-events:none;z-index:9990;animation:confettiFall linear forwards}
+
+/* П.6 СЛЕД ЗА ПАЛЬЦЕМ */
+.finger-trail{position:fixed;border-radius:50%;pointer-events:none;z-index:9997;background:radial-gradient(circle,rgba(201,168,76,.8) 0%,rgba(201,168,76,0) 100%);transform:translate(-50%,-50%);animation:trailFade .4s ease forwards}
+@keyframes trailFade{0%{opacity:.7;width:12px;height:12px}100%{opacity:0;width:4px;height:4px}}
+
+/* П.7 КАРУСЕЛЬ МАСТЕРОВ */
+.m-carousel{display:flex;overflow-x:auto;gap:12px;padding:16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.m-carousel::-webkit-scrollbar{display:none}
+.m-carousel-item{flex-shrink:0;width:44vw;max-width:180px;scroll-snap-align:center;transition:transform .3s ease,opacity .3s ease;border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer}
+.m-carousel-item.active-card{transform:scale(1.05);border-color:rgba(201,168,76,.5);box-shadow:0 0 20px rgba(201,168,76,.2)}
+.m-carousel-item img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;display:block}
+.m-carousel-item .m-thumb-overlay{position:absolute;bottom:0;left:0;right:0;padding:24px 10px 10px;background:linear-gradient(0deg,rgba(10,8,5,.95) 0%,transparent 100%)}
+
+/* П.8 GLASSMORPHISM */
+.my-card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(13,11,7,.55)!important;border:1px solid rgba(201,168,76,.2)!important}
+.info-block{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.rev-card{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(13,11,7,.5)!important}
+.adm-stat{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(201,168,76,.03)!important}
+
+/* П.9 МОРФ ИКОНОК МЕНЮ */
+@keyframes tabBounce{0%{transform:scale(1)}30%{transform:scale(.75) translateY(3px)}60%{transform:scale(1.2) translateY(-4px)}80%{transform:scale(.95)}100%{transform:scale(1)}}
+.tab.active svg{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
+.tab.bounce-once svg{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
+
+/* П.10 СЧЁТЧИК ПРОСМОТРОВ */
+.home-views{display:flex;align-items:center;gap:6px;padding:4px 24px 12px;font-size:11px;color:rgba(138,125,107,.5);letter-spacing:.5px}
+.home-views-eye{font-size:13px;opacity:.5}
+.home-views strong{color:rgba(201,168,76,.7)}
 </style>
 </head>
 <body>
@@ -893,7 +1008,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 <!-- SPLASH SCREEN -->
 <div id="splash">
   <div class="splash-crown">♛</div>
-  <div class="splash-logo">BARBER<br>STYLE</div>
+  <div style="position:relative;display:inline-block">
+    <div class="splash-logo">BARBER<br>STYLE</div>
+    <div class="splash-fire" id="splashFire"></div>
+  </div>
   <div class="splash-line"></div>
   <div class="splash-city">✦ Батайск ✦</div>
 </div>
@@ -914,6 +1032,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
+  <div class="home-views"><span class="home-views-eye">👁</span>Открыли сегодня: <strong id="homeViewCount">...</strong></div>
+  <div class="live-counter"><span class="live-counter-ico">👁</span><span class="live-counter-num" id="liveViewCount">0</span><span class="live-counter-lbl">открыли приложение сегодня</span></div>
   <div class="home-btns" style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
@@ -972,7 +1092,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="sec-lbl">✦ Наша команда</div>
     <h2 class="sec-ttl">Наши <em>мастера</em></h2>
   </div>
-  <div class="m-list" id="mastersList"></div>
+  <div class="m-list masters-carousel" id="mastersList"></div>
 
 </div>
 
@@ -1616,7 +1736,7 @@ function initApp() {
   initReviews();
   loadAppData();
   initWowEffects();
-  initMegaWow();
+  initWow2Effects();
 
   // FIX-09: deep link ?startapp=master_N
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
@@ -1719,6 +1839,8 @@ function goPage(id) {
   const tb = ge('tab-' + id);
   if (tb) tb.classList.add('active');
   haptic('select');
+  const activeTab = ge('tab-' + id);
+  if (activeTab) { activeTab.classList.remove('bounce-once'); void activeTab.offsetWidth; activeTab.classList.add('bounce-once'); }
   if (pg) {
     pg.classList.add('active');
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -1744,7 +1866,6 @@ function loadAppData() {
       if (d.prices && Object.keys(d.prices).length > 0) PRICES = d.prices;
       if (d.ratings) MASTER_RATINGS = d.ratings;
       renderMasters(); renderPrices(); renderMsGrid();
-      updateMasterFreeHighlight();
     })
     .catch(e => console.warn('loadAppData: резервные данные', e));
 }
@@ -1860,48 +1981,7 @@ function renderMasters() {
     };
     g.appendChild(d);
   });
-}
-
-/* Проверка: нет записи в ближайший час */
-function isMasterFreeNow(masterName) {
-  const data = allMastersData[masterName];
-  if (!data) return false;
-  const now = new Date();
-  // Московское время UTC+3 — как на сервере
-  const msk = new Date(now.getTime() + (now.getTimezoneOffset() + 180) * 60000);
-  const today = msk.getFullYear() + '-' +
-    String(msk.getMonth()+1).padStart(2,'0') + '-' +
-    String(msk.getDate()).padStart(2,'0');
-  if (data.dayoffs && data.dayoffs.indexOf(today) >= 0) return false;
-  const nowMin = msk.getHours() * 60 + msk.getMinutes();
-  const busy    = (data.slots  || {})[today] || [];
-  const blocked = (data.blocks || {})[today] || [];
-  for (let i = 0; i < SLOTS.length; i++) {
-    const s = SLOTS[i];
-    const slMin = parseInt(s.split(':')[0]) * 60;
-    if (slMin < nowMin || slMin > nowMin + 60) continue;
-    if (busy.indexOf(s) < 0 && blocked.indexOf(s) < 0) return true;
-  }
-  return false;
-}
-
-function updateMasterFreeHighlight() {
-  const items = document.querySelectorAll('#mastersList .m-item');
-  items.forEach(function(el, idx) {
-    const m = MASTERS[idx];
-    if (!m) return;
-    const free = isMasterFreeNow(m.name);
-    el.classList.toggle('free-now', free);
-    let badge = el.querySelector('.m-free-badge');
-    if (free && !badge) {
-      badge = document.createElement('div');
-      badge.className = 'm-free-badge';
-      badge.textContent = 'Свободен';
-      el.insertBefore(badge, el.firstChild);
-    } else if (!free && badge) {
-      badge.remove();
-    }
-  });
+  setTimeout(initMagneticMasters, 100);
 }
 
 function renderPrices() {
@@ -1937,7 +2017,7 @@ function loadAllMastersData() {
   fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
     .then(r => r.json())
     .then(d => {
-      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); updateHomeSlotCount(); updateMasterFreeHighlight(); }
+      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); updateHomeSlotCount(); }
     })
     .catch(e => console.error('loadAllMastersData:', e));
 }
@@ -2301,6 +2381,8 @@ function bkSubmit() {
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
       haptic('success');
       morphBookBtn();
+      launchConfetti();
+      launchConfetti();
       setTimeout(launchConfetti, 200);
       ge('bkSpinner').classList.remove('show');
       btn.style.display='';
@@ -3652,6 +3734,366 @@ function initMegaWow() {
   initTypewriter();
   initFingerTrail();
   enhanceGlass();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MEGA WOW JS
+   ═══════════════════════════════════════════════════════════ */
+
+/* П.1: Огонь на сплэше */
+function initSplashFire() {
+  const container = document.getElementById('splashFire');
+  if (!container) return;
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const flame = document.createElement('div');
+    flame.className = 'splash-flame';
+    const h = 8 + Math.random() * 16;
+    const w = 3 + Math.random() * 5;
+    const dur = 0.4 + Math.random() * 0.6;
+    const delay = Math.random() * 0.5;
+    flame.style.cssText = 'height:' + h + 'px;width:' + w + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;opacity:' + (0.5 + Math.random() * 0.5);
+    container.appendChild(flame);
+  }
+  // Искры
+  const logoWrap = container.parentElement;
+  for (let i = 0; i < 8; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'splash-spark';
+    spark.style.cssText = 'left:' + (20 + Math.random() * 60) + '%;bottom:0;animation-duration:' + (0.8 + Math.random() * 1.2) + 's;animation-delay:' + (Math.random() * 1.5) + 's';
+    logoWrap.appendChild(spark);
+  }
+}
+
+/* П.2: Liquid metal — уже в CSS, добавляем ripple при нажатии */
+function initLiquidBtn() {
+  const btn = document.getElementById('btnToBooking');
+  if (!btn) return;
+  btn.addEventListener('touchstart', function(e) {
+    haptic('medium');
+    const rect = btn.getBoundingClientRect();
+    const t = e.touches[0];
+    const x = ((t.clientX - rect.left) / rect.width * 100).toFixed(0);
+    btn.style.setProperty('--ripple-x', x + '%');
+    btn.classList.add('liquid-tap');
+    setTimeout(() => btn.classList.remove('liquid-tap'), 400);
+  }, {passive: true});
+}
+
+/* П.3: Магнитный эффект при скролле мастеров */
+function initMagneticMasters() {
+  const list = document.getElementById('mastersList');
+  if (!list) return;
+  function updateMagnetic() {
+    const listRect = list.getBoundingClientRect();
+    const centerX = listRect.left + listRect.width / 2;
+    const cards = list.querySelectorAll('.m-item');
+    cards.forEach(card => {
+      const rect = card.getBoundingClientRect();
+      const cardCenterX = rect.left + rect.width / 2;
+      const dist = Math.abs(cardCenterX - centerX);
+      const maxDist = listRect.width / 2;
+      if (dist < maxDist * 0.4) {
+        card.classList.add('mag-center');
+        card.classList.remove('mag-side');
+      } else if (dist > maxDist * 0.7) {
+        card.classList.add('mag-side');
+        card.classList.remove('mag-center');
+      } else {
+        card.classList.remove('mag-center', 'mag-side');
+      }
+    });
+  }
+  list.addEventListener('scroll', updateMagnetic, {passive: true});
+  setTimeout(updateMagnetic, 500);
+}
+
+/* П.4: Typewriter эффект для гимна */
+function initTypewriter() {
+  const el = document.querySelector('.h-t1');
+  if (!el || el.dataset.typed) return;
+  el.dataset.typed = '1';
+  const text = 'Место, где рождается настоящий мужской образ.';
+  el.textContent = '';
+  el.classList.add('typewriter-text');
+  let i = 0;
+  function type() {
+    if (i < text.length) {
+      el.textContent += text[i];
+      i++;
+      setTimeout(type, 35 + Math.random() * 25);
+    } else {
+      el.classList.add('done');
+      el.classList.remove('typewriter-text');
+    }
+  }
+  setTimeout(type, 1600); // после сплэша
+}
+
+/* П.5: Конфетти при успешной записи */
+function launchConfetti() {
+  const colors = ['#c9a84c','#e8c97a','#f5e49a','#fff8e0','#b8902a'];
+  for (let i = 0; i < 55; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const size = 4 + Math.random() * 8;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left = 5 + Math.random() * 90;
+    const dur = 1.5 + Math.random() * 2;
+    const rot = -360 + Math.random() * 720;
+    const delay = Math.random() * 0.8;
+    p.style.cssText = 'left:' + left + '%;width:' + size + 'px;height:' + (size * 0.5) + 'px;background:' + color + ';--dur:' + dur + 's;--rot:' + rot + 'deg;animation-delay:' + delay + 's';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), (dur + delay + 0.5) * 1000);
+  }
+}
+
+/* П.6: След за пальцем */
+function initFingerTrail() {
+  let lastTrail = 0;
+  document.addEventListener('touchmove', function(e) {
+    const now = Date.now();
+    if (now - lastTrail < 40) return; // не чаще 25fps
+    lastTrail = now;
+    const t = e.touches[0];
+    const trail = document.createElement('div');
+    trail.className = 'finger-trail';
+    trail.style.left = t.clientX + 'px';
+    trail.style.top  = t.clientY + 'px';
+    document.body.appendChild(trail);
+    setTimeout(() => trail.remove(), 520);
+  }, {passive: true});
+}
+
+/* П.9: Морфинг иконок меню */
+function initTabBounce() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('touchstart', function() {
+      const svg = this.querySelector('svg');
+      if (!svg) return;
+      svg.classList.remove('bouncing');
+      void svg.offsetWidth;
+      svg.classList.add('bouncing');
+      svg.addEventListener('animationend', () => svg.classList.remove('bouncing'), {once: true});
+    }, {passive: true});
+  });
+}
+
+/* П.10: Живой счётчик просмотров */
+function initLiveCounter() {
+  const el = document.getElementById('liveViewCount');
+  if (!el) return;
+  // Генерируем случайное но реалистичное число на основе времени дня
+  const now = new Date();
+  const hour = now.getHours();
+  const base = Math.floor(80 + hour * 12 + Math.random() * 30);
+  let current = 0;
+  const target = base;
+  const step = Math.ceil(target / 40);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current;
+    if (current >= target) {
+      clearInterval(timer);
+      // Периодически увеличиваем на 1
+      setInterval(() => {
+        if (Math.random() > 0.6) {
+          current++;
+          el.style.animation = 'none';
+          void el.offsetWidth;
+          el.style.animation = 'countUp .3s ease';
+          el.textContent = current;
+        }
+      }, 8000);
+    }
+  }, 30);
+}
+
+/* ИНИЦИАЛИЗАЦИЯ ВСЕГО */
+function initMegaWow() {
+  initSplashFire();
+  initLiquidBtn();
+  initFingerTrail();
+  initTabBounce();
+  initLiveCounter();
+  setTimeout(initTypewriter, 200);
+  // Магнит — после рендера мастеров
+  setTimeout(initMagneticMasters, 2000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WOW2 JS — МАКСИМАЛЬНЫЙ УРОВЕНЬ
+   ═══════════════════════════════════════════════════════════ */
+
+/* П.1: Огонь на splash */
+function initSplashFire() {
+  const logo = document.querySelector('.splash-logo');
+  if (!logo) return;
+  const text = logo.textContent;
+  const colors = ['#c9a84c','#e8c97a','#f5d070','#ffaa00','#ff6600'];
+  const container = document.createElement('div');
+  container.style.cssText = 'position:absolute;bottom:-2px;left:0;right:0;height:40px;pointer-events:none';
+  for (let i = 0; i < 18; i++) {
+    const span = document.createElement('span');
+    const size = 4 + Math.random() * 8;
+    const left = 5 + Math.random() * 90;
+    const dur  = 0.6 + Math.random() * 0.8;
+    const delay = Math.random() * 1.2;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    span.style.cssText = 'position:absolute;bottom:0;left:' + left + '%;width:' + size + 'px;height:' + (size * 1.6) + 'px;background:' + color + ';border-radius:50% 50% 20% 20%;opacity:0;animation:flameRise ' + dur + 's ease-in-out ' + delay + 's infinite';
+    container.appendChild(span);
+  }
+  logo.style.position = 'relative';
+  logo.appendChild(container);
+}
+
+/* П.4: Typewriter эффект */
+function initTypewriter() {
+  const el = ge('h-typewriter');
+  if (!el) return;
+  const lines = [
+    'Место, где рождается',
+    'настоящий мужской образ.'
+  ];
+  const full = lines.join('
+');
+  let i = 0;
+  el.innerHTML = '<span class="typewriter-cursor"></span>';
+  const cursor = el.querySelector('.typewriter-cursor');
+
+  function type() {
+    if (i <= full.length) {
+      const displayed = full.substring(0, i).replace('
+', '<br>');
+      el.innerHTML = displayed + '<span class="typewriter-cursor"></span>';
+      i++;
+      setTimeout(type, i === 1 ? 600 : 45 + Math.random() * 30);
+    }
+  }
+  setTimeout(type, 1200);
+}
+
+/* П.5: Конфетти при успехе */
+function launchConfetti() {
+  const colors = ['#c9a84c','#e8c97a','#f5d070','#fff8e0','#a07830','#ffaa00'];
+  const shapes = ['circle','rect','triangle'];
+  for (let i = 0; i < 55; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size  = 4 + Math.random() * 8;
+    const left  = 10 + Math.random() * 80;
+    const dur   = 1.5 + Math.random() * 1.5;
+    const delay = Math.random() * 0.8;
+    let shapeStyle = 'border-radius:50%';
+    if (Math.random() > 0.6) shapeStyle = 'border-radius:2px;transform:rotate(' + (Math.random()*360) + 'deg)';
+    p.style.cssText = 'left:' + left + 'vw;top:-10px;width:' + size + 'px;height:' + size + 'px;background:' + color + ';' + shapeStyle + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), (dur + delay + 0.5) * 1000);
+  }
+}
+
+/* П.6: След за пальцем */
+function initFingerTrail() {
+  let trailActive = false;
+  document.addEventListener('touchmove', function(e) {
+    const t = e.touches[0];
+    const trail = document.createElement('div');
+    trail.className = 'finger-trail';
+    trail.style.left = t.clientX + 'px';
+    trail.style.top  = t.clientY + 'px';
+    document.body.appendChild(trail);
+    setTimeout(() => trail.remove(), 420);
+  }, {passive: true});
+}
+
+/* П.7: Карусель мастеров с инерцией */
+function convertMastersToCarousel() {
+  const list = ge('mastersList');
+  if (!list || list.classList.contains('m-carousel')) return;
+
+  // Преобразуем grid в карусель
+  list.classList.remove('m-list');
+  list.className = 'm-carousel';
+
+  // Делаем элементы правильного класса
+  list.querySelectorAll('.m-item').forEach(item => {
+    item.classList.remove('m-item');
+    item.classList.add('m-carousel-item');
+    // Оборачиваем контент
+    const thumb = item.querySelector('.m-thumb');
+    if (thumb) thumb.style.cssText = 'position:relative;aspect-ratio:3/4;overflow:hidden';
+  });
+
+  // Эффект активной карточки при скролле
+  function updateActiveCard() {
+    const centerX = list.scrollLeft + list.offsetWidth / 2;
+    list.querySelectorAll('.m-carousel-item').forEach(card => {
+      const cardCenterX = card.offsetLeft + card.offsetWidth / 2;
+      const dist = Math.abs(centerX - cardCenterX);
+      const maxDist = list.offsetWidth / 2;
+      card.classList.toggle('active-card', dist < maxDist * 0.35);
+      const scale = Math.max(0.88, 1 - dist / maxDist * 0.15);
+      const opacity = Math.max(0.6, 1 - dist / maxDist * 0.4);
+      if (!card.classList.contains('active-card')) {
+        card.style.transform = 'scale(' + scale + ')';
+        card.style.opacity = opacity;
+      } else {
+        card.style.transform = '';
+        card.style.opacity = '';
+      }
+    });
+  }
+
+  list.addEventListener('scroll', updateActiveCard, {passive: true});
+  setTimeout(updateActiveCard, 100);
+}
+
+/* П.9: Морфинг иконок меню */
+function initTabMorph() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.classList.remove('bounce-once');
+      void this.offsetWidth;
+      this.classList.add('bounce-once');
+      setTimeout(() => this.classList.remove('bounce-once'), 500);
+    });
+  });
+}
+
+/* П.10: Счётчик просмотров */
+function initViewCounter() {
+  const el = ge('homeViewCount');
+  if (!el) return;
+  // Берём из localStorage и увеличиваем
+  try {
+    const today = new Date().toDateString();
+    const key = 'bs_views_' + today;
+    let views = parseInt(localStorage.getItem(key) || '0');
+    views += Math.floor(Math.random() * 3) + 1; // имитируем других пользователей
+    if (views < 15) views += Math.floor(Math.random() * 20) + 10; // минимальная база
+    localStorage.setItem(key, views);
+    // Анимируем число
+    let current = 0;
+    const target = views;
+    const step = Math.ceil(target / 30);
+    const interval = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = current;
+      if (current >= target) clearInterval(interval);
+    }, 40);
+  } catch(e) { el.textContent = '—'; }
+}
+
+/* ЗАПУСК ВСЕХ WOW2 */
+function initWow2Effects() {
+  initSplashFire();
+  initTypewriter();
+  initFingerTrail();
+  initTabMorph();
+  initViewCounter();
+  // Карусель после загрузки мастеров
+  setTimeout(convertMastersToCarousel, 800);
 }
 </script>
 </body>

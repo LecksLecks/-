@@ -692,6 +692,176 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* ПОДЕЛИТЬСЯ МАСТЕРОМ */
 .m-share-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(10,8,5,.6);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;backdrop-filter:blur(4px)}
 .m-share-btn:active{background:rgba(201,168,76,.2)}
+
+/* ═══════════════════════════════════════════════
+   WOW EFFECTS
+   ═══════════════════════════════════════════════ */
+
+/* П.1 ПАРАЛЛАКС */
+.home-hero{will-change:transform}
+.home-hero-inner{transition:transform .1s linear}
+
+/* П.2 ЧАСТИЦЫ ФОНА */
+#bgParticles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-particle{position:absolute;border-radius:50%;background:var(--gold);pointer-events:none;animation:bgFloat linear infinite}
+@keyframes bgFloat{0%{opacity:0;transform:translateY(0) scale(0)}10%{opacity:1}90%{opacity:.3}100%{opacity:0;transform:translateY(-100vh) scale(.5)}}
+
+/* П.3 СЧЁТЧИК АНАЛИТИКИ */
+.adm-val-counting{display:inline-block}
+
+/* П.4 МОРФИНГ КНОПКИ */
+@keyframes btnMorph{0%{transform:scale(1)}40%{transform:scale(.95)}70%{transform:scale(1.03)}100%{transform:scale(1)}}
+@keyframes btnSuccess{0%{background:var(--gold);color:var(--black)}100%{background:#4caf7d;color:#fff}}
+.bk-sub.morphing{animation:btnMorph .4s ease}
+.bk-sub.success-state{background:#4caf7d!important;color:#fff!important;letter-spacing:6px}
+
+/* П.5 TOUCH RIPPLE */
+.ripple{position:fixed;border-radius:50%;border:1.5px solid rgba(201,168,76,.6);pointer-events:none;z-index:9998;transform:translate(-50%,-50%) scale(0);animation:rippleOut .5s ease-out forwards}
+@keyframes rippleOut{0%{transform:translate(-50%,-50%) scale(0);opacity:.8}100%{transform:translate(-50%,-50%) scale(1);opacity:0;width:60px;height:60px}}
+
+/* П.6 REVEAL АНИМАЦИЯ ЗАГОЛОВКОВ */
+@keyframes revealUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.sec-ttl .reveal-word{display:inline-block;opacity:0;animation:revealUp .5s ease forwards}
+.sec-lbl.reveal-lbl{opacity:0;animation:revealUp .4s ease .1s forwards}
+
+/* П.7 ОНЛАЙН ИНДИКАТОР */
+.home-online{display:flex;align-items:center;gap:8px;padding:8px 24px;font-size:11px;letter-spacing:1px;color:rgba(138,125,107,.7)}
+.home-online-dot{width:7px;height:7px;border-radius:50%;background:#4caf7d;animation:livePulse 2s ease-in-out infinite;flex-shrink:0}
+.home-online-txt{color:var(--cream)}
+.home-online-txt strong{color:#4caf7d}
+
+/* П.8 3D TILT КАРТОЧКИ МАСТЕРОВ */
+.m-item{transform-style:preserve-3d;perspective:600px}
+.m-item.tilting{transition:transform .15s ease}
+
+/* П.9 GLOW У ВЫБРАННЫХ ЭЛЕМЕНТОВ */
+.ms-btn.sel{border-color:var(--gold);background:rgba(201,168,76,.06);box-shadow:0 0 14px rgba(201,168,76,.2),inset 0 0 8px rgba(201,168,76,.05)}
+.cal-d.sel{background:var(--gold);color:var(--black);font-weight:700;box-shadow:0 0 12px rgba(201,168,76,.4)}
+.t-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--black);box-shadow:0 0 12px rgba(201,168,76,.35)}
+
+/* П.10 МАСОНСКАЯ СЕТКА РАБОТ */
+.works-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto;gap:4px}
+.works-item:first-child{grid-row:span 2;aspect-ratio:unset}
+.works-item:not(:first-child){aspect-ratio:1}
+
+/* ═══════════════════════════════════════════════════════════
+   MEGA WOW EFFECTS
+   ═══════════════════════════════════════════════════════════ */
+
+/* П.2 LIQUID METAL КНОПКА */
+@keyframes liquidFlow{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@keyframes liquidRipple{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:.9}
+  100%{transform:translate(-50%,-50%) scale(4);opacity:0}
+}
+@keyframes liquidPress{
+  0%{transform:scale(1)}
+  40%{transform:scale(.96)}
+  70%{transform:scale(1.02)}
+  100%{transform:scale(1)}
+}
+.btn-g{
+  background:linear-gradient(270deg,#c9a84c,#e8c97a,#f5d77a,#c9a84c,#a8892e,#c9a84c);
+  background-size:400% 400%;
+  animation:liquidFlow 4s ease infinite;
+  overflow:hidden;
+  position:relative;
+}
+.btn-g:active{animation:liquidPress .3s ease,liquidFlow 4s ease infinite}
+.btn-g-ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:liquidRipple .6s ease forwards}
+
+/* П.4 TYPEWRITER */
+@keyframes typewriterCursor{0%,100%{opacity:1}50%{opacity:0}}
+.h-t1-typed{display:inline}
+.h-t1-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);vertical-align:middle;margin-left:2px;animation:typewriterCursor .7s step-end infinite}
+
+/* П.5 ЗОЛОТОЕ КОНФЕТТИ */
+@keyframes confettiFall{
+  0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1}
+  80%{opacity:.8}
+  100%{transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(.3);opacity:0}
+}
+.confetti-piece{
+  position:fixed;pointer-events:none;z-index:9997;
+  animation:confettiFall var(--cd) cubic-bezier(.25,.46,.45,.94) forwards;
+  border-radius:var(--cbr);
+}
+
+/* П.6 ЗОЛОТОЙ СЛЕД ЗА ПАЛЬЦЕМ */
+@keyframes trailFade{
+  0%{opacity:.8;transform:scale(1)}
+  100%{opacity:0;transform:scale(.2)}
+}
+.finger-trail{
+  position:fixed;pointer-events:none;z-index:9996;
+  border-radius:50%;background:radial-gradient(circle,rgba(232,201,122,.9),rgba(201,168,76,.4),transparent);
+  animation:trailFade .5s ease forwards;
+  transform-origin:center;
+}
+
+/* П.8 GLASSMORPHISM */
+.my-card{
+  background:rgba(13,11,7,.55)!important;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(201,168,76,.18)!important;
+  border-left:3px solid var(--gold)!important;
+}
+.my-card-past{
+  background:rgba(10,8,5,.4)!important;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.adm-booking{
+  background:rgba(13,11,7,.5)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.cart-bar{
+  background:rgba(13,11,7,.6)!important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(201,168,76,.15)!important;
+}
+.adm-stat{
+  background:rgba(13,11,7,.5)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.rev-card{
+  background:rgba(13,11,7,.55)!important;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.adm-summary-card{
+  background:rgba(13,11,7,.5)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.succ-tbl{
+  background:rgba(13,11,7,.6)!important;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.ms-btn{
+  background:rgba(13,11,7,.5)!important;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.ms-btn.sel{
+  background:rgba(201,168,76,.1)!important;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.adm-drawer-menu{
+  backdrop-filter:blur(20px)!important;
+  -webkit-backdrop-filter:blur(20px)!important;
+  background:rgba(10,8,5,.88)!important;
+}
 </style>
 </head>
 <body>
@@ -727,6 +897,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <div class="splash-city">✦ Батайск ✦</div>
 </div>
 
+<div id="bgParticles"></div>
 <div class="page active page-visible" id="page-home">
   <div class="home-hero">
     <div class="home-crown">♛</div>
@@ -735,12 +906,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
   <div class="hymn">
     <div class="h-orn"><span class="h-line"></span><span class="h-phi">φ</span><span class="h-line"></span></div>
-    <div class="h-t1">Место, где рождается<br>настоящий мужской образ.</div>
+    <div class="h-t1" id="h1TypeWriter"></div>
     <div class="h-orn2">
       <span class="h-line"></span>
       <span class="h-line"></span>
     </div>
   </div>
+  <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
   <div class="home-btns" style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
@@ -825,6 +997,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="sec-lbl">✦ Онлайн запись</div>
     <h2 class="sec-ttl">За-<em>пись</em></h2>
   </div>
+  <div id="confettiContainer"></div>
   <div class="succ" id="bkSucc">
     <div class="succ-ico">✅</div>
     <h3 class="succ-ttl">Запись <em>подтверждена!</em></h3>
@@ -1441,6 +1614,8 @@ function initApp() {
   bkInit();
   initReviews();
   loadAppData();
+  initWowEffects();
+  initMegaWow();
 
   // FIX-09: deep link ?startapp=master_N
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
@@ -1545,8 +1720,10 @@ function goPage(id) {
   haptic('select');
   if (pg) {
     pg.classList.add('active');
-    // Запускаем анимацию через rAF чтобы браузер успел применить display:block
-    requestAnimationFrame(() => requestAnimationFrame(() => pg.classList.add('page-visible')));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      pg.classList.add('page-visible');
+      revealPageHeaders(id);
+    }));
   }
   if (id === 'booking')    bkInit();
   if (id === 'mybookings') myBkInit();
@@ -1716,7 +1893,7 @@ function loadAllMastersData() {
   fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
     .then(r => r.json())
     .then(d => {
-      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); }
+      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); updateHomeSlotCount(); }
     })
     .catch(e => console.error('loadAllMastersData:', e));
 }
@@ -2079,6 +2256,8 @@ function bkSubmit() {
       // Успех
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
       haptic('success');
+      morphBookBtn();
+      setTimeout(launchConfetti, 200);
       ge('bkSpinner').classList.remove('show');
       btn.style.display='';
       ge('bkFormWrap').style.display = 'none';
@@ -2636,7 +2815,15 @@ function admLoadAnalytics() {
     .then(r=>r.json())
     .then(d => {
       if (d.error==='Unauthorized') { [rev,svc,mst].forEach(el=>{if(el) el.innerHTML='<div class="adm-loading">❌ Нет прав</div>';}); return; }
-      if (rev) rev.innerHTML='<div class="adm-stat-grid"><div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val">'+formatPrice(d.revenueToday||0)+'</div></div><div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val">'+formatPrice(d.revenueWeek||0)+'</div></div><div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val">'+formatPrice(d.revenueMonth||0)+'</div></div><div class="adm-stat"><div class="adm-lbl">Всего</div><div class="adm-val">'+( d.totalBookings||0)+'</div></div></div>';
+      if (rev) {
+        rev.innerHTML='<div class="adm-stat-grid"><div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div><div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div><div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div><div class="adm-stat"><div class="adm-lbl">Всего</div><div class="adm-val" id="revTotal">0</div></div></div>';
+        setTimeout(() => {
+          animateRevenue(ge('revToday'), d.revenueToday||0, ' ₽');
+          animateRevenue(ge('revWeek'),  d.revenueWeek||0,  ' ₽');
+          animateRevenue(ge('revMonth'), d.revenueMonth||0, ' ₽');
+          animateCount(ge('revTotal'),   d.totalBookings||0, 800);
+        }, 100);
+      }
       const ts=d.topServices||[];
       if (svc) svc.innerHTML=ts.length===0?'<div class="adm-loading">Нет данных</div>':ts.map(s=>'<div class="adm-top-item"><span class="adm-top-nm">'+s.name+'</span><span class="adm-top-cnt">'+s.count+'</span></div>').join('');
       const ms=d.masterStats||[];
@@ -3106,6 +3293,322 @@ window.worksClose = worksClose;
 window.worksPrev = worksPrev;
 window.worksNext = worksNext;
 window.worksLightboxBgClick = worksLightboxBgClick;
+
+/* ═══════════════════════════════════════════════════════════
+   WOW EFFECTS JS
+   ═══════════════════════════════════════════════════════════ */
+
+/* П.2: Фоновые частицы */
+function initBgParticles() {
+  const container = ge('bgParticles');
+  if (!container) return;
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'bg-particle';
+    const size = 1.5 + Math.random() * 2.5;
+    const left = Math.random() * 100;
+    const duration = 12 + Math.random() * 20;
+    const delay = Math.random() * 15;
+    p.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + left + '%;bottom:-10px;opacity:' + (0.15 + Math.random() * 0.25) + ';animation-duration:' + duration + 's;animation-delay:' + delay + 's';
+    container.appendChild(p);
+  }
+}
+
+/* П.1: Параллакс главной */
+function initParallax() {
+  const hero = document.querySelector('.home-hero');
+  if (!hero) return;
+  const page = ge('page-home');
+  if (!page) return;
+  page.addEventListener('scroll', function() {
+    const y = page.scrollTop || window.scrollY;
+    hero.style.transform = 'translateY(' + (y * 0.35) + 'px)';
+  }, {passive: true});
+  window.addEventListener('scroll', function() {
+    const y = window.scrollY;
+    hero.style.transform = 'translateY(' + (y * 0.35) + 'px)';
+  }, {passive: true});
+}
+
+/* П.5: Touch ripple */
+function initRipple() {
+  document.addEventListener('touchstart', function(e) {
+    const t = e.touches[0];
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    r.style.left = t.clientX + 'px';
+    r.style.top  = t.clientY + 'px';
+    r.style.width  = '10px';
+    r.style.height = '10px';
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 520);
+  }, {passive: true});
+}
+
+/* П.6: Reveal анимация заголовков */
+function revealPageHeaders(pageId) {
+  const page = ge('page-' + pageId);
+  if (!page) return;
+  const lbl = page.querySelector('.sec-lbl');
+  const ttl = page.querySelector('.sec-ttl');
+  if (lbl) { lbl.style.opacity = ''; lbl.classList.remove('reveal-lbl'); void lbl.offsetWidth; lbl.classList.add('reveal-lbl'); }
+  if (ttl && ttl.dataset.revealed !== '1') {
+    ttl.dataset.revealed = '1';
+    const orig = ttl.innerHTML;
+    const words = ttl.textContent.split(' ');
+    ttl.innerHTML = words.map((w, i) =>
+      '<span class="reveal-word" style="animation-delay:' + (0.05 + i * 0.1) + 's">' + w + ' </span>'
+    ).join('') + (orig.includes('<em>') ? '' : '');
+    // Восстанавливаем em теги
+    const ttlText = ttl.textContent;
+    page.querySelectorAll('.reveal-word').forEach((span, i) => {
+      if (words[i] && words[i].includes('em>')) span.innerHTML = words[i];
+    });
+  }
+}
+
+/* П.3: Счётчик анимации для аналитики */
+function animateCount(el, target, duration) {
+  if (!el) return;
+  const start = 0;
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(start + (target - start) * eased);
+    el.textContent = current.toLocaleString('ru-RU');
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function animateRevenue(el, target, suffix) {
+  if (!el) return;
+  const duration = 1200;
+  const startTime = performance.now();
+  function update(now) {
+    const p = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = Math.round(target * eased);
+    el.textContent = val.toLocaleString('ru-RU') + (suffix || ' ₽');
+    if (p < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+/* П.7: Количество свободных слотов на главной */
+function updateHomeSlotCount() {
+  const slot = ge('homeSlotCount');
+  if (!slot) return;
+  const today = formatDate_iso(new Date());
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  let freeCount = 0;
+  MASTERS.forEach(m => {
+    const data = allMastersData[m.name];
+    if (!data) return;
+    if (data.dayoffs && data.dayoffs.indexOf(today) >= 0) return;
+    const busy    = (data.slots  || {})[today] || [];
+    const blocked = (data.blocks || {})[today] || [];
+    SLOTS.forEach(s => {
+      const hr = parseInt(s.split(':')[0]);
+      if (hr * 60 <= nowMin + 30) return;
+      if (busy.indexOf(s) < 0 && blocked.indexOf(s) < 0) freeCount++;
+    });
+  });
+  slot.textContent = freeCount > 0 ? freeCount : '0';
+}
+
+/* П.8: 3D Tilt карточки мастеров */
+function initMasterTilt() {
+  document.addEventListener('touchstart', function(e) {
+    const card = e.target.closest('.m-item');
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const t = e.touches[0];
+    const x = (t.clientX - rect.left) / rect.width - 0.5;
+    const y = (t.clientY - rect.top)  / rect.height - 0.5;
+    card.style.transform = 'perspective(600px) rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 8) + 'deg) scale(1.02)';
+    card.classList.add('tilting');
+  }, {passive: true});
+  document.addEventListener('touchend', function(e) {
+    const card = e.target.closest('.m-item');
+    if (!card) return;
+    card.style.transform = '';
+    card.classList.remove('tilting');
+  }, {passive: true});
+}
+
+/* П.4: Морфинг кнопки при успехе */
+function morphBookBtn() {
+  const btn = ge('bkSub');
+  if (!btn) return;
+  btn.classList.add('morphing');
+  setTimeout(() => {
+    btn.classList.remove('morphing');
+    btn.classList.add('success-state');
+    btn.textContent = '✓';
+    setTimeout(() => btn.classList.remove('success-state'), 2000);
+  }, 400);
+}
+
+/* ИНИЦИАЛИЗАЦИЯ ВСЕХ WOW */
+function initWowEffects() {
+  initBgParticles();
+  initParallax();
+  initRipple();
+  initMasterTilt();
+  // Обновляем слоты после загрузки данных
+  setTimeout(updateHomeSlotCount, 3000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MEGA WOW JS
+   ═══════════════════════════════════════════════════════════ */
+
+/* П.2: Liquid ripple при нажатии кнопки Записаться */
+(function() {
+  function addLiquidRipple(e) {
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    const r = document.createElement('span');
+    r.className = 'btn-g-ripple';
+    r.style.left = x + 'px';
+    r.style.top  = y + 'px';
+    btn.appendChild(r);
+    setTimeout(() => r.remove(), 650);
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = ge('btnToBooking');
+    if (btn) {
+      btn.addEventListener('touchstart', addLiquidRipple, {passive:true});
+      btn.addEventListener('mousedown',  addLiquidRipple);
+    }
+  });
+})();
+
+/* П.4: Typewriter эффект для главного слогана */
+function initTypewriter() {
+  const el = ge('h1TypeWriter');
+  if (!el) return;
+  const text1 = 'Место, где рождается';
+  const text2 = 'настоящий мужской образ.';
+  let i = 0, line = 1;
+  el.innerHTML = '<span class="h-t1-typed" id="typedLine1"></span><span class="h-t1-cursor">|</span>';
+  const typed1 = ge('typedLine1');
+
+  function typeChar() {
+    if (line === 1) {
+      if (i < text1.length) {
+        typed1.textContent += text1[i++];
+        setTimeout(typeChar, 55 + Math.random() * 30);
+      } else {
+        // Переходим на вторую строку
+        line = 2; i = 0;
+        el.innerHTML = '<span class="h-t1-typed">' + text1 + '</span><br><span class="h-t1-typed" id="typedLine2"></span><span class="h-t1-cursor">|</span>';
+        setTimeout(typeChar, 180);
+      }
+    } else {
+      const typed2 = ge('typedLine2');
+      if (!typed2) return;
+      if (i < text2.length) {
+        typed2.textContent += text2[i++];
+        setTimeout(typeChar, 50 + Math.random() * 25);
+      } else {
+        // Убираем курсор через 2 сек
+        setTimeout(() => {
+          const cursor = el.querySelector('.h-t1-cursor');
+          if (cursor) cursor.style.opacity = '0';
+        }, 2000);
+      }
+    }
+  }
+
+  // Запускаем после splash screen
+  setTimeout(typeChar, 2000);
+}
+
+/* П.5: Золотое конфетти */
+function launchConfetti() {
+  const container = ge('confettiContainer');
+  if (!container) return;
+
+  const colors = ['#c9a84c','#e8c97a','#f5d77a','#a8892e','#fff8e1','#ffd700'];
+  const shapes = ['2px','50%','0'];  // квадрат, круг, ромб
+
+  for (let i = 0; i < 55; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      const size = 5 + Math.random() * 9;
+      const startX = 20 + Math.random() * 60; // стартуем в центре экрана
+      const cx = (Math.random() - 0.5) * window.innerWidth * 1.2;
+      const cy = window.innerHeight * (0.4 + Math.random() * 0.7);
+      const cr = (Math.random() - 0.5) * 720;
+      const cd = 0.8 + Math.random() * 1.4;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const br = shapes[Math.floor(Math.random() * shapes.length)];
+
+      p.style.cssText = [
+        'width:' + size + 'px',
+        'height:' + size + 'px',
+        'left:' + startX + 'vw',
+        'top:10vh',
+        'background:' + color,
+        '--cx:' + cx + 'px',
+        '--cy:' + cy + 'px',
+        '--cr:' + cr + 'deg',
+        '--cd:' + cd + 's',
+        '--cbr:' + br,
+      ].join(';');
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), (cd + 0.2) * 1000);
+    }, i * 30);
+  }
+}
+
+/* П.6: Золотой след за пальцем */
+function initFingerTrail() {
+  let trailTimeout;
+  let lastX = 0, lastY = 0;
+  let trailCount = 0;
+
+  document.addEventListener('touchmove', function(e) {
+    const t = e.touches[0];
+    const x = t.clientX, y = t.clientY;
+    const dx = x - lastX, dy = y - lastY;
+    if (Math.sqrt(dx*dx + dy*dy) < 8) return; // только если сдвинулся
+    lastX = x; lastY = y;
+
+    if (trailCount > 12) return; // лимит одновременных частиц
+    trailCount++;
+
+    const trail = document.createElement('div');
+    trail.className = 'finger-trail';
+    const size = 18 + Math.random() * 12;
+    trail.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + x + 'px;top:' + y + 'px;margin-left:-' + size/2 + 'px;margin-top:-' + size/2 + 'px';
+    document.body.appendChild(trail);
+    setTimeout(() => { trail.remove(); trailCount--; }, 520);
+  }, {passive: true});
+}
+
+/* П.8: Glassmorphism — уже в CSS, здесь усиливаем бэкграунд body */
+function enhanceGlass() {
+  // Добавляем blur-слой поверх фона для усиления эффекта стекла
+  const glassLayer = document.createElement('div');
+  glassLayer.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:-1;background:rgba(10,8,5,.08)';
+  document.body.appendChild(glassLayer);
+}
+
+/* ИНИЦИАЛИЗАЦИЯ MEGA WOW */
+function initMegaWow() {
+  initTypewriter();
+  initFingerTrail();
+  enhanceGlass();
+}
 </script>
 </body>
 </html>

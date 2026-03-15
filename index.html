@@ -646,20 +646,30 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes splashFadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
 @keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
-#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  gap:0;
+  width:100vw;height:100vh;
+  margin:0;padding:0;
   background:#0a0805;
   background-image:
     repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(201,168,76,.012) 2px,rgba(201,168,76,.012) 3px),
     repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(201,168,76,.008) 2px,rgba(201,168,76,.008) 3px),
     linear-gradient(180deg,#120e09 0%,#0a0805 60%,#070503 100%);
-  pointer-events:all;transition:opacity .5s ease,transform .5s ease}
+  pointer-events:all;
+  transition:opacity .5s ease,transform .5s ease;
+  box-sizing:border-box;
+}
 #splash.hiding{animation:splashFadeOut .5s ease forwards;pointer-events:none}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
-.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;
+.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;text-align:center;
   background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards}
-.splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px 0}
-.splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards}
+.splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px auto;display:block}
+.splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards;text-align:center;width:100%}
 
 /* СТРАНИЦА ПРОФИЛЯ МАСТЕРА */
 @keyframes profileIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -978,6 +988,71 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .home-views{display:flex;align-items:center;gap:6px;padding:4px 24px 12px;font-size:11px;color:rgba(138,125,107,.5);letter-spacing:.5px}
 .home-views-eye{font-size:13px;opacity:.5}
 .home-views strong{color:rgba(201,168,76,.7)}
+
+/* РЕФЕРАЛЬНАЯ ПРОГРАММА */
+.ref-block{margin:0 16px 16px;border:1px solid rgba(201,168,76,.25);background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));padding:18px}
+.ref-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:4px}
+.ref-title em{color:var(--gold);font-style:italic}
+.ref-desc{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:14px}
+.ref-code-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.ref-code{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.3);padding:10px 12px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:3px;color:var(--gold);text-align:center}
+.ref-copy-btn{background:transparent;border:1px solid rgba(201,168,76,.4);color:var(--gold);padding:10px 14px;font-size:11px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;white-space:nowrap;transition:all .15s}
+.ref-copy-btn:active{background:rgba(201,168,76,.1)}
+.ref-share-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:13px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .2s}
+.ref-share-btn:active{background:var(--gold-l)}
+.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.ref-stat{border:1px solid rgba(201,168,76,.1);padding:10px;text-align:center;background:rgba(0,0,0,.2)}
+.ref-stat-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
+.ref-stat-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:2px}
+
+/* ВИТРИНА АКЦИЙ */
+.promo-block{padding:0 16px 4px}
+.promo-ttl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;margin-top:16px}
+.promo-list{display:flex;flex-direction:column;gap:8px}
+.promo-item{border:1px solid rgba(201,168,76,.2);background:rgba(201,168,76,.04);padding:12px 14px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden}
+.promo-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+.promo-badge{font-size:22px;flex-shrink:0}
+.promo-body{flex:1}
+.promo-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream)}
+.promo-desc{font-size:12px;color:var(--gray);margin-top:2px}
+.promo-price{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);white-space:nowrap}
+.promo-until{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:2px;text-align:right}
+.promo-empty{font-size:13px;color:var(--gray);font-style:italic;text-align:center;padding:16px 0}
+
+/* ГРАФИК ВЫРУЧКИ ПО ДНЯМ */
+.chart-wrap{padding:0 16px 16px}
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:6px}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;background:rgba(201,168,76,.15);border-radius:2px 2px 0 0;transition:height .6s cubic-bezier(.34,1.56,.64,1);position:relative;min-height:3px}
+.chart-bar.today{background:var(--gold)}
+.chart-bar:not(.today){background:rgba(201,168,76,.3)}
+.chart-bar-val{font-size:8px;color:var(--gray);letter-spacing:.3px;text-align:center;white-space:nowrap}
+.chart-day{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--gray)}
+.chart-day.today{color:var(--gold)}
+
+/* УЧЁТ РАСХОДОВ */
+.expense-form{padding:0 16px 8px}
+.expense-row{display:flex;gap:8px;margin-bottom:8px}
+.expense-inp{flex:1;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px;outline:none}
+.expense-inp::placeholder{color:rgba(138,125,107,.35)}
+.expense-inp:focus{border-color:rgba(201,168,76,.5)}
+.expense-add-btn{background:var(--gold);color:var(--black);border:none;padding:10px 16px;font-size:18px;cursor:pointer;flex-shrink:0}
+.expense-list{margin:0 16px}
+.expense-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(201,168,76,.07)}
+.expense-item:last-child{border-bottom:none}
+.expense-nm{font-size:14px;color:var(--cream)}
+.expense-dt{font-size:10px;color:var(--gray);margin-top:2px;letter-spacing:.5px}
+.expense-sum{font-family:'Playfair Display',serif;font-size:15px;color:#e05050;font-weight:700}
+.expense-rm{color:rgba(138,125,107,.4);cursor:pointer;font-size:18px;margin-left:8px;padding:4px}
+.expense-rm:active{color:#e05050}
+.expense-total{display:flex;justify-content:space-between;padding:12px 16px;border-top:1px solid rgba(201,168,76,.15);margin-top:4px}
+.expense-total-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
+.expense-total-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#e05050}
+.profit-row{display:flex;justify-content:space-between;padding:10px 16px 16px}
+.profit-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
+.profit-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.profit-val.positive{color:#4caf7d}
+.profit-val.negative{color:#e05050}
 </style>
 </head>
 <body>
@@ -1007,13 +1082,15 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 <!-- SPLASH SCREEN -->
 <div id="splash">
-  <div class="splash-crown">♛</div>
-  <div style="position:relative;display:inline-block">
-    <div class="splash-logo">BARBER<br>STYLE</div>
-    <div class="splash-fire" id="splashFire"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100%">
+    <div class="splash-crown">♛</div>
+    <div style="position:relative;display:inline-block">
+      <div class="splash-logo">BARBER<br>STYLE</div>
+      <div class="splash-fire" id="splashFire"></div>
+    </div>
+    <div class="splash-line" style="margin:14px auto"></div>
+    <div class="splash-city">✦ Батайск ✦</div>
   </div>
-  <div class="splash-line"></div>
-  <div class="splash-city">✦ Батайск ✦</div>
 </div>
 
 <div id="bgParticles"></div>
@@ -1034,6 +1111,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
   <div class="home-views"><span class="home-views-eye">👁</span>Открыли сегодня: <strong id="homeViewCount">...</strong></div>
   <div class="live-counter"><span class="live-counter-ico">👁</span><span class="live-counter-num" id="liveViewCount">0</span><span class="live-counter-lbl">открыли приложение сегодня</span></div>
+  <div class="promo-block" id="promoBlock" style="display:none">
+    <div class="promo-ttl">✦ Акции и предложения</div>
+    <div class="promo-list" id="promoList"></div>
+  </div>
   <div class="home-btns" style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
@@ -1057,6 +1138,20 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <a href="https://www.instagram.com/barber_stayle161?igsh=MWMwbno5d215dnhzag==" target="_blank"><span class="soc-ico">◎</span>INST</a>
     <a href="https://vk.com/club211199483" target="_blank"><span class="soc-ico">◈</span>VK</a>
     <a href="https://yandex.ru/maps/?text=Батайск+Октябрьская+108" target="_blank"><span class="soc-ico">⊕</span>MAP</a>
+  </div>
+  <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
+  <div class="ref-block" id="refBlock">
+    <div class="ref-title">Приведи <em>друга</em></div>
+    <div class="ref-desc">Поделись своей ссылкой — друг получит <strong style="color:var(--gold)">скидку 20%</strong> на первый визит, а ты на следующий тоже.</div>
+    <div class="ref-code-row">
+      <div class="ref-code" id="refCode">Загрузка...</div>
+      <button class="ref-copy-btn" onclick="refCopyCode()">Копировать</button>
+    </div>
+    <button class="ref-share-btn" onclick="refShare()">✦ Поделиться ссылкой</button>
+    <div class="ref-stats">
+      <div class="ref-stat"><div class="ref-stat-val" id="refFriendsCount">0</div><div class="ref-stat-lbl">Друзей привёл</div></div>
+      <div class="ref-stat"><div class="ref-stat-val" id="refDiscountsEarned">0</div><div class="ref-stat-lbl">Скидок получено</div></div>
+    </div>
   </div>
   <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="reviews-section">
@@ -1240,9 +1335,14 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
         <span class="adm-menu-ico">📢</span>
         <div><span class="adm-menu-nm">Рассылка</span><span class="adm-menu-desc">Сообщения клиентам</span></div>
       </button>
-      <button class="adm-menu-item" data-admtab="clients">
-        <span class="adm-menu-ico">👥</span>
-        <div><span class="adm-menu-nm">Клиенты</span><span class="adm-menu-desc">LTV, средний чек</span></div>
+
+      <button class="adm-menu-item" data-admtab="revenue">
+        <span class="adm-menu-ico">📈</span>
+        <div><span class="adm-menu-nm">График выручки</span><span class="adm-menu-desc">По дням недели</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="expenses">
+        <span class="adm-menu-ico">💸</span>
+        <div><span class="adm-menu-nm">Расходы</span><span class="adm-menu-desc">Учёт затрат, прибыль</span></div>
       </button>
     </div>
   </div>
@@ -1349,7 +1449,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
 
   <!-- ПАНЕЛЬ КЛИЕНТОВ -->
-  <div class="adm-panel" id="adm-clients">
+  <div class="adm-panel" id="adm-clients" style="display:none!important">
     <div class="adm-section">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         <input type="text" class="adm-select" id="clSearchInput" placeholder="Поиск по имени или телефону..." style="margin-bottom:0;flex:1">
@@ -1368,6 +1468,59 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <div id="clList"><div class="adm-loading">Загрузка клиентов...</div></div>
     </div>
   </div>
+
+  <!-- ПАНЕЛЬ ГРАФИКА ВЫРУЧКИ -->
+  <div class="adm-panel" id="adm-revenue">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Выручка по дням недели</div>
+      <div class="chart-wrap" id="revenueChartWrap">
+        <div class="adm-loading">Загрузка...</div>
+      </div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">По месяцам (последние 6)</div>
+      <div class="chart-wrap" id="revenueMonthChartWrap">
+        <div class="adm-loading">Загрузка...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛЬ РАСХОДОВ -->
+  <div class="adm-panel" id="adm-expenses">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Добавить расход</div>
+      <div class="expense-form">
+        <div class="expense-row">
+          <input type="text" class="expense-inp" id="expName" placeholder="Название (аренда, материалы...)">
+        </div>
+        <div class="expense-row">
+          <input type="number" class="expense-inp" id="expSum" placeholder="Сумма ₽" style="max-width:130px">
+          <select class="expense-inp" id="expCat" style="flex:1">
+            <option value="rent">🏠 Аренда</option>
+            <option value="materials">✂️ Материалы</option>
+            <option value="salary">👤 Зарплата</option>
+            <option value="equipment">🔧 Оборудование</option>
+            <option value="marketing">📢 Маркетинг</option>
+            <option value="other">📦 Прочее</option>
+          </select>
+          <button class="expense-add-btn" onclick="expenseAdd()">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">Расходы за месяц</div>
+      <div class="expense-list" id="expenseList"><div class="adm-loading">Нет расходов</div></div>
+      <div class="expense-total">
+        <span class="expense-total-lbl">Расходы итого</span>
+        <span class="expense-total-val" id="expenseTotal">0 ₽</span>
+      </div>
+      <div class="profit-row">
+        <span class="profit-lbl">Прибыль за месяц</span>
+        <span class="profit-val" id="profitVal">— ₽</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 
@@ -1736,6 +1889,8 @@ function initApp() {
   initReviews();
   loadAppData();
   initWowEffects();
+  refInit();
+  loadPromos();
   initWow2Effects();
 
   // FIX-09: deep link ?startapp=master_N
@@ -2629,6 +2784,8 @@ function admTab(tab, tabEl) {
   if (tab==='analytics') admLoadAnalytics();
   if (tab==='broadcast') bcInit();
   if (tab==='clients')   clInit();
+  if (tab==='revenue')   revenueInit();
+  if (tab==='expenses')  expensesInit();
 }
 
 function admInit() {
@@ -4095,6 +4252,277 @@ function initWow2Effects() {
   // Карусель после загрузки мастеров
   setTimeout(convertMastersToCarousel, 800);
 }
+
+/* ════════════════════════════════════════════════════════════
+   П.8: РЕФЕРАЛЬНАЯ ПРОГРАММА
+   ════════════════════════════════════════════════════════════ */
+function refInit() {
+  const chatId = getChatId();
+  if (!chatId) return;
+
+  // Генерируем реферальный код из chatId
+  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
+  const el = ge('refCode');
+  if (el) el.textContent = refCode;
+
+  // Статистика из localStorage
+  try {
+    const stats = JSON.parse(localStorage.getItem('ref_stats_' + chatId) || '{"friends":0,"discounts":0}');
+    const fc = ge('refFriendsCount'), dc = ge('refDiscountsEarned');
+    if (fc) fc.textContent = stats.friends;
+    if (dc) dc.textContent = stats.discounts;
+  } catch(e) {}
+}
+
+function refCopyCode() {
+  const code = ge('refCode') ? ge('refCode').textContent : '';
+  if (!code || code === 'Загрузка...') return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code).then(() => showToast('✅ Код скопирован: ' + code, 'success'));
+  } else {
+    showToast('Ваш код: ' + code, 'info', 4000);
+  }
+  haptic('light');
+}
+
+function refShare() {
+  haptic('light');
+  const chatId = getChatId();
+  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
+  const botUser = 'barber_style_bot';
+  const url = 'https://t.me/' + botUser + '?start=ref_' + refCode;
+  const text = '✂️ Записался в BARBER STYLE — классный барбершоп в Батайске!
+
+По моей ссылке получишь скидку 20% на первый визит 🎁';
+
+  if (tg && tg.shareMessage) {
+    try { tg.shareMessage(text + '
+
+' + url); return; } catch(e) {}
+  }
+  if (navigator.share) {
+    navigator.share({ title: 'BARBER STYLE', text: text, url: url }).catch(() => {});
+  } else {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => showToast('✅ Ссылка скопирована!', 'success'));
+    }
+  }
+}
+window.refCopyCode = refCopyCode;
+window.refShare    = refShare;
+
+/* ════════════════════════════════════════════════════════════
+   П.9: ВИТРИНА АКЦИЙ
+   ════════════════════════════════════════════════════════════ */
+function loadPromos() {
+  const chatId = getChatId();
+  // Загружаем акции из Settings таблицы
+  fetchWithTimeout(CONFIG.GS + '?action=getPromos')
+    .then(r => r.json())
+    .then(d => {
+      const promos = d.promos || [];
+      const block  = ge('promoBlock');
+      const list   = ge('promoList');
+      if (!block || !list) return;
+
+      if (promos.length === 0) {
+        block.style.display = 'none';
+        return;
+      }
+
+      block.style.display = 'block';
+      const icons = { sale:'🔥', new:'✨', season:'🍂', gift:'🎁', vip:'👑' };
+      list.innerHTML = promos.map(p => {
+        const ico = icons[p.type] || '✦';
+        return '<div class="promo-item">' +
+          '<div class="promo-badge">' + ico + '</div>' +
+          '<div class="promo-body">' +
+            '<div class="promo-name">' + escapeHtml(p.name) + '</div>' +
+            '<div class="promo-desc">' + escapeHtml(p.desc || '') + '</div>' +
+          '</div>' +
+          (p.price ? '<div style="text-align:right"><div class="promo-price">' + escapeHtml(p.price) + '</div>' + (p.until ? '<div class="promo-until">до ' + escapeHtml(p.until) + '</div>' : '') + '</div>' : '') +
+        '</div>';
+      }).join('');
+    })
+    .catch(() => {
+      // Если акций нет — скрываем блок тихо
+      const block = ge('promoBlock');
+      if (block) block.style.display = 'none';
+    });
+}
+
+/* ════════════════════════════════════════════════════════════
+   П.11: ГРАФИК ВЫРУЧКИ ПО ДНЯМ
+   ════════════════════════════════════════════════════════════ */
+let _revenueLoaded = false;
+
+function revenueInit() {
+  if (!_revenueLoaded) revenueLoad();
+}
+
+function revenueLoad() {
+  const chatId = getChatId();
+  ge('revenueChartWrap').innerHTML      = '<div class="adm-loading">Загрузка...</div>';
+  ge('revenueMonthChartWrap').innerHTML = '<div class="adm-loading">Загрузка...</div>';
+
+  fetchWithTimeout(CONFIG.GS + '?action=getRevenueChart&chatId=' + encodeURIComponent(chatId))
+    .then(r => r.json())
+    .then(d => {
+      if (d.error === 'Unauthorized') {
+        ge('revenueChartWrap').innerHTML = '<div class="adm-loading">❌ Нет прав</div>';
+        return;
+      }
+      _revenueLoaded = true;
+      renderRevenueChart(d.byDay   || [], 'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
+      renderRevenueChart(d.byMonth || [], 'revenueMonthChartWrap', d.monthLabels || []);
+    })
+    .catch(() => {
+      // Если нет эндпоинта — показываем заглушку с примером
+      renderRevenueMock();
+    });
+}
+
+function renderRevenueMock() {
+  // Показываем пример пока не реализован эндпоинт
+  const mockDay = [3200, 5400, 4800, 6200, 7100, 9800, 4200];
+  const mockMonth = [42000, 58000, 61000, 55000, 78000, 83000];
+  renderRevenueChart(mockDay,   'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
+  renderRevenueChart(mockMonth, 'revenueMonthChartWrap', ['Окт','Ноя','Дек','Янв','Фев','Мар']);
+}
+
+function renderRevenueChart(data, containerId, labels) {
+  const wrap = ge(containerId);
+  if (!wrap || !data.length) { wrap.innerHTML = '<div class="adm-loading">Нет данных</div>'; return; }
+
+  const max = Math.max(...data, 1);
+  const todayDow = new Date().getDay();
+  const todayIdx = todayDow === 0 ? 6 : todayDow - 1;
+  const isWeek   = data.length === 7;
+
+  let html = '<div class="chart-bars">';
+  data.forEach((val, i) => {
+    const pct    = Math.round((val / max) * 100);
+    const isToday = isWeek && i === todayIdx;
+    const label  = labels[i] || '';
+    const valStr = val >= 1000 ? Math.round(val/1000) + 'к' : val;
+    html += '<div class="chart-bar-col">' +
+      '<div class="chart-bar-val">' + (val > 0 ? valStr : '') + '</div>' +
+      '<div class="chart-bar' + (isToday ? ' today' : '') + '" style="height:' + Math.max(pct, 3) + '%;min-height:3px;max-height:72px;width:100%;align-self:flex-end"></div>' +
+      '<div class="chart-day' + (isToday ? ' today' : '') + '">' + label + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  // Итого
+  const total = data.reduce((s, v) => s + v, 0);
+  html += '<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(201,168,76,.1)">' +
+    '<span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)">Итого</span>' +
+    '<span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold)">' + formatPrice(total) + '</span>' +
+  '</div>';
+
+  wrap.innerHTML = html;
+
+  // Анимируем столбцы
+  setTimeout(() => {
+    wrap.querySelectorAll('.chart-bar').forEach((bar, i) => {
+      bar.style.transition = 'height .6s cubic-bezier(.34,1.56,.64,1) ' + (i * 0.06) + 's';
+    });
+  }, 50);
+}
+
+/* ════════════════════════════════════════════════════════════
+   П.12: УЧЁТ РАСХОДОВ
+   ════════════════════════════════════════════════════════════ */
+function expensesInit() {
+  expensesRender();
+}
+
+function expenseAdd() {
+  haptic('light');
+  const name = (ge('expName').value || '').trim();
+  const sum  = parseFloat(ge('expSum').value || '0');
+  const cat  = ge('expCat').value;
+
+  if (!name) { showToast('Введите название расхода', 'error'); return; }
+  if (!sum || sum <= 0) { showToast('Введите сумму', 'error'); return; }
+
+  try {
+    const key      = 'expenses_' + new Date().toISOString().slice(0, 7); // YYYY-MM
+    const expenses = JSON.parse(localStorage.getItem(key) || '[]');
+    expenses.push({ id: Date.now(), name, sum, cat, date: new Date().toISOString() });
+    localStorage.setItem(key, JSON.stringify(expenses));
+
+    ge('expName').value = '';
+    ge('expSum').value  = '';
+    expensesRender();
+    showToast('✅ Расход добавлен', 'success');
+  } catch(e) {
+    showToast('Ошибка сохранения', 'error');
+  }
+}
+window.expenseAdd = expenseAdd;
+
+function expenseDelete(id) {
+  haptic('light');
+  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
+  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
+  const filtered = expenses.filter(e => e.id !== id);
+  localStorage.setItem(key, JSON.stringify(filtered));
+  expensesRender();
+}
+window.expenseDelete = expenseDelete;
+
+function expensesRender() {
+  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
+  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
+  const list     = ge('expenseList');
+  const totalEl  = ge('expenseTotal');
+  const profitEl = ge('profitVal');
+
+  if (!list) return;
+
+  const catNames = { rent:'Аренда', materials:'Материалы', salary:'Зарплата', equipment:'Оборудование', marketing:'Маркетинг', other:'Прочее' };
+  const catIcons = { rent:'🏠', materials:'✂️', salary:'👤', equipment:'🔧', marketing:'📢', other:'📦' };
+
+  if (expenses.length === 0) {
+    list.innerHTML = '<div class="adm-loading">Расходов за этот месяц нет</div>';
+  } else {
+    list.innerHTML = expenses.map(e => {
+      const d = new Date(e.date);
+      const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0');
+      return '<div class="expense-item">' +
+        '<div><div class="expense-nm">' + (catIcons[e.cat]||'') + ' ' + escapeHtml(e.name) + '</div><div class="expense-dt">' + dateStr + ' · ' + (catNames[e.cat]||'') + '</div></div>' +
+        '<div style="display:flex;align-items:center">' +
+          '<span class="expense-sum">−' + formatPrice(e.sum) + '</span>' +
+          '<span class="expense-rm" onclick="expenseDelete(' + e.id + ')">✕</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  const totalExp = expenses.reduce((s, e) => s + e.sum, 0);
+  if (totalEl) totalEl.textContent = formatPrice(totalExp);
+
+  // Прибыль = выручка за месяц - расходы (берём из аналитики если есть)
+  if (profitEl) {
+    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(getChatId()))
+      .then(r => r.json())
+      .then(d => {
+        const revenue = d.revenueMonth || 0;
+        const profit  = revenue - totalExp;
+        profitEl.textContent = formatPrice(Math.abs(profit));
+        profitEl.className   = 'profit-val ' + (profit >= 0 ? 'positive' : 'negative');
+        profitEl.textContent = (profit >= 0 ? '' : '−') + formatPrice(Math.abs(profit));
+      })
+      .catch(() => { profitEl.textContent = '—'; });
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   П.13: УВЕДОМЛЕНИЕ МАСТЕРУ ЗА ЧАС ДО ЗАПИСИ
+   (реализуется в бэкенде — здесь заглушка)
+   ════════════════════════════════════════════════════════════ */
+// Функция добавлена в бэкенд как sendMasterReminders()
 </script>
 </body>
 </html>

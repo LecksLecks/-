@@ -143,16 +143,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .sec-ttl em{font-style:italic;color:var(--gold)}
 
 /* MASTERS */
-.m-list{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
-.m-item{display:flex;align-items:center;gap:14px;border:1px solid rgba(201,168,76,.12);padding:12px;background:rgba(201,168,76,.02);cursor:pointer;transition:border-color .2s}
-.m-item:active{border-color:rgba(201,168,76,.4)}
-.m-thumb{width:52px;height:64px;flex-shrink:0;overflow:hidden;border:1px solid rgba(201,168,76,.18)}
-.m-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center}
-.m-nm{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cream)}
-.m-sp{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin:3px 0 5px}
-.m-desc{font-size:12px;color:var(--gray);font-style:italic}
-.m-arr{color:rgba(201,168,76,.35);font-size:20px;margin-left:auto}
-.m-rating{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:12px}
+.m-list{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.m-item{border:1px solid rgba(201,168,76,.15);background:#0d0b07;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column}
+.m-item:active{border-color:var(--gold);transform:scale(.98)}
+.m-thumb{width:100%;aspect-ratio:3/4;overflow:hidden;flex-shrink:0}
+.m-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.m-thumb-placeholder{width:100%;aspect-ratio:3/4;background:rgba(201,168,76,.06);display:flex;align-items:center;justify-content:center;font-size:32px;opacity:.25}
+.m-body{padding:10px 10px 12px;flex:1;display:flex;flex-direction:column}
+.m-nm{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream);line-height:1.2}
+.m-sp{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-top:4px}
+.m-rating{display:flex;align-items:center;gap:3px;margin-top:6px;font-size:12px;color:var(--gold)}
 .m-rating-num{color:var(--gray);font-size:11px;margin-left:2px}
 .ms-rating{font-size:10px;color:var(--gold);margin-top:3px;letter-spacing:.5px}
 
@@ -559,6 +559,30 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cl-stat-lbl{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--gray);margin-top:1px}
 .cl-last{font-size:11px;color:var(--gray);margin-top:6px;letter-spacing:.5px}
 .cl-empty{text-align:center;color:var(--gray);font-style:italic;padding:30px 0;font-size:14px}
+
+/* НАШИ РАБОТЫ */
+.works-section{padding:20px 16px 8px}
+.works-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.works-ttl{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--cream)}
+.works-ttl em{font-style:italic;color:var(--gold)}
+.works-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.works-item{position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer;background:rgba(201,168,76,.04)}
+.works-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.works-item:active img{transform:scale(1.04)}
+.works-item-overlay{position:absolute;inset:0;background:rgba(10,8,5,0);transition:background .2s}
+.works-item:active .works-item-overlay{background:rgba(10,8,5,.25)}
+.works-more{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border:1px dashed rgba(201,168,76,.25);margin-top:4px;color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;background:transparent;width:100%;font-family:'Cormorant Garamond',serif;transition:background .2s}
+.works-more:active{background:rgba(201,168,76,.06)}
+
+/* ЛАЙТБОКС */
+.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px}
+.works-lightbox.open{display:flex}
+.works-lightbox img{max-width:100%;max-height:85vh;object-fit:contain;border:1px solid rgba(201,168,76,.2)}
+.works-lightbox-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.8);color:var(--gold);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%}
+.works-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.7);color:var(--gold);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.works-lightbox-prev{left:12px}
+.works-lightbox-next{right:12px}
+.works-lightbox-counter{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:2px;color:rgba(201,168,76,.6);text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -635,6 +659,40 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <h2 class="sec-ttl">Наши <em>мастера</em></h2>
   </div>
   <div class="m-list" id="mastersList"></div>
+
+  <!-- БЛОК НАШИХ РАБОТ -->
+  <div class="works-section">
+    <div class="works-hdr">
+      <h2 class="works-ttl">Наши <em>работы</em></h2>
+    </div>
+    <div class="works-grid" id="worksGrid">
+      <div class="works-item" onclick="worksOpen(0)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work1.jpg" alt="Работа 1" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+      <div class="works-item" onclick="worksOpen(1)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work2.jpg" alt="Работа 2" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+      <div class="works-item" onclick="worksOpen(2)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work3.jpg" alt="Работа 3" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+      <div class="works-item" onclick="worksOpen(3)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work4.jpg" alt="Работа 4" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЛАЙТБОКС -->
+  <div class="works-lightbox" id="worksLightbox" onclick="worksLightboxBgClick(event)">
+    <button class="works-lightbox-close" onclick="worksClose()">✕</button>
+    <button class="works-lightbox-nav works-lightbox-prev" onclick="worksPrev(event)">‹</button>
+    <img id="worksLightboxImg" src="" alt="">
+    <button class="works-lightbox-nav works-lightbox-next" onclick="worksNext(event)">›</button>
+    <div class="works-lightbox-counter" id="worksCounter"></div>
+  </div>
 </div>
 
 <!-- PAGE: PRICE -->
@@ -1330,10 +1388,10 @@ function loadAppData() {
 
 function getMasterRatingHtml(masterName) {
   const r = MASTER_RATINGS[masterName];
-  if (!r || r.count === 0) return '';
+  if (!r || r.count === 0) return '<div class="m-rating" style="color:rgba(138,125,107,.3);font-size:11px">Нет отзывов</div>';
   const stars = Math.round(r.avg);
   let h = '<div class="m-rating">';
-  for (let i=1;i<=5;i++) h += '<span style="color:' + (i<=stars?'var(--gold)':'rgba(201,168,76,.2)') + '">★</span>';
+  for (let i=1;i<=5;i++) h += '<span style="color:' + (i<=stars?'var(--gold)':'rgba(201,168,76,.2)') + ';font-size:11px">★</span>';
   return h + '<span class="m-rating-num">' + r.avg.toFixed(1) + ' (' + r.count + ')</span></div>';
 }
 
@@ -1343,10 +1401,16 @@ function renderMasters() {
   MASTERS.forEach(m => {
     const d = document.createElement('div');
     d.className = 'm-item';
-    d.innerHTML =
-      (m.photo ? '<div class="m-thumb"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '"></div>' : '') +
-      '<div style="flex:1"><div class="m-nm">' + escapeHtml(m.name) + '</div><div class="m-sp">' + escapeHtml(m.spec) + '</div>' + getMasterRatingHtml(m.name) + '</div>' +
-      '<div class="m-arr">›</div>';
+    const photoHtml = m.photo
+      ? '<div class="m-thumb"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" loading="lazy"></div>'
+      : '<div class="m-thumb m-thumb-placeholder">✂</div>';
+    const ratingHtml = getMasterRatingHtml(m.name);
+    d.innerHTML = photoHtml +
+      '<div class="m-body">' +
+        '<div class="m-nm">' + escapeHtml(m.name) + '</div>' +
+        '<div class="m-sp">' + escapeHtml(m.spec) + '</div>' +
+        ratingHtml +
+      '</div>';
     d.onclick = function() { goPage('booking'); requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(m.id))); };
     g.appendChild(d);
   });
@@ -2672,6 +2736,70 @@ function clRender() {
     '</div>';
   }).join('');
 }
+
+/* ────────────────────────────────────────────────────────────
+   НАШИ РАБОТЫ — лайтбокс
+   ──────────────────────────────────────────────────────────── */
+var _worksImages = [];
+var _worksIdx = 0;
+
+function worksInit() {
+  _worksImages = Array.from(document.querySelectorAll('.works-item img')).map(img => img.src);
+}
+
+function worksOpen(idx) {
+  if (!_worksImages.length) worksInit();
+  _worksIdx = idx;
+  worksShowCurrent();
+  ge('worksLightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function worksClose() {
+  ge('worksLightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function worksShowCurrent() {
+  ge('worksLightboxImg').src = _worksImages[_worksIdx];
+  ge('worksCounter').textContent = (_worksIdx + 1) + ' / ' + _worksImages.length;
+}
+
+function worksPrev(e) {
+  e && e.stopPropagation();
+  _worksIdx = (_worksIdx - 1 + _worksImages.length) % _worksImages.length;
+  worksShowCurrent();
+}
+
+function worksNext(e) {
+  e && e.stopPropagation();
+  _worksIdx = (_worksIdx + 1) % _worksImages.length;
+  worksShowCurrent();
+}
+
+function worksLightboxBgClick(e) {
+  if (e.target === ge('worksLightbox')) worksClose();
+}
+
+// Свайп в лайтбоксе
+(function() {
+  var startX = 0;
+  document.addEventListener('touchstart', function(e) {
+    if (!ge('worksLightbox').classList.contains('open')) return;
+    startX = e.touches[0].clientX;
+  }, {passive:true});
+  document.addEventListener('touchend', function(e) {
+    if (!ge('worksLightbox').classList.contains('open')) return;
+    var diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? worksNext() : worksPrev(); }
+  }, {passive:true});
+})();
+
+window.worksOpen = worksOpen;
+window.worksClose = worksClose;
+window.worksPrev = worksPrev;
+window.worksNext = worksNext;
+window.worksLightboxBgClick = worksLightboxBgClick;
 </script>
 </body>
 </html>

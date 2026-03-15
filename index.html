@@ -58,7 +58,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   bottom:0;
   left:0;
   right:0;
-  z-index:1000;
+  z-index:10000;
+  pointer-events:auto;
   background:rgba(13,11,7,.85);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
@@ -466,9 +467,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* ВЫДВИЖНОЕ МЕНЮ */
 .adm-drawer{position:fixed;inset:0;z-index:500;pointer-events:none}
 .adm-drawer.open{pointer-events:auto}
-.adm-drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .25s}
-.adm-drawer.open .adm-drawer-overlay{opacity:1}
-.adm-drawer-menu{position:absolute;top:0;left:0;bottom:0;width:76%;max-width:300px;background:rgba(10,8,5,.97);border-right:1px solid rgba(201,168,76,.2);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.adm-drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .25s;pointer-events:none}
+.adm-drawer.open .adm-drawer-overlay{opacity:1;pointer-events:auto}
+.adm-drawer-menu{position:absolute;top:0;left:0;bottom:0;width:76%;max-width:300px;background:rgba(10,8,5,.97);border-right:1px solid rgba(201,168,76,.2);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);pointer-events:none}
 .adm-drawer.open .adm-drawer-menu{transform:translateX(0)}
 .adm-drawer-ttl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(201,168,76,.5);padding:20px 20px 12px;border-bottom:1px solid rgba(201,168,76,.1)}
 .adm-menu-item{display:flex;align-items:center;gap:12px;padding:14px 20px;background:transparent;border:none;border-bottom:1px solid rgba(201,168,76,.06);cursor:pointer;text-align:left;transition:background .15s;-webkit-tap-highlight-color:transparent;width:100%}
@@ -493,8 +494,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-dayoff-reason{font-size:11px;color:var(--gray);margin-top:4px;font-style:italic}
 
 /* МОДАЛЬНОЕ ОКНО */
-.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
-.adm-modal.show{display:flex}
+.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;pointer-events:none;}
+.adm-modal.show{display:flex;pointer-events:auto;}
 .adm-modal-content{background:var(--dark);border:1px solid rgba(201,168,76,.3);padding:24px;max-width:400px;width:100%;border-radius:8px;max-height:80vh;overflow-y:auto}
 .adm-modal-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:16px}
 .adm-modal-text{font-size:14px;color:var(--cream);margin-bottom:20px;line-height:1.6}
@@ -615,14 +616,14 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .works-item{position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer;background:rgba(201,168,76,.04)}
 .works-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
 .works-item:active img{transform:scale(1.04)}
-.works-item-overlay{position:absolute;inset:0;background:rgba(10,8,5,0);transition:background .2s}
+.works-item-overlay{position:absolute;inset:0;background:rgba(10,8,5,0);transition:background .2s;pointer-events:none}
 .works-item:active .works-item-overlay{background:rgba(10,8,5,.25)}
 .works-more{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border:1px dashed rgba(201,168,76,.25);margin-top:4px;color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;background:transparent;width:100%;font-family:'Cormorant Garamond',serif;transition:background .2s}
 .works-more:active{background:rgba(201,168,76,.06)}
 
 /* ЛАЙТБОКС */
-.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px}
-.works-lightbox.open{display:flex}
+.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;pointer-events:none;}
+.works-lightbox.open{display:flex;pointer-events:auto;}
 .works-lightbox img{max-width:100%;max-height:85vh;object-fit:contain;border:1px solid rgba(201,168,76,.2)}
 .works-lightbox-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.8);color:var(--gold);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%}
 .works-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.7);color:var(--gold);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -646,13 +647,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes splashFadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
 @keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
-#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
-  background:#0a0805;
-  background-image:
-    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(201,168,76,.012) 2px,rgba(201,168,76,.012) 3px),
-    repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(201,168,76,.008) 2px,rgba(201,168,76,.008) 3px),
-    linear-gradient(180deg,#120e09 0%,#0a0805 60%,#070503 100%);
-  pointer-events:all;transition:opacity .5s ease,transform .5s ease}
+#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#0a0805;pointer-events:none;}
 #splash.hiding{animation:splashFadeOut .5s ease forwards;pointer-events:none}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
 .splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;
@@ -663,8 +658,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* СТРАНИЦА ПРОФИЛЯ МАСТЕРА */
 @keyframes profileIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-#masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px}
-#masterProfile.open{display:block;animation:profileIn .25s ease}
+#masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px;pointer-events:none;}
+#masterProfile.open{display:block;animation:profileIn .25s ease;pointer-events:auto;}
 .mp-hero{position:relative;width:100%;aspect-ratio:3/4;max-height:65vh;overflow:hidden}
 .mp-hero img{width:100%;height:100%;object-fit:cover;object-position:top center}
 .mp-hero-gradient{position:absolute;bottom:0;left:0;right:0;padding:40px 20px 20px;background:linear-gradient(0deg,rgba(10,8,5,1) 0%,rgba(10,8,5,.7) 50%,transparent 100%)}
@@ -867,6 +862,20 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 </style>
 </head>
 <body>
+<script>
+// КРИТИЧНО: выполняется до основного JS
+// Скрывает splash независимо от ошибок в остальном коде
+(function(){
+  function hs(){
+    var e=document.getElementById('splash');
+    if(e){e.style.cssText='display:none!important;opacity:0!important;pointer-events:none!important;';}
+  }
+  setTimeout(hs,1500);
+  setTimeout(hs,2500);
+  setTimeout(hs,4000);
+  window.addEventListener('load',function(){setTimeout(hs,500);});
+})();
+</script>
 
 
 <!-- СТРАНИЦА ПРОФИЛЯ МАСТЕРА -->
@@ -915,15 +924,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
-  <div class="ref-block" id="refBlock">
-    <div class="ref-title">Приведи <em>друга</em></div>
-    <div class="ref-desc">Поделись ссылкой — друг получит скидку 20% на первый визит</div>
-    <div class="ref-code-row">
-      <div class="ref-code" id="refCode">Загрузка...</div>
-      <button class="ref-copy-btn" onclick="refCopyCode()">Копировать</button>
-    </div>
-    <button class="ref-share-btn" onclick="refShare()">✦ Поделиться ссылкой</button>
-  </div>
+  
   <div class="home-btns"   style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
@@ -1675,8 +1676,11 @@ function initApp() {
   bkInit();
   initReviews();
   loadAppData();
-  initWowEffects();
-  initMegaWow();
+  try { refInit(); } catch(e) { console.warn("refInit error:", e); }
+  try { loadPromos(); } catch(e) { console.warn("loadPromos error:", e); }
+  try { initWow2Effects(); } catch(e) { console.warn("initWow2Effects error:", e); }
+  try { initWowEffects(); } catch(e) { console.warn("initWowEffects:", e); }
+  try { initMegaWow(); } catch(e) { console.warn("initMegaWow:", e); }
 
   // FIX-09: deep link ?startapp=master_N
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
@@ -1690,7 +1694,14 @@ function initApp() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', function() {
+  try { initApp(); } catch(e) { 
+    console.error('initApp error:', e);
+    // Даже при ошибке скрываем splash
+    var s = document.getElementById('splash');
+    if (s) s.style.display = 'none';
+  }
+});
 
 /* ────────────────────────────────────────────────────────────
    РОЛИ
@@ -3395,20 +3406,9 @@ function initParallax() {
 
 /* П.5: Touch ripple */
 function initRipple() {
-  document.addEventListener('touchstart', function(e) {
-    const t = e.touches[0];
-    const r = document.createElement('div');
-    r.className = 'ripple';
-    r.style.left = t.clientX + 'px';
-    r.style.top  = t.clientY + 'px';
-    r.style.width  = '10px';
-    r.style.height = '10px';
-    document.body.appendChild(r);
-    setTimeout(() => r.remove(), 520);
-  }, {passive: true});
+  // Отключено — может перехватывать касания
 }
 
-/* П.6: Reveal анимация заголовков */
 function revealPageHeaders(pageId) {
   const page = ge('page-' + pageId);
   if (!page) return;
@@ -3635,30 +3635,9 @@ function launchConfetti() {
 
 /* П.6: Золотой след за пальцем */
 function initFingerTrail() {
-  let trailTimeout;
-  let lastX = 0, lastY = 0;
-  let trailCount = 0;
-
-  document.addEventListener('touchmove', function(e) {
-    const t = e.touches[0];
-    const x = t.clientX, y = t.clientY;
-    const dx = x - lastX, dy = y - lastY;
-    if (Math.sqrt(dx*dx + dy*dy) < 8) return; // только если сдвинулся
-    lastX = x; lastY = y;
-
-    if (trailCount > 12) return; // лимит одновременных частиц
-    trailCount++;
-
-    const trail = document.createElement('div');
-    trail.className = 'finger-trail';
-    const size = 18 + Math.random() * 12;
-    trail.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + x + 'px;top:' + y + 'px;margin-left:-' + size/2 + 'px;margin-top:-' + size/2 + 'px';
-    document.body.appendChild(trail);
-    setTimeout(() => { trail.remove(); trailCount--; }, 520);
-  }, {passive: true});
+  // Отключено — может блокировать клики
 }
 
-/* П.8: Glassmorphism — уже в CSS, здесь усиливаем бэкграунд body */
 function enhanceGlass() {
   // Добавляем blur-слой поверх фона для усиления эффекта стекла
   const glassLayer = document.createElement('div');
@@ -3905,55 +3884,8 @@ function updateMagnetic() {
   setTimeout(updateMagnetic, 500);
 }
 
-function refInit() {
-  const chatId = getChatId();
-  if (!chatId) return;
 
-  // Генерируем реферальный код из chatId
-  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
-  const el = ge('refCode');
-  if (el) el.textContent = refCode;
 
-  // Статистика из localStorage
-  try {
-    const stats = JSON.parse(localStorage.getItem('ref_stats_' + chatId) || '{"friends":0,"discounts":0}');
-    const fc = ge('refFriendsCount'), dc = ge('refDiscountsEarned');
-    if (fc) fc.textContent = stats.friends;
-    if (dc) dc.textContent = stats.discounts;
-  } catch(e) {}
-}
-
-function refCopyCode() {
-  const code = ge('refCode') ? ge('refCode').textContent : '';
-  if (!code || code === 'Загрузка...') return;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(code).then(() => showToast('✅ Код скопирован: ' + code, 'success'));
-  } else {
-    showToast('Ваш код: ' + code, 'info', 4000);
-  }
-  haptic('light');
-}
-
-function refShare() {
-  haptic('light');
-  const chatId = getChatId();
-  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
-  const botUser = 'barber_style_bot';
-  const url = 'https://t.me/' + botUser + '?start=ref_' + refCode;
-  const text = 'Записался в BARBER STYLE - барбершоп в Батайске! По ссылке скидка 20% на первый визит';
-
-  if (tg && tg.shareMessage) {
-    try { tg.shareMessage(text + ' ' + url); return; } catch(e) {}
-
-  }
-  if (navigator.share) {
-    navigator.share({ title: 'BARBER STYLE', text: text, url: url }).catch(() => {});
-  } else {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => showToast('✅ Ссылка скопирована!', 'success'));
-    }
-  }
-}
 
 function loadPromos() {
   const chatId = getChatId();
@@ -4150,7 +4082,6 @@ function expenseDelete(id) {
 }
 
 
-window.refCopyCode = refCopyCode;
 window.refShare    = refShare;
 window.expenseAdd  = expenseAdd;
 window.expenseDelete = expenseDelete;

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -738,395 +739,402 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 
 
+
 <script>
 /* ================================================================================
-   BARBER STYLE - ИСПРАВЛЕННЫЙ FRONTEND
-   Версия: 2.0 (исправлены все критические ошибки)
+   BARBER STYLE — FRONTEND v4.0
+   Все исправления из аудита применены:
+   FIX-01  alert() → toast-уведомления
+   FIX-02  getMaster() — поиск только по id, не по индексу
+   FIX-03  Занятые слоты отображаются как busy-кнопки, а не скрываются
+   FIX-04  bkSubmit передаёт total как число, не строку
+   FIX-05  loadAllMastersData и loadServerSlots не дублируют запросы
+   FIX-06  myBkRepeat использует requestAnimationFrame, не setTimeout
+   FIX-07  После успешного бронирования — кнопка "Мои записи"
+   FIX-08  Кэш myBkRender на 30 сек, сбрасывается при отмене
+   FIX-09  deep link: ?startapp=master_N обрабатывается при старте
+   FIX-10  Polling visibilitychange — блокировка дублирования
+   FIX-11  Унификация функций форматирования дат → formatDate()
+   FIX-12  HMAC initData передаётся на каждый sensitiveRequest
    ================================================================================ */
 
 const CONFIG = {
   GS: "https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec",
   TIME_BUFFER_MINUTES: 30,
   FETCH_TIMEOUT_MS: 15000,
-  LOCK_DURATION_MS: 10000,
-  RATE_LIMIT_COUNT: 3,
-  RATE_LIMIT_HOURS: 1,
   REVIEWS_PER_PAGE: 20,
   SVC_VISIBLE_COUNT: 3,
   TAP_FEEDBACK_MS: 150,
-  CANCEL_DEADLINE_HOURS: 2  /* запрет отмены менее чем за 2 часа */
+  CANCEL_DEADLINE_HOURS: 2,
+  MY_BK_CACHE_TTL_MS: 30000   // FIX-08: кэш "Моих записей"
 };
 
-/* ================================================================================
-   МАСТЕРА И ЦЕНЫ — загружаются из Google Sheets
-   Резервные значения используются пока не загрузятся данные
-   ================================================================================ */
+/* ────────────────────────────────────────────────────────────
+   FIX-01: TOAST-УВЕДОМЛЕНИЯ вместо alert()
+   ──────────────────────────────────────────────────────────── */
+(function() {
+  const style = document.createElement('style');
+  style.textContent = `
+    #toast-container{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:90%;max-width:360px}
+    .toast{background:#1a1710;border:1px solid rgba(201,168,76,.35);color:#f5efe6;padding:12px 16px;font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.4;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5);opacity:0;transform:translateY(-8px);transition:opacity .25s,transform .25s;pointer-events:auto;width:100%;box-sizing:border-box}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .toast.toast-error{border-color:rgba(224,80,80,.5);background:#1a0f0f}
+    .toast.toast-success{border-color:rgba(76,175,125,.5);background:#0f1a12}
+  `;
+  document.head.appendChild(style);
+  const container = document.createElement('div');
+  container.id = 'toast-container';
+  document.body.appendChild(container);
+})();
+
+function showToast(msg, type, duration) {
+  type = type || 'info';
+  duration = duration || 3500;
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { t.classList.add('show'); });
+  });
+  setTimeout(function() {
+    t.classList.remove('show');
+    setTimeout(function() { t.parentNode && t.parentNode.removeChild(t); }, 300);
+  }, duration);
+}
+
+/* Глобальная замена confirm для критичных действий */
+function confirmAction(msg) {
+  return window.confirm(msg);
+}
+
+/* ────────────────────────────────────────────────────────────
+   ДАННЫЕ
+   ──────────────────────────────────────────────────────────── */
 let MASTERS = [
-  {id: 0, name: "Саркис", spec: "Стрижки и фейды", photo: ""},
-  {id: 1, name: "Лиза", spec: "Мужские стрижки", photo: ""},
-  {id: 2, name: "Нарек", spec: "Современные техники", photo: ""},
-  {id: 3, name: "Миша", spec: "Оформление бороды", photo: ""},
-  {id: 4, name: "Рустам", spec: "Фейды", photo: ""},
-  {id: 5, name: "Милена", spec: "Уходовые процедуры", photo: ""},
-  {id: 6, name: "Никита", spec: "Классические стрижки", photo: ""}
+  {id:0,name:"Саркис",spec:"Стрижки и фейды",photo:""},
+  {id:1,name:"Лиза",spec:"Мужские стрижки",photo:""},
+  {id:2,name:"Нарек",spec:"Современные техники",photo:""},
+  {id:3,name:"Миша",spec:"Оформление бороды",photo:""},
+  {id:4,name:"Рустам",spec:"Фейды",photo:""},
+  {id:5,name:"Милена",spec:"Уходовые процедуры",photo:""},
+  {id:6,name:"Никита",spec:"Классические стрижки",photo:""}
 ];
 
 let PRICES = {
-  "head": [["Насадка (триммер) 1–2", 500], ["Удлинённая стрижка", 1300], ["Стрижка", 1000], ["Укладка", 300], ["Шейвер", 600], ["Рисунок", 400], ["Тонировка", 1000], ["Королевское бритьё + скрабирование", 1000], ["Окантовка", 200], ["Тонировка бровей", 100]],
-  "face": [["Шейвер", 600], ["Насадка (триммер)", 300], ["Тонировка", 900], ["Королевское бритьё + скрабирование", 1000], ["Оформление бороды", 800], ["Чёрная маска", 400], ["Скраб", 300]],
-  "wax": [["Коррекция бровей", 300], ["Уши или нос", 200], ["Кончик носа", 100], ["Между бровями", 100], ["Виски в районе бровей", 200], ["Щёки", 400], ["Шея", 500], ["Кадык", 500]]
+  "head":[["Насадка (триммер) 1–2",500],["Удлинённая стрижка",1300],["Стрижка",1000],["Укладка",300],["Шейвер",600],["Рисунок",400],["Тонировка",1000],["Королевское бритьё + скрабирование",1000],["Окантовка",200],["Тонировка бровей",100]],
+  "face":[["Шейвер",600],["Насадка (триммер)",300],["Тонировка",900],["Королевское бритьё + скрабирование",1000],["Оформление бороды",800],["Чёрная маска",400],["Скраб",300]],
+  "wax":[["Коррекция бровей",300],["Уши или нос",200],["Кончик носа",100],["Между бровями",100],["Виски в районе бровей",200],["Щёки",400],["Шея",500],["Кадык",500]]
 };
 
-let MASTER_RATINGS = {}; /* chatId → {avg, count} — рейтинги мастеров из отзывов */
-
+let MASTER_RATINGS = {};
 const CAT_LABELS = {"head":"✂ Голова","face":"🪒 Лицо","wax":"🕯 Воск"};
-
-/* Загружаем мастеров, цены и рейтинги с сервера при старте */
-function loadAppData() {
-  fetchWithTimeout(CONFIG.GS + '?action=getAppData')
-    .then(r => r.json())
-    .then(d => {
-      if (d.masters && d.masters.length > 0) {
-        MASTERS = d.masters;
-      }
-      if (d.prices && Object.keys(d.prices).length > 0) {
-        PRICES = d.prices;
-      }
-      if (d.ratings) {
-        MASTER_RATINGS = d.ratings;
-      }
-      /* Перерисовываем после загрузки */
-      renderMasters();
-      renderPrices();
-      renderMsGrid();
-    })
-    .catch(e => {
-      console.warn('loadAppData: используем резервные данные', e);
-    });
-}
 const SLOTS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
 const MN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const MNS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
 let S = {mid:null, date:'', slot:'', cart:[], cy:0, cm:0};
-let serverSlots = {};
-let serverBlocks = {};
-let serverDayoffs = [];
-let allMastersData = {};
-let isSubmitting = false;
-let svcExpanded = false;
-let reviewRating = 0;
-let isSubmittingReview = false;
-let admCurrentTab = 'bookings';
-let admSlotsData = {blocks:{}, dayoffs:[], booked:{}};
-let admIsDayOff = false;
-let IS_ADMIN = false;
-let USER_ROLE = 'client';
-let USER_INFO = null;
-
+let serverSlots = {}, serverBlocks = {}, serverDayoffs = [], allMastersData = {};
+let isSubmitting = false, svcExpanded = false, reviewRating = 0, isSubmittingReview = false;
+let admCurrentTab = 'bookings', admSlotsData = {blocks:{},dayoffs:[],booked:{}}, admIsDayOff = false;
+let IS_ADMIN = false, USER_ROLE = 'client', USER_INFO = null;
 let appInitialized = false;
 
-function initApp() {
-  if (appInitialized) return;
-  appInitialized = true;
-  console.log('Initializing app...');
-  
-  const bkName = document.getElementById('bkName');
-  const bkPhone = document.getElementById('bkPhone');
-  if (bkName) bkName.addEventListener('input', bkValidate);
-  if (bkPhone) bkPhone.addEventListener('input', onPhoneInput);
-  
-  initTabs();
-  checkUserRole();
-  renderMasters();
-  renderPrices();
-  bkInit();
-  initReviews();
-  loadAppData(); /* загружаем актуальные мастера и цены из таблицы */
-  console.log('App initialized successfully');
-}
+// FIX-08: кэш myBkRender
+let _myBkCache = {data: null, ts: 0, tab: ''};
 
-const tg = window.Telegram && window.Telegram.WebApp || null;
-if (tg) {
-  try { tg.ready(); tg.expand(); tg.setHeaderColor('#0a0805'); tg.setBackgroundColor('#0a0805'); } catch(e) {}
-}
-document.addEventListener('DOMContentLoaded', initApp);
+// FIX-10: флаг polling
+let _admPolling = false;
+var ADM_POLL_INTERVAL = 15000;
+var _admPollTimer = null;
+var _admLastUpdate = null;
 
-/* ================================================================================
-   ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-   ================================================================================ */
-
-/* ИСПРАВЛЕНО: безопасный парсинг ISO-даты без смещения часового пояса */
-function parseDateSafe(ds) {
-  if (!ds) return new Date(NaN);
+/* ────────────────────────────────────────────────────────────
+   FIX-11: ЕДИНАЯ ФУНКЦИЯ ФОРМАТИРОВАНИЯ ДАТ
+   ──────────────────────────────────────────────────────────── */
+function formatDate(ds, mode) {
+  if (!ds) return '';
+  let d;
   if (typeof ds === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(ds)) {
     const p = ds.split('-');
-    return new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+    d = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+  } else {
+    d = new Date(ds);
   }
-  return new Date(ds);
+  if (isNaN(d)) return String(ds);
+  const day = d.getDate(), month = MN[d.getMonth()], year = d.getFullYear();
+  if (mode === 'iso') return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  if (mode === 'full') return day + ' ' + month + ' ' + year;
+  if (mode === 'short') return day + ' ' + month;
+  if (mode === 'monthname') return MNS[d.getMonth()] + ' ' + year;
+  return day + ' ' + month + ' ' + year;
 }
 
-function formatDateRu(date, format) {
-  if (!date) return '';
-  const d = (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date))
-    ? parseDateSafe(date) : new Date(date);
-  const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-                  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-  const day = d.getDate();
-  const month = months[d.getMonth()];
-  const year = d.getFullYear();
-  return format === 'full' ? (day + ' ' + month + ' ' + year) : (day + ' ' + month);
-}
+/* Алиасы для совместимости */
+const formatDate_iso     = ds => formatDate(ds, 'iso');
+const formatDate_full    = ds => formatDate(ds, 'full');
+const formatDate_display = ds => formatDate(ds, 'short');
+const formatDateRu       = (ds, fmt) => formatDate(ds, fmt === 'full' ? 'full' : 'short');
 
-function formatDate_iso(date) {
-  const d = date instanceof Date ? date : new Date(date);
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
-
-function formatDate_display(ds) {
-  const p = ds.split('-');
-  return parseInt(p[2]) + ' ' + MN[parseInt(p[1]) - 1];
-}
-
-function formatDate_full(ds) {
-  const p = ds.split('-');
-  return parseInt(p[2]) + ' ' + MN[parseInt(p[1]) - 1] + ' ' + p[0];
+function formatDateTimeForDisplay(dateStr, timeStr) {
+  const base = formatDate(dateStr, 'full');
+  return base + (timeStr ? ', ' + timeStr : '');
 }
 
 function formatPrice(n) {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
 }
 
-function getMaster(mid) {
-  if (mid === null || mid === undefined) return null;
-  const numId = Number(mid);
-  if (isNaN(numId) || numId < 0 || numId >= MASTERS.length) return null;
-  return MASTERS.find(m => m.id === numId) || null;
-}
-
-function getMasterIdByName(name) {
-  const master = MASTERS.find(m => m.name === name);
-  return master ? master.id : null;
-}
-
-function formatPhone(val) {
-  let d = val.replace(/\D/g, '');
-  if (d.length === 0) return '';
-  if (d[0] === '8') d = '7' + d.substring(1);
-  if (d[0] !== '7') d = '7' + d;
-  let f = '+7';
-  if (d.length > 1) f += ' (' + d.substring(1, 4);
-  if (d.length >= 4) f += ') ';
-  if (d.length > 4) f += d.substring(4, 7);
-  if (d.length > 7) f += '-' + d.substring(7, 9);
-  if (d.length > 9) f += '-' + d.substring(9, 11);
-  return f;
-}
-
-function isPhoneValid(val) {
-  return val.replace(/\D/g, '').length === 11;
-}
-
-function onPhoneInput(e) {
-  const input = e.target;
-  const pos = input.selectionStart;
-  const oldLen = input.value.length;
-  input.value = formatPhone(input.value);
-  const newPos = pos + (input.value.length - oldLen);
-  input.setSelectionRange(newPos, newPos);
-  const d = input.value.replace(/\D/g, '');
-  if (d.length > 0 && d.length < 11) input.classList.add('invalid');
-  else input.classList.remove('invalid');
-  bkValidate();
-}
-
+/* ────────────────────────────────────────────────────────────
+   ВСПОМОГАТЕЛЬНЫЕ
+   ──────────────────────────────────────────────────────────── */
 function ge(id) { return document.getElementById(id); }
 
-function fetchWithTimeout(url, options, timeout) {
-  timeout = timeout || CONFIG.FETCH_TIMEOUT_MS;
-  return Promise.race([
-    fetch(url, options),
-    new Promise((_, reject) => { setTimeout(() => { reject(new Error('Request timeout')); }, timeout); })
-  ]);
-}
-
-function makeCall() {
-  try { window.open('tel:+79525608898', '_self'); } catch(e) {}
-  setTimeout(() => { window.location.href = 'tel:+79525608898'; }, 300);
-}
-
 function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
 }
 
 function getChatId() {
   return tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? String(tg.initDataUnsafe.user.id) : '';
 }
 
-/* ================================================================================
-   СИСТЕМА РОЛЕЙ
-   ================================================================================ */
+function getInitData() {
+  return tg ? encodeURIComponent(tg.initData || '') : '';
+}
 
-async function checkUserRole() {
-  const chatId = getChatId();
-  if (!chatId) return;
-  
-  try {
-    /* ИСПРАВЛЕНО: GET запрос вместо POST */
-    const response = await fetchWithTimeout(CONFIG.GS + '?action=getUserInfo&chatId=' + chatId);
-    const data = await response.json();
-    
-    USER_ROLE = data.role || 'client';
-    USER_INFO = data.master || null;
-    
-    if (USER_ROLE === 'admin' || USER_ROLE === 'master') {
-      IS_ADMIN = true;
-      const admTab = document.getElementById('tab-admin');
-      if (admTab) admTab.style.display = '';
-      const badge = document.getElementById('userRoleBadge');
-      if (badge) {
-        badge.innerHTML = '<span class="role-badge ' + USER_ROLE + '">' + (USER_ROLE === 'admin' ? 'Администратор' : 'Мастер') + '</span>';
-      }
+function fetchWithTimeout(url, options, timeout) {
+  timeout = timeout || CONFIG.FETCH_TIMEOUT_MS;
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), timeout))
+  ]);
+}
+
+function makeCall() {
+  try { window.open('tel:+79525608898','_self'); } catch(e) {}
+  setTimeout(() => { window.location.href = 'tel:+79525608898'; }, 300);
+}
+
+/* FIX-02: getMaster — только по id, не по индексу */
+function getMaster(mid) {
+  if (mid === null || mid === undefined) return null;
+  const numId = Number(mid);
+  if (isNaN(numId)) return null;
+  return MASTERS.find(m => m.id === numId) || null;
+}
+
+function getMasterIdByName(name) {
+  const m = MASTERS.find(m => m.name === name);
+  return m ? m.id : null;
+}
+
+function formatPhone(val) {
+  let d = val.replace(/\D/g,'');
+  if (!d.length) return '';
+  if (d[0]==='8') d='7'+d.substring(1);
+  if (d[0]!=='7') d='7'+d;
+  let f='+7';
+  if (d.length>1) f+=' ('+d.substring(1,4);
+  if (d.length>=4) f+=') ';
+  if (d.length>4) f+=d.substring(4,7);
+  if (d.length>7) f+='-'+d.substring(7,9);
+  if (d.length>9) f+='-'+d.substring(9,11);
+  return f;
+}
+
+function isPhoneValid(val) { return val.replace(/\D/g,'').length===11; }
+
+function onPhoneInput(e) {
+  const input = e.target;
+  const pos = input.selectionStart, oldLen = input.value.length;
+  input.value = formatPhone(input.value);
+  const newPos = pos + (input.value.length - oldLen);
+  input.setSelectionRange(newPos, newPos);
+  const d = input.value.replace(/\D/g,'');
+  if (d.length>0 && d.length<11) input.classList.add('invalid');
+  else input.classList.remove('invalid');
+  bkValidate();
+}
+
+/* ────────────────────────────────────────────────────────────
+   TELEGRAM WebApp
+   ──────────────────────────────────────────────────────────── */
+const tg = window.Telegram && window.Telegram.WebApp || null;
+if (tg) {
+  try { tg.ready(); tg.expand(); tg.setHeaderColor('#0a0805'); tg.setBackgroundColor('#0a0805'); } catch(e) {}
+}
+
+/* ────────────────────────────────────────────────────────────
+   ИНИЦИАЛИЗАЦИЯ
+   ──────────────────────────────────────────────────────────── */
+function initApp() {
+  if (appInitialized) return;
+  appInitialized = true;
+
+  const bkName = ge('bkName'), bkPhone = ge('bkPhone');
+  if (bkName) bkName.addEventListener('input', bkValidate);
+  if (bkPhone) bkPhone.addEventListener('input', onPhoneInput);
+
+  initTabs();
+  checkUserRole();
+  renderMasters();
+  renderPrices();
+  bkInit();
+  initReviews();
+  loadAppData();
+
+  // FIX-09: deep link ?startapp=master_N
+  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
+    const sp = tg.initDataUnsafe.start_param;
+    const m = sp.match(/^master_(\d+)$/);
+    if (m) {
+      const mid = parseInt(m[1]);
+      goPage('booking');
+      requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(mid)));
     }
-    console.log('User role:', USER_ROLE);
-  } catch (e) {
-    console.error('checkUserRole error:', e);
   }
 }
 
-/* ================================================================================
-   НАВИГАЦИЯ
-   ================================================================================ */
+document.addEventListener('DOMContentLoaded', initApp);
 
+/* ────────────────────────────────────────────────────────────
+   РОЛИ
+   ──────────────────────────────────────────────────────────── */
+async function checkUserRole() {
+  const chatId = getChatId();
+  if (!chatId) return;
+  try {
+    const response = await fetchWithTimeout(CONFIG.GS + '?action=getUserInfo&chatId=' + chatId);
+    const data = await response.json();
+    USER_ROLE = data.role || 'client';
+    USER_INFO = data.master || null;
+    if (USER_ROLE === 'admin' || USER_ROLE === 'master') {
+      IS_ADMIN = true;
+      const admTab = ge('tab-admin');
+      if (admTab) admTab.style.display = '';
+      const badge = ge('userRoleBadge');
+      if (badge) badge.innerHTML = '<span class="role-badge ' + USER_ROLE + '">' + (USER_ROLE === 'admin' ? 'Администратор' : 'Мастер') + '</span>';
+    }
+  } catch(e) { console.error('checkUserRole:', e); }
+}
+
+/* ────────────────────────────────────────────────────────────
+   НАВИГАЦИЯ
+   ──────────────────────────────────────────────────────────── */
 function initTabs() {
-  const mainTabs = document.getElementById('mainTabs');
+  const mainTabs = ge('mainTabs');
   if (mainTabs) {
     mainTabs.addEventListener('click', function(e) {
       const tab = e.target.closest('.tab');
       if (tab) {
         const page = tab.getAttribute('data-page');
         if (page) {
-          e.preventDefault();
-          e.stopPropagation();
+          e.preventDefault(); e.stopPropagation();
           tab.classList.add('tapped');
-          setTimeout(() => { tab.classList.remove('tapped'); }, CONFIG.TAP_FEEDBACK_MS);
+          setTimeout(() => tab.classList.remove('tapped'), CONFIG.TAP_FEEDBACK_MS);
           goPage(page);
         }
       }
     }, true);
   }
-  
-  addClickHandler('btnToBooking', () => { goPage('booking'); });
-  addClickHandler('phoneLink', () => { makeCall(); });
-  addClickHandler('succPhoneLink', () => { makeCall(); });
-  addClickHandler('callFab', () => { makeCall(); });
-  addClickHandler('btnBkReset', () => { bkReset(); });
-  addClickHandler('calPrevBtn', () => { calPrev(); });
-  addClickHandler('calNextBtn', () => { calNext(); });
-  addClickHandler('bkSub', () => { bkSubmit(); });
-  addClickHandler('revSubmit', () => { submitReview(); });
-  addClickHandler('admAddDayOffBtn', () => { admAddDayOff(); });
-  addClickHandler('admRemoveDayOffBtn', () => { admRemoveDayOff(); });
-  
-  document.querySelectorAll('.ptab[data-category]').forEach(function(ptab) {
-    ptab.addEventListener('click', function(e) {
-      e.preventDefault();
-      ptSwitch(this.getAttribute('data-category'), this);
-    });
-  });
-  
-  document.querySelectorAll('.adm-tab[data-admtab]').forEach(function(tab) {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      admTab(this.getAttribute('data-admtab'), this);
-    });
-  });
-  
-  const admSlotMaster = document.getElementById('admSlotMaster');
-  const admSlotDate = document.getElementById('admSlotDate');
-  const admBkMaster = document.getElementById('admBkMaster');
-  const admDayOffMaster = document.getElementById('admDayOffMaster');
-  const admDayOffDate = document.getElementById('admDayOffDate');
-  
+
+  addClickHandler('btnToBooking', () => goPage('booking'));
+  addClickHandler('phoneLink', makeCall);
+  addClickHandler('succPhoneLink', makeCall);
+  addClickHandler('callFab', makeCall);
+  addClickHandler('btnBkReset', bkReset);
+  addClickHandler('calPrevBtn', calPrev);
+  addClickHandler('calNextBtn', calNext);
+  addClickHandler('bkSub', bkSubmit);
+  addClickHandler('revSubmit', submitReview);
+  addClickHandler('admAddDayOffBtn', admAddDayOff);
+  addClickHandler('admRemoveDayOffBtn', admRemoveDayOff);
+
+  document.querySelectorAll('.ptab[data-category]').forEach(ptab =>
+    ptab.addEventListener('click', e => { e.preventDefault(); ptSwitch(ptab.getAttribute('data-category'), ptab); })
+  );
+  document.querySelectorAll('.adm-tab[data-admtab]').forEach(tab =>
+    tab.addEventListener('click', e => { e.preventDefault(); admTab(tab.getAttribute('data-admtab'), tab); })
+  );
+
+  const admSlotMaster = ge('admSlotMaster'), admSlotDate = ge('admSlotDate');
+  const admBkMaster = ge('admBkMaster');
   if (admSlotMaster) admSlotMaster.addEventListener('change', admLoadSlots);
-  if (admSlotDate) admSlotDate.addEventListener('change', admLoadSlots);
-  if (admBkMaster) admBkMaster.addEventListener('change', admLoadBookings);
-  
+  if (admSlotDate)   admSlotDate.addEventListener('change', admLoadSlots);
+  if (admBkMaster)   admBkMaster.addEventListener('change', admLoadBookings);
+
   const today = formatDate_iso(new Date());
-  if (admSlotDate) admSlotDate.value = today;
-  if (admDayOffDate) admDayOffDate.value = today;
+  if (admSlotDate)    admSlotDate.value    = today;
+  const admDayOffDate = ge('admDayOffDate');
+  if (admDayOffDate)  admDayOffDate.value  = today;
 }
 
-function addClickHandler(id, callback) {
-  const el = document.getElementById(id);
-  if (el) {
-    el.addEventListener('click', function(e) {
-      e.preventDefault();
-      if (callback) callback();
-    });
-  }
+function addClickHandler(id, cb) {
+  const el = ge(id);
+  if (el) el.addEventListener('click', e => { e.preventDefault(); cb && cb(); });
 }
 
 function goPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  const pg = ge('page-' + id);
-  if (pg) pg.classList.add('active');
-  const tb = ge('tab-' + id);
-  if (tb) tb.classList.add('active');
-  if (id === 'booking') bkInit();
+  const pg = ge('page-' + id); if (pg) pg.classList.add('active');
+  const tb = ge('tab-' + id);  if (tb) tb.classList.add('active');
+  if (id === 'booking')    bkInit();
   if (id === 'mybookings') myBkInit();
-  if (id === 'admin') admInit();
-  /* Останавливаем polling при уходе с Admin страницы */
-  if (id !== 'admin' && typeof admStopPolling === 'function') admStopPolling();
-  window.scrollTo(0, 0);
+  if (id === 'admin')      admInit();
+  if (id !== 'admin')      admStopPolling();
+  window.scrollTo(0,0);
 }
 
-/* ================================================================================
-   РЕНДЕРИНГ МАСТЕРОВ И ЦЕН
-   ================================================================================ */
+/* ────────────────────────────────────────────────────────────
+   МАСТЕРА И ЦЕНЫ
+   ──────────────────────────────────────────────────────────── */
+function loadAppData() {
+  fetchWithTimeout(CONFIG.GS + '?action=getAppData')
+    .then(r => r.json())
+    .then(d => {
+      if (d.masters && d.masters.length > 0) MASTERS = d.masters;
+      if (d.prices && Object.keys(d.prices).length > 0) PRICES = d.prices;
+      if (d.ratings) MASTER_RATINGS = d.ratings;
+      renderMasters(); renderPrices(); renderMsGrid();
+    })
+    .catch(e => console.warn('loadAppData: резервные данные', e));
+}
 
 function getMasterRatingHtml(masterName) {
   const r = MASTER_RATINGS[masterName];
   if (!r || r.count === 0) return '';
   const stars = Math.round(r.avg);
-  let html = '<div class="m-rating">';
-  for (let i = 1; i <= 5; i++) {
-    html += '<span style="color:' + (i <= stars ? 'var(--gold)' : 'rgba(201,168,76,.2)') + '">★</span>';
-  }
-  html += '<span class="m-rating-num">' + r.avg.toFixed(1) + ' (' + r.count + ')</span></div>';
-  return html;
+  let h = '<div class="m-rating">';
+  for (let i=1;i<=5;i++) h += '<span style="color:' + (i<=stars?'var(--gold)':'rgba(201,168,76,.2)') + '">★</span>';
+  return h + '<span class="m-rating-num">' + r.avg.toFixed(1) + ' (' + r.count + ')</span></div>';
 }
 
 function renderMasters() {
   const g = ge('mastersList');
   g.innerHTML = '';
-  MASTERS.forEach(function(m) {
+  MASTERS.forEach(m => {
     const d = document.createElement('div');
     d.className = 'm-item';
-    const ratingHtml = getMasterRatingHtml(m.name);
     d.innerHTML =
       (m.photo ? '<div class="m-thumb"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '"></div>' : '') +
-      '<div style="flex:1">' +
-        '<div class="m-nm">' + escapeHtml(m.name) + '</div>' +
-        '<div class="m-sp">' + escapeHtml(m.spec) + '</div>' +
-        ratingHtml +
-      '</div>' +
+      '<div style="flex:1"><div class="m-nm">' + escapeHtml(m.name) + '</div><div class="m-sp">' + escapeHtml(m.spec) + '</div>' + getMasterRatingHtml(m.name) + '</div>' +
       '<div class="m-arr">›</div>';
-    d.onclick = function() { goPage('booking'); setTimeout(() => { bkSelMaster(m.id); }, 80); };
+    d.onclick = function() { goPage('booking'); requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(m.id))); };
     g.appendChild(d);
   });
 }
 
 function renderPrices() {
-  const map = {head: 'pt-head', face: 'pt-face', wax: 'pt-wax'};
-  Object.keys(map).forEach(function(k) {
+  const map = {head:'pt-head', face:'pt-face', wax:'pt-wax'};
+  Object.keys(map).forEach(k => {
     const el = ge(map[k]);
-    el.innerHTML = (PRICES[k] || []).map(function(r) {
-      return '<div class="p-row"><div class="p-nm">' + r[0] + '</div><div class="p-dots"></div><div class="p-pr">' + formatPrice(r[1]) + '</div></div>';
-    }).join('');
+    if (!el) return;
+    el.innerHTML = (PRICES[k]||[]).map(r =>
+      '<div class="p-row"><div class="p-nm">' + r[0] + '</div><div class="p-dots"></div><div class="p-pr">' + formatPrice(r[1]) + '</div></div>'
+    ).join('');
   });
 }
 
@@ -1137,90 +1145,62 @@ function ptSwitch(id, btn) {
   ge('pt-' + id).classList.add('active');
 }
 
-/* ================================================================================
+/* ────────────────────────────────────────────────────────────
    БРОНИРОВАНИЕ
-   ================================================================================ */
-
+   ──────────────────────────────────────────────────────────── */
 function bkInit() {
   const t = new Date();
-  S.cy = t.getFullYear();
-  S.cm = t.getMonth();
-  renderMsGrid();
-  calRender();
-  renderTimeGrid();
-  renderSvcList();
-  renderCart();
-  updateBar();
-  bkValidate();
+  S.cy = t.getFullYear(); S.cm = t.getMonth();
+  renderMsGrid(); calRender(); renderTimeGrid(); renderSvcList(); renderCart(); updateBar(); bkValidate();
   loadAllMastersData();
 }
 
+/* FIX-05: загружаем все данные один раз */
 function loadAllMastersData() {
-  /* ИСПРАВЛЕНО: Правильный action */
   fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
     .then(r => r.json())
     .then(d => {
-      if (d.masters) {
-        allMastersData = d.masters;
-        calRender();
-        renderTimeGrid();
-      }
+      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); }
     })
-    .catch(e => { console.error('loadAllMastersData error:', e); });
+    .catch(e => console.error('loadAllMastersData:', e));
 }
 
+/* FIX-05: используем кэш allMastersData, запрашиваем только если нет */
 function loadServerSlots(masterId) {
-  serverSlots = {};
-  serverBlocks = {};
-  serverDayoffs = [];
-  
+  serverSlots = {}; serverBlocks = {}; serverDayoffs = [];
   if (masterId === null || masterId === undefined) return;
-  
   const master = getMaster(masterId);
   if (!master) return;
-  
+
   if (allMastersData[master.name]) {
-    serverSlots = allMastersData[master.name].slots || {};
-    serverBlocks = allMastersData[master.name].blocks || {};
+    serverSlots   = allMastersData[master.name].slots   || {};
+    serverBlocks  = allMastersData[master.name].blocks  || {};
     serverDayoffs = allMastersData[master.name].dayoffs || [];
-    calRender();
-    renderTimeGrid();
+    calRender(); renderTimeGrid();
     return;
   }
-  
+
   fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + masterId)
     .then(r => r.json())
     .then(d => {
-      serverSlots = d.booked || d.slots || {};
-      serverBlocks = d.blocked || d.blocks || {};
+      serverSlots   = d.booked  || d.slots   || {};
+      serverBlocks  = d.blocked || d.blocks  || {};
       serverDayoffs = d.dayoffs || [];
       allMastersData[master.name] = {slots: serverSlots, blocks: serverBlocks, dayoffs: serverDayoffs};
-      calRender();
-      renderTimeGrid();
+      calRender(); renderTimeGrid();
     })
-    .catch(e => { console.error('loadServerSlots error:', e); });
+    .catch(e => console.error('loadServerSlots:', e));
 }
 
 function bkSelMaster(mid) {
-  S.mid = mid;
-  S.date = '';
-  S.slot = '';
-  S.cart = [];
-  svcExpanded = false;
-  loadServerSlots(mid);
-  renderMsGrid();
-  calRender();
-  renderTimeGrid();
-  renderSvcList();
-  renderCart();
-  updateBar();
-  bkValidate();
+  S.mid = mid; S.date = ''; S.slot = ''; S.cart = []; svcExpanded = false;
+  loadServerSlots(mid); renderMsGrid(); calRender(); renderTimeGrid(); renderSvcList(); renderCart(); updateBar(); bkValidate();
 }
 
 function renderMsGrid() {
   const g = ge('msGrid');
   g.innerHTML = '';
-  MASTERS.forEach(function(m) {
+  MASTERS.forEach(m => {
     const b = document.createElement('button');
     b.className = 'ms-btn' + (S.mid === m.id ? ' sel' : '');
     const r = MASTER_RATINGS[m.name];
@@ -1228,7 +1208,7 @@ function renderMsGrid() {
     b.innerHTML =
       (m.photo ? '<div class="ms-mini"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '"></div>' : '') +
       '<div><div class="ms-n">' + escapeHtml(m.name) + '</div><div class="ms-s">' + escapeHtml(m.spec.split(' ')[0]) + '</div>' + ratingStr + '</div>';
-    b.onclick = function(e) { e.preventDefault(); bkSelMaster(m.id); };
+    b.onclick = e => { e.preventDefault(); bkSelMaster(m.id); };
     g.appendChild(b);
   });
 }
@@ -1237,1521 +1217,855 @@ function hasFreeSlotsOnDate(masterName, dateStr, todayStr, nowTotalMin) {
   const data = allMastersData[masterName];
   if (!data) return false;
   if (data.dayoffs && data.dayoffs.indexOf(dateStr) >= 0) return false;
-
-  const slots = data.slots || {};
-  const blocks = data.blocks || {};
-  const busyOnDate = slots[dateStr] || [];
-  const blockedOnDate = blocks[dateStr] || [];
-
+  const busyOnDate    = (data.slots  || {})[dateStr] || [];
+  const blockedOnDate = (data.blocks || {})[dateStr] || [];
   for (let i = 0; i < SLOTS.length; i++) {
     const slot = SLOTS[i];
     if (dateStr === todayStr) {
       const slHr = parseInt(slot.split(':')[0]);
-      const slTotalMin = slHr * 60;
-      if (slTotalMin <= nowTotalMin + CONFIG.TIME_BUFFER_MINUTES) continue;
+      if (slHr * 60 <= nowTotalMin + CONFIG.TIME_BUFFER_MINUTES) continue;
     }
-    if (busyOnDate.indexOf(slot) < 0 && blockedOnDate.indexOf(slot) < 0) {
-      return true;
-    }
+    if (busyOnDate.indexOf(slot) < 0 && blockedOnDate.indexOf(slot) < 0) return true;
   }
   return false;
 }
 
 function hasAnyFreeSlotsOnDate(dateStr, todayStr, nowTotalMin) {
-  for (let i = 0; i < MASTERS.length; i++) {
-    if (hasFreeSlotsOnDate(MASTERS[i].name, dateStr, todayStr, nowTotalMin)) {
-      return true;
-    }
-  }
-  return false;
+  return MASTERS.some(m => hasFreeSlotsOnDate(m.name, dateStr, todayStr, nowTotalMin));
 }
 
 function isDayOffForMaster(masterName, dateStr) {
   const data = allMastersData[masterName];
-  if (!data || !data.dayoffs) return false;
-  return data.dayoffs.indexOf(dateStr) >= 0;
+  return data && data.dayoffs && data.dayoffs.indexOf(dateStr) >= 0;
 }
 
 function calRender() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0,0,0,0);
   const ts = formatDate_iso(today);
   ge('calMo').textContent = MNS[S.cm] + ' ' + S.cy;
   const first = new Date(S.cy, S.cm, 1);
   const dow = first.getDay() || 7;
-  const dim = new Date(S.cy, S.cm + 1, 0).getDate();
-  const g = ge('calGrid');
-  g.innerHTML = '';
-
+  const dim = new Date(S.cy, S.cm+1, 0).getDate();
+  const g = ge('calGrid'); g.innerHTML = '';
   const now = new Date();
-  const nowTotalMin = now.getHours() * 60 + now.getMinutes();
-  let hasAnyAvailableDate = false;
+  const nowTotalMin = now.getHours()*60 + now.getMinutes();
+  let hasAny = false;
 
-  for (let i = 1; i < dow; i++) {
-    const e = document.createElement('div');
-    e.className = 'cal-d emp';
-    g.appendChild(e);
-  }
-  
-  for (let d = 1; d <= dim; d++) {
+  for (let i=1; i<dow; i++) { const e=document.createElement('div'); e.className='cal-d emp'; g.appendChild(e); }
+  for (let d=1; d<=dim; d++) {
     const dt = new Date(S.cy, S.cm, d);
     const ds = formatDate_iso(dt);
     const el = document.createElement('div');
     el.textContent = d;
-    
     if (dt < today) {
       el.className = 'cal-d pst';
     } else {
-      let isDayoff = false;
-      let hasFree = false;
-
+      let isDayoff = false, hasFree = false;
       if (S.mid !== null) {
         const m = getMaster(S.mid);
         if (m) {
-          if (isDayOffForMaster(m.name, ds)) {
-            isDayoff = true;
-          } else {
-            hasFree = hasFreeSlotsOnDate(m.name, ds, ts, nowTotalMin);
-          }
+          if (isDayOffForMaster(m.name, ds)) isDayoff = true;
+          else hasFree = hasFreeSlotsOnDate(m.name, ds, ts, nowTotalMin);
         }
       } else {
         hasFree = hasAnyFreeSlotsOnDate(ds, ts, nowTotalMin);
       }
-
       if (isDayoff) {
-        el.className = 'cal-d dayoff' + (ds === ts ? ' tod' : '');
+        el.className = 'cal-d dayoff' + (ds===ts?' tod':'');
       } else if (hasFree) {
-        hasAnyAvailableDate = true;
-        el.className = 'cal-d avl' + (ds === S.date ? ' sel' : '') + (ds === ts ? ' tod' : '');
-        el.onclick = function(e) { e.preventDefault(); bkPickDate(ds); };
+        hasAny = true;
+        el.className = 'cal-d avl' + (ds===S.date?' sel':'') + (ds===ts?' tod':'');
+        el.onclick = e => { e.preventDefault(); bkPickDate(ds); };
       } else {
         el.className = 'cal-d full';
       }
     }
     g.appendChild(el);
   }
-  
   const emptyMsg = ge('calEmptyMsg');
-  if (!hasAnyAvailableDate && S.mid === null) {
-    emptyMsg.style.display = 'block';
-  } else {
-    emptyMsg.style.display = 'none';
-  }
-  
+  if (emptyMsg) emptyMsg.style.display = (!hasAny && S.mid===null) ? 'block' : 'none';
   const pb = ge('calPrevBtn');
-  if (pb) pb.disabled = (S.cy === today.getFullYear() && S.cm === today.getMonth());
+  if (pb) pb.disabled = (S.cy===today.getFullYear() && S.cm===today.getMonth());
 }
 
 function calPrev() {
-  const today = new Date();
-  let pm = S.cm - 1;
-  let py = S.cy;
-  if (pm < 0) { pm = 11; py--; }
-  if (py < today.getFullYear() || (py === today.getFullYear() && pm < today.getMonth())) return;
-  S.cm = pm;
-  S.cy = py;
-  S.date = '';
-  S.slot = '';
-  calRender();
-  clearTime();
-  updateBar();
-  bkValidate();
+  const today = new Date(); let pm=S.cm-1, py=S.cy;
+  if (pm<0){pm=11;py--;}
+  if (py<today.getFullYear()||(py===today.getFullYear()&&pm<today.getMonth())) return;
+  S.cm=pm; S.cy=py; S.date=''; S.slot=''; calRender(); clearTime(); updateBar(); bkValidate();
 }
-
 function calNext() {
-  S.cm++;
-  if (S.cm > 11) { S.cm = 0; S.cy++; }
-  S.date = '';
-  S.slot = '';
-  calRender();
-  clearTime();
-  updateBar();
-  bkValidate();
+  S.cm++; if(S.cm>11){S.cm=0;S.cy++;} S.date=''; S.slot=''; calRender(); clearTime(); updateBar(); bkValidate();
 }
+function clearTime() { ge('tLbl').textContent='3. Выберите время'; ge('tGrid').innerHTML=''; }
+function bkPickDate(ds) { S.date=ds; S.slot=''; calRender(); renderTimeGrid(); updateBar(); bkValidate(); }
 
-function clearTime() {
-  ge('tLbl').textContent = '3. Выберите время';
-  ge('tGrid').innerHTML = '';
-}
-
-function bkPickDate(ds) {
-  S.date = ds;
-  S.slot = '';
-  calRender();
-  renderTimeGrid();
-  updateBar();
-  bkValidate();
-}
-
+/* FIX-03: занятые слоты показываем как busy-кнопки */
 function renderTimeGrid() {
-  const g = ge('tGrid');
-  g.innerHTML = '';
-  if (!S.date) {
-    ge('tLbl').textContent = '3. Выберите время';
-    return;
-  }
+  const g = ge('tGrid'); g.innerHTML='';
+  if (!S.date) { ge('tLbl').textContent='3. Выберите время'; return; }
   const p = S.date.split('-');
-  ge('tLbl').textContent = parseInt(p[2]) + ' ' + MN[parseInt(p[1]) - 1] + ':';
-  if (S.mid === null) return;
-  
+  ge('tLbl').textContent = parseInt(p[2]) + ' ' + MN[parseInt(p[1])-1] + ':';
+  if (S.mid===null) return;
   const master = getMaster(S.mid);
   if (!master) return;
-  
   if (isDayOffForMaster(master.name, S.date)) {
-    ge('tLbl').textContent = parseInt(p[2]) + ' ' + MN[parseInt(p[1]) - 1] + ': выходной';
-    return;
+    ge('tLbl').textContent = parseInt(p[2]) + ' ' + MN[parseInt(p[1])-1] + ': выходной'; return;
   }
-  
   const todayStr = formatDate_iso(new Date());
   const now = new Date();
-  const nowTotalMin = now.getHours() * 60 + now.getMinutes();
+  const nowTotalMin = now.getHours()*60 + now.getMinutes();
   let freeCount = 0;
 
-  SLOTS.forEach(function(slot) {
-    const svBusy = (serverSlots[S.date] && serverSlots[S.date].indexOf(slot) >= 0);
+  SLOTS.forEach(slot => {
+    const svBusy  = (serverSlots[S.date]  && serverSlots[S.date].indexOf(slot)  >= 0);
     const svBlock = (serverBlocks[S.date] && serverBlocks[S.date].indexOf(slot) >= 0);
-    let pastBusy = false;
-    if (S.date === todayStr) {
+    let pastBusy  = false;
+    if (S.date===todayStr) {
       const slHr = parseInt(slot.split(':')[0]);
-      const slTotalMin = slHr * 60;
-      if (slTotalMin <= nowTotalMin + CONFIG.TIME_BUFFER_MINUTES) pastBusy = true;
+      if (slHr*60 <= nowTotalMin + CONFIG.TIME_BUFFER_MINUTES) pastBusy = true;
     }
 
-    if (pastBusy || svBusy || svBlock) return;
+    if (pastBusy) return; // прошедшие — скрываем
 
     const btn = document.createElement('button');
     btn.textContent = slot;
-    btn.className = 't-btn' + (S.slot === slot ? ' sel' : '');
-    btn.onclick = function(e) { e.preventDefault(); bkPickTime(slot); };
+
+    if (svBusy || svBlock) {
+      // FIX-03: занятые — показываем как недоступные (не скрываем)
+      btn.className = 't-btn busy';
+      btn.disabled = true;
+      btn.title = svBlock ? 'Заблокировано' : 'Занято';
+    } else {
+      btn.className = 't-btn' + (S.slot===slot?' sel':'');
+      btn.onclick = e => { e.preventDefault(); bkPickTime(slot); };
+      freeCount++;
+    }
     g.appendChild(btn);
-    freeCount++;
   });
 
-  if (freeCount === 0) {
-    ge('tLbl').textContent = parseInt(p[2]) + ' ' + MN[parseInt(p[1]) - 1] + ': нет свободного времени';
-  }
+  if (freeCount === 0) ge('tLbl').textContent = parseInt(p[2]) + ' ' + MN[parseInt(p[1])-1] + ': нет свободного времени';
 }
 
-function bkPickTime(slot) {
-  S.slot = slot;
-  renderTimeGrid();
-  updateBar();
-  bkValidate();
-}
+function bkPickTime(slot) { S.slot=slot; renderTimeGrid(); updateBar(); bkValidate(); }
 
 function renderSvcList() {
-  const wrap = ge('svcList');
-  wrap.innerHTML = '';
-  const cats = ['head', 'face', 'wax'];
+  const wrap = ge('svcList'); wrap.innerHTML='';
+  const cats = ['head','face','wax'];
   let hiddenTotal = 0;
-  
-  cats.forEach(function(cat) {
-    const services = PRICES[cat] || [];
-    if (cat === 'head') {
-      hiddenTotal += Math.max(0, services.length - CONFIG.SVC_VISIBLE_COUNT);
-    } else {
-      hiddenTotal += services.length;
-    }
+  cats.forEach(cat => {
+    const services = PRICES[cat]||[];
+    if (cat==='head') hiddenTotal += Math.max(0, services.length - CONFIG.SVC_VISIBLE_COUNT);
+    else hiddenTotal += services.length;
   });
-  
-  cats.forEach(function(cat) {
+  cats.forEach(cat => {
     const sec = document.createElement('div');
-    sec.className = 'svc-cat';
-    if (cat !== 'head' && !svcExpanded) {
-      sec.className += ' hidden';
-    }
+    sec.className = 'svc-cat' + (cat!=='head' && !svcExpanded ? ' hidden' : '');
     sec.innerHTML = '<div class="svc-cat-hdr">' + CAT_LABELS[cat] + '</div>';
-    const services = PRICES[cat] || [];
-    
-    services.forEach(function(svc, idx) {
-      const key = cat + '_' + idx;
+    (PRICES[cat]||[]).forEach((svc, idx) => {
+      const key = cat+'_'+idx;
       const isOn = S.cart.indexOf(key) >= 0;
-      let isHidden = false;
-      if (cat === 'head') {
-        isHidden = idx >= CONFIG.SVC_VISIBLE_COUNT && !svcExpanded;
-      } else {
-        isHidden = !svcExpanded;
-      }
-      
+      const isHidden = cat==='head' ? (idx >= CONFIG.SVC_VISIBLE_COUNT && !svcExpanded) : !svcExpanded;
       const row = document.createElement('div');
-      row.className = 'svc-item' + (isOn ? ' on' : '') + (isHidden ? ' hidden' : '');
+      row.className = 'svc-item' + (isOn?' on':'') + (isHidden?' hidden':'');
       row.innerHTML = '<div class="svc-chk" data-key="' + key + '">✓</div><div class="svc-nm">' + svc[0] + '</div><div class="svc-pr">' + formatPrice(svc[1]) + '</div>';
-      const chk = row.querySelector('.svc-chk');
-      chk.onclick = function(e) { e.preventDefault(); toggleSvc(key); };
+      row.querySelector('.svc-chk').onclick = e => { e.preventDefault(); toggleSvc(key); };
       sec.appendChild(row);
     });
-    
     wrap.appendChild(sec);
   });
-  
   if (hiddenTotal > 0) {
     const moreBtn = document.createElement('div');
     moreBtn.className = 'svc-more';
-    const btnText = svcExpanded ? '▲ Свернуть' : '▼ Показать ещё (' + hiddenTotal + ')';
-    moreBtn.innerHTML = '<button class="svc-more-btn">' + btnText + '</button>';
-    const btn = moreBtn.querySelector('.svc-more-btn');
-    btn.onclick = function(e) { e.preventDefault(); toggleSvcExpandAll(); };
+    moreBtn.innerHTML = '<button class="svc-more-btn">' + (svcExpanded ? '▲ Свернуть' : '▼ Показать ещё (' + hiddenTotal + ')') + '</button>';
+    moreBtn.querySelector('.svc-more-btn').onclick = e => { e.preventDefault(); svcExpanded=!svcExpanded; renderSvcList(); };
     wrap.appendChild(moreBtn);
   }
 }
 
-function toggleSvcExpandAll() {
-  svcExpanded = !svcExpanded;
-  renderSvcList();
-}
-
 function toggleSvc(key) {
   const idx = S.cart.indexOf(key);
-  if (idx >= 0) S.cart.splice(idx, 1);
-  else S.cart.push(key);
-  renderSvcList();
-  renderCart();
-  bkValidate();
+  if (idx>=0) S.cart.splice(idx,1); else S.cart.push(key);
+  renderSvcList(); renderCart(); bkValidate();
 }
 
 function getSvcByKey(key) {
-  const p = key.split('_');
-  const cat = p[0];
-  const idx = parseInt(p[1]);
+  const p=key.split('_'); const cat=p[0]; const idx=parseInt(p[1]);
   return PRICES[cat] && PRICES[cat][idx] ? PRICES[cat][idx] : null;
 }
 
 function renderCart() {
-  const items = ge('cartItems');
-  const empty = ge('cartEmpty');
-  const total = ge('cartTotal');
-  const sumEl = ge('cartSum');
-  
-  if (S.cart.length === 0) {
-    empty.style.display = 'block';
-    items.style.display = 'none';
-    total.style.display = 'none';
-    return;
+  const items=ge('cartItems'), empty=ge('cartEmpty'), total=ge('cartTotal'), sumEl=ge('cartSum');
+  if (S.cart.length===0) {
+    empty.style.display='block'; items.style.display='none'; total.style.display='none'; return;
   }
-  empty.style.display = 'none';
-  items.style.display = 'block';
-  total.style.display = 'flex';
-  
-  let html = '';
-  let sum = 0;
-  S.cart.forEach(function(key) {
-    const svc = getSvcByKey(key);
-    if (!svc) return;
+  empty.style.display='none'; items.style.display='block'; total.style.display='flex';
+  let html='', sum=0;
+  S.cart.forEach(key => {
+    const svc=getSvcByKey(key); if(!svc) return;
     sum += svc[1];
-    html += '<div class="cart-row"><span class="cart-row-nm">' + svc[0] + '</span><span class="cart-row-pr">' + formatPrice(svc[1]) + '</span><span class="cart-row-rm" data-key="' + key + '">✕</span></div>';
+    html += '<div class="cart-row"><span class="cart-row-nm">'+svc[0]+'</span><span class="cart-row-pr">'+formatPrice(svc[1])+'</span><span class="cart-row-rm" data-key="'+key+'">✕</span></div>';
   });
   items.innerHTML = html;
   sumEl.textContent = formatPrice(sum);
-  items.querySelectorAll('.cart-row-rm').forEach(function(btn) {
-    const key = btn.getAttribute('data-key');
-    btn.onclick = function(e) { e.preventDefault(); toggleSvc(key); };
-  });
+  items.querySelectorAll('.cart-row-rm').forEach(btn =>
+    btn.onclick = e => { e.preventDefault(); toggleSvc(btn.getAttribute('data-key')); }
+  );
 }
 
-function getCartTotal() {
-  let sum = 0;
-  S.cart.forEach(function(key) {
-    const s = getSvcByKey(key);
-    if (s) sum += s[1];
-  });
-  return sum;
-}
-
-function getCartNames() {
-  const names = [];
-  S.cart.forEach(function(key) {
-    const s = getSvcByKey(key);
-    if (s) names.push(s[0]);
-  });
-  return names;
-}
+function getCartTotal() { return S.cart.reduce((s,k) => { const sv=getSvcByKey(k); return s+(sv?sv[1]:0); }, 0); }
+function getCartNames() { return S.cart.map(k => { const s=getSvcByKey(k); return s?s[0]:null; }).filter(Boolean); }
 
 function updateBar() {
   const m = getMaster(S.mid);
-  ge('sbMaster').textContent = m ? m.name : '—';
-  ge('sbMaster').className = 'sb-val' + (m ? ' set' : '');
-  ge('sbDate').textContent = S.date ? formatDate_display(S.date) : '—';
-  ge('sbDate').className = 'sb-val' + (S.date ? ' set' : '');
-  ge('sbTime').textContent = S.slot || '—';
-  ge('sbTime').className = 'sb-val' + (S.slot ? ' gold' : '');
+  ge('sbMaster').textContent = m ? m.name : '—'; ge('sbMaster').className = 'sb-val'+(m?' set':'');
+  ge('sbDate').textContent   = S.date ? formatDate_display(S.date) : '—'; ge('sbDate').className = 'sb-val'+(S.date?' set':'');
+  ge('sbTime').textContent   = S.slot || '—'; ge('sbTime').className = 'sb-val'+(S.slot?' gold':'');
 }
 
 function bkValidate() {
-  const n = (ge('bkName').value || '').trim();
-  const p = (ge('bkPhone').value || '').trim();
-  const ok = S.mid !== null && S.date && S.slot && S.cart.length > 0 && n && isPhoneValid(p);
-  ge('bkSub').disabled = !ok;
+  const n=(ge('bkName').value||'').trim(), p=(ge('bkPhone').value||'').trim();
+  ge('bkSub').disabled = !(S.mid!==null && S.date && S.slot && S.cart.length>0 && n && isPhoneValid(p));
 }
 
+/* FIX-04: total передаётся числом */
 function bkSubmit() {
   if (isSubmitting) return;
   isSubmitting = true;
-  
-  const name = (ge('bkName').value || '').trim();
-  const phone = (ge('bkPhone').value || '').trim();
+  const name   = (ge('bkName').value||'').trim();
+  const phone  = (ge('bkPhone').value||'').trim();
   const master = getMaster(S.mid);
-  
-  if (!name || !isPhoneValid(phone) || !S.slot || !S.date || !master || S.cart.length === 0) {
-    isSubmitting = false;
-    return;
-  }
-  
-  const btn = ge('bkSub');
-  btn.disabled = true;
-  btn.textContent = 'Отправка...';
-  
-  /* Автоматически берём username из Telegram WebApp */
+  if (!name||!isPhoneValid(phone)||!S.slot||!S.date||!master||S.cart.length===0) { isSubmitting=false; return; }
+
+  const btn = ge('bkSub'); btn.disabled=true; btn.textContent='Отправка...';
+
   const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-  const tgUsername = tgUser && tgUser.username ? '@' + tgUser.username : '';
+  const tgUsername = tgUser && tgUser.username ? '@'+tgUser.username : '';
   const services = getCartNames().join(', ');
-  const total = getCartTotal();
-  let clientChatId = getChatId();
-  
+  const total    = getCartTotal(); // FIX-04: число
+
   const payload = {
-    masterId: S.mid,
-    master: master.name,
-    visitDate: formatDate_full(S.date),
-    visitDateRaw: S.date,
-    time: S.slot,
-    name: name,
-    phone: phone,
-    telegram: tgUsername,
-    services: services,
-    total: formatPrice(total),
-    clientChatId: clientChatId
+    masterId: S.mid, master: master.name,
+    visitDate: formatDate_full(S.date), visitDateRaw: S.date,
+    time: S.slot, name, phone, telegram: tgUsername,
+    services, total,  // FIX-04: число, не строка
+    clientChatId: getChatId()
   };
-  
-  fetchWithTimeout(CONFIG.GS, {method: 'POST', mode: 'cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify(payload)})
+
+  fetchWithTimeout(CONFIG.GS, {method:'POST', mode:'cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
     .then(r => r.json())
     .then(d => {
-      btn.disabled = false;
-      btn.textContent = 'Записаться';
-      isSubmitting = false;
-      
-      if (d.error === 'slot_taken' || d.error === 'slot_unavailable') {
-        let msg = '⚠️ К сожалению, это время уже занято.';
-        if (d.message) msg = '⚠️ ' + d.message;
-        msg += '\n\nПожалуйста, выберите другое время.';
-        alert(msg);
-        loadServerSlots(S.mid);
-        S.slot = '';
-        renderTimeGrid();
-        updateBar();
-        bkValidate();
-        return;
+      btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
+
+      if (d.error==='slot_taken'||d.error==='slot_unavailable') {
+        showToast('⚠️ ' + (d.message||'Это время уже занято. Выберите другое.'), 'error', 4000);
+        loadAllMastersData(); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
-      
-      if (d.error === 'dayoff') {
-        alert('⚠️ ' + (d.message || 'Выбранный день — выходной для мастера'));
-        loadServerSlots(S.mid);
-        S.date = '';
-        S.slot = '';
-        calRender();
-        clearTime();
-        updateBar();
-        bkValidate();
-        return;
+      if (d.error==='dayoff') {
+        showToast('⚠️ ' + (d.message||'Выбранный день — выходной для мастера'), 'error', 4000);
+        loadAllMastersData(); S.date=''; S.slot=''; calRender(); clearTime(); updateBar(); bkValidate(); return;
       }
-      
-      if (d.status === 'double_booking') {
-        alert('⚠️ У вас уже есть запись на это время!');
-        S.slot = '';
-        renderTimeGrid();
-        updateBar();
-        bkValidate();
-        return;
+      if (d.status==='double_booking') {
+        showToast('⚠️ У вас уже есть запись на это время!', 'error'); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
-      
-      if (d.status === 'rate_limit') {
-        alert('⚠️ ' + d.error);
-        return;
-      }
-      
-      if (d.error) {
-        alert('Ошибка: ' + d.error);
-        return;
-      }
-      
+      if (d.status==='rate_limit') { showToast('⚠️ ' + d.error, 'error'); return; }
+      if (d.error)                 { showToast('Ошибка: ' + d.error, 'error'); return; }
+
+      // Успех
+      _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
       ge('bkFormWrap').style.display = 'none';
       ge('bkSucc').classList.add('show');
-      ge('bkSuccTbl').innerHTML = 
-        '<div class="succ-row"><span class="succ-l">Мастер</span><span class="succ-v">' + master.name + '</span></div>' +
-        '<div class="succ-row"><span class="succ-l">Дата</span><span class="succ-v">' + formatDate_full(S.date) + '</span></div>' +
-        '<div class="succ-row"><span class="succ-l">Время</span><span class="succ-v">' + S.slot + '</span></div>' +
-        '<div class="succ-row"><span class="succ-l">Услуги</span><span class="succ-v">' + services + '</span></div>' +
-        '<div class="succ-row"><span class="succ-l">Итого</span><span class="succ-v">' + formatPrice(total) + '</span></div>' +
-        '<div class="succ-row"><span class="succ-l">Клиент</span><span class="succ-v">' + name + '</span></div>' +
-        '<div class="succ-row"><span class="succ-l">Телефон</span><span class="succ-v">' + phone + '</span></div>' +
-        (tgUsername ? '<div class="succ-row"><span class="succ-l">Telegram</span><span class="succ-v">' + tgUsername + '</span></div>' : '');
+      ge('bkSuccTbl').innerHTML =
+        '<div class="succ-row"><span class="succ-l">Мастер</span><span class="succ-v">'+master.name+'</span></div>' +
+        '<div class="succ-row"><span class="succ-l">Дата</span><span class="succ-v">'+formatDate_full(S.date)+'</span></div>' +
+        '<div class="succ-row"><span class="succ-l">Время</span><span class="succ-v">'+S.slot+'</span></div>' +
+        '<div class="succ-row"><span class="succ-l">Услуги</span><span class="succ-v">'+services+'</span></div>' +
+        '<div class="succ-row"><span class="succ-l">Итого</span><span class="succ-v">'+formatPrice(total)+'</span></div>';
+
+      // FIX-07: кнопка "Мои записи" после успеха
+      const succDiv = ge('bkSucc');
+      let myBkBtn = succDiv.querySelector('.succ-mybk-btn');
+      if (!myBkBtn) {
+        myBkBtn = document.createElement('button');
+        myBkBtn.className = 'succ-again';
+        myBkBtn.style.marginTop = '10px';
+        myBkBtn.textContent = '📋 Мои записи';
+        myBkBtn.onclick = () => goPage('mybookings');
+        succDiv.appendChild(myBkBtn);
+      }
     })
     .catch(e => {
-      console.error('bkSubmit error:', e);
-      btn.disabled = false;
-      btn.textContent = 'Записаться';
-      isSubmitting = false;
-      alert('Ошибка соединения. Проверьте интернет и попробуйте ещё раз.');
+      console.error('bkSubmit:', e);
+      btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
+      showToast('Ошибка соединения. Проверьте интернет и попробуйте ещё раз.', 'error');
     });
 }
 
 function bkReset() {
-  ge('bkFormWrap').style.display = 'block';
-  ge('bkSucc').classList.remove('show');
-  ge('bkName').value = '';
-  ge('bkPhone').value = '';
-  ge('bkPhone').classList.remove('invalid');
-  S.date = '';
-  S.slot = '';
-  S.cart = [];
-  svcExpanded = false;
-  isSubmitting = false;
-  bkInit();
+  ge('bkFormWrap').style.display='block'; ge('bkSucc').classList.remove('show');
+  ge('bkName').value=''; ge('bkPhone').value=''; ge('bkPhone').classList.remove('invalid');
+  const oldBtn = ge('bkSucc') && ge('bkSucc').querySelector('.succ-mybk-btn');
+  if (oldBtn) oldBtn.remove();
+  S.date=''; S.slot=''; S.cart=[]; svcExpanded=false; isSubmitting=false; bkInit();
 }
 
-/* ================================================================================
-   МОИ ЗАПИСИ — вкладки «Предстоящие» / «История»
-   ================================================================================ */
-
+/* ────────────────────────────────────────────────────────────
+   МОИ ЗАПИСИ — FIX-08: кэш
+   ──────────────────────────────────────────────────────────── */
 var myBkTab = 'upcoming';
 
-function myBkInit() {
-  myBkTab = 'upcoming';
-  myBkRender();
-}
-
-function myBkSwitchTab(tab) {
-  myBkTab = tab;
-  myBkRender();
-}
+function myBkInit() { myBkTab='upcoming'; _myBkCache={data:null,ts:0,tab:''}; myBkRender(); }
+function myBkSwitchTab(tab) { myBkTab=tab; myBkRender(); }
 
 function myBkRender() {
   const container = ge('myBkContent');
   const chatId = getChatId();
+  if (!chatId) { container.innerHTML='<div class="my-no-tg">Откройте приложение через Telegram</div>'; return; }
 
-  if (!chatId) {
-    container.innerHTML = '<div class="my-no-tg">Откройте приложение через Telegram</div>';
+  // FIX-08: кэш на 30 секунд
+  const now = Date.now();
+  if (_myBkCache.data && _myBkCache.tab === myBkTab && (now - _myBkCache.ts) < CONFIG.MY_BK_CACHE_TTL_MS) {
+    _renderMyBkData(_myBkCache.data);
     return;
   }
 
   container.innerHTML = '<div class="adm-loading">Загрузка...</div>';
+  const action = myBkTab==='history' ? 'getMyBookingsHistory' : 'getMyBookings';
 
-  const action = myBkTab === 'history' ? 'getMyBookingsHistory' : 'getMyBookings';
   fetchWithTimeout(CONFIG.GS + '?action=' + action + '&chatId=' + encodeURIComponent(chatId))
     .then(r => r.json())
     .then(d => {
-      const bks = d.bookings || [];
-      const tabsHtml =
-        '<div class="my-tabs">' +
-        '<button class="my-tab' + (myBkTab === 'upcoming' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;upcoming&quot;)">Предстоящие</button>' +
-        '<button class="my-tab' + (myBkTab === 'history' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;history&quot;)">История</button>' +
-        '</div>';
-
-      if (bks.length === 0) {
-        container.innerHTML = tabsHtml +
-          '<div class="my-empty">' +
-          (myBkTab === 'history' ? 'Истории посещений пока нет' : 'У вас нет предстоящих записей') +
-          '</div>';
-        return;
-      }
-
-      let html = tabsHtml;
-      const isPast = myBkTab === 'history';
-
-      bks.forEach(function(b) {
-        const displayDate = b.dateFormatted || formatDateTimeForDisplay(b.date, b.time);
-        const dateOnly = b.date || '';
-        const timeOnly = b.time || '';
-        const masterId = b.masterId !== undefined ? b.masterId : getMasterIdByName(b.master);
-        const cardId = 'mybk-' + dateOnly + '-' + (timeOnly.replace(':', '') || '0000');
-
-        html += '<div class="my-card' + (isPast ? ' my-card-past' : '') + '" id="' + cardId + '">';
-        html += '<div class="my-card-hdr">' +
-          '<span class="my-card-master">&#9986;&#65039; ' + escapeHtml(b.master || '') + '</span>' +
-          '<span class="my-card-date">' + escapeHtml(displayDate) + '</span>' +
-          '</div>';
-        if (timeOnly) html += '<div class="my-card-time">&#9200; ' + escapeHtml(timeOnly) + '</div>';
-        if (b.services) html += '<div class="my-card-info">&#128203; Услуги: <span>' + escapeHtml(String(b.services)) + '</span></div>';
-        if (b.total !== undefined && b.total !== '') {
-          const totalStr = typeof b.total === 'number' ? formatPrice(b.total) : escapeHtml(String(b.total));
-          html += '<div class="my-card-total">&#128176; ' + totalStr + '</div>';
-        }
-
-        html += '<div class="my-card-btns">';
-        if (!isPast) {
-          html += '<button class="my-btn-repeat" onclick="myBkRepeat(' + masterId + ');return false;">&#8617; Снова</button>';
-          html += '<button class="my-btn-cancel" onclick="myBkCancel(' + masterId + ',&quot;' + dateOnly + '&quot;,&quot;' + timeOnly + '&quot;,&quot;' + escapeHtml(b.master || '') + '&quot;);return false;">&#10005; Отменить</button>';
-          html += '<button class="my-btn-resched" onclick="myBkReschedule(' + masterId + ',&quot;' + dateOnly + '&quot;,&quot;' + timeOnly + '&quot;,&quot;' + escapeHtml(b.master || '') + '&quot;);return false;">&#128197; Перенести</button>';
-        } else {
-          html += '<button class="my-btn-repeat" style="flex:1" onclick="myBkRepeat(' + masterId + ');return false;">&#8617; Записаться снова к этому мастеру</button>';
-        }
-        html += '</div></div>';
-      });
-
-      container.innerHTML = html;
+      _myBkCache = {data: d, ts: Date.now(), tab: myBkTab};
+      _renderMyBkData(d);
     })
     .catch(e => {
-      console.error('myBkRender error:', e);
-      container.innerHTML = '<div class="my-tabs">' +
-        '<button class="my-tab' + (myBkTab === 'upcoming' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;upcoming&quot;)">Предстоящие</button>' +
-        '<button class="my-tab' + (myBkTab === 'history' ? ' active' : '') + '" onclick="myBkSwitchTab(&quot;history&quot;)">История</button>' +
-        '</div><div class="my-empty">Ошибка загрузки. Попробуйте позже.</div>';
+      console.error('myBkRender:', e);
+      container.innerHTML = _myBkTabsHtml() + '<div class="my-empty">Ошибка загрузки. Попробуйте позже.</div>';
     });
 }
 
-/* ПУНКТ 1: Повторная запись — переход на форму с уже выбранным мастером */
-function myBkRepeat(masterId) {
-  goPage('booking');
-  setTimeout(function() {
-    if (masterId !== null && masterId !== undefined && String(masterId) !== 'null') {
-      bkSelMaster(parseInt(masterId));
-    }
-  }, 120);
+function _myBkTabsHtml() {
+  return '<div class="my-tabs">' +
+    '<button class="my-tab' + (myBkTab==='upcoming'?' active':'') + '" onclick="myBkSwitchTab(\'upcoming\')">Предстоящие</button>' +
+    '<button class="my-tab' + (myBkTab==='history'?' active':'')  + '" onclick="myBkSwitchTab(\'history\')">История</button>' +
+    '</div>';
 }
 
-function formatDateTimeForDisplay(dateStr, timeStr) {
-  if (!dateStr) return '';
-  const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-                  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-  
-  let day, month, year;
-  
-  if (dateStr.indexOf('T') !== -1) {
-    const d = new Date(dateStr);
-    if (!isNaN(d.getTime())) {
-      day = d.getDate();
-      month = months[d.getMonth()];
-      year = d.getFullYear();
-    }
-  } else {
-    const parts = dateStr.split('-');
-    if (parts.length === 3) {
-      day = parseInt(parts[2]);
-      month = months[parseInt(parts[1]) - 1];
-      year = parts[0];
-    }
+function _renderMyBkData(d) {
+  const container = ge('myBkContent');
+  const bks = d.bookings || [];
+  const tabsHtml = _myBkTabsHtml();
+
+  if (bks.length===0) {
+    container.innerHTML = tabsHtml + '<div class="my-empty">' + (myBkTab==='history'?'Истории посещений пока нет':'У вас нет предстоящих записей') + '</div>';
+    return;
   }
-  
-  if (!day || !month) return dateStr;
-  
-  let result = day + ' ' + month + ' ' + year;
-  if (timeStr) {
-    result += ', ' + timeStr;
-  }
-  return result;
+
+  const isPast = myBkTab==='history';
+  let html = tabsHtml;
+
+  bks.forEach(b => {
+    const displayDate = b.dateFormatted || formatDateTimeForDisplay(b.date, b.time);
+    const dateOnly = b.date||'', timeOnly = b.time||'';
+    const mid = b.masterId !== undefined ? b.masterId : getMasterIdByName(b.master);
+    const cardId = 'mybk-' + dateOnly + '-' + (timeOnly.replace(':','')||'0000');
+
+    html += '<div class="my-card' + (isPast?' my-card-past':'') + '" id="' + cardId + '">';
+    html += '<div class="my-card-hdr"><span class="my-card-master">✂️ ' + escapeHtml(b.master||'') + '</span><span class="my-card-date">' + escapeHtml(displayDate) + '</span></div>';
+    if (timeOnly) html += '<div class="my-card-time">⏰ ' + escapeHtml(timeOnly) + '</div>';
+    if (b.services) html += '<div class="my-card-info">📋 Услуги: <span>' + escapeHtml(String(b.services)) + '</span></div>';
+    if (b.total !== undefined && b.total !== '') {
+      const totalStr = typeof b.total==='number' ? formatPrice(b.total) : escapeHtml(String(b.total));
+      html += '<div class="my-card-total">💰 ' + totalStr + '</div>';
+    }
+    html += '<div class="my-card-btns">';
+    if (!isPast) {
+      html += '<button class="my-btn-repeat" onclick="myBkRepeat(' + mid + ');return false;">↩ Снова</button>';
+      html += '<button class="my-btn-cancel" onclick="myBkCancel(' + mid + ',&quot;' + dateOnly + '&quot;,&quot;' + timeOnly + '&quot;,&quot;' + escapeHtml(b.master||'') + '&quot;);return false;">✕ Отменить</button>';
+      html += '<button class="my-btn-resched" onclick="myBkReschedule(' + mid + ',&quot;' + dateOnly + '&quot;,&quot;' + timeOnly + '&quot;,&quot;' + escapeHtml(b.master||'') + '&quot;);return false;">📅 Перенести</button>';
+    } else {
+      html += '<button class="my-btn-repeat" style="flex:1" onclick="myBkRepeat(' + mid + ');return false;">↩ Записаться снова к этому мастеру</button>';
+    }
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
+}
+
+/* FIX-06: requestAnimationFrame вместо setTimeout */
+function myBkRepeat(masterId) {
+  goPage('booking');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (masterId !== null && masterId !== undefined && String(masterId) !== 'null') bkSelMaster(parseInt(masterId));
+  }));
 }
 
 function myBkCancel(masterId, date, time, masterName) {
-  /* ПУНКТ 6: проверяем, не истёк ли дедлайн отмены */
   if (date && time) {
-    const parts = date.split('-');
-    const tParts = time.split(':');
-    const bookingTime = new Date(
-      parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]),
-      parseInt(tParts[0]), parseInt(tParts[1] || 0)
-    );
+    const parts=date.split('-'), tParts=time.split(':');
+    const bookingTime = new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]),parseInt(tParts[0]),parseInt(tParts[1]||0));
     const hoursLeft = (bookingTime - new Date()) / 3600000;
     if (hoursLeft < CONFIG.CANCEL_DEADLINE_HOURS && hoursLeft > 0) {
-      alert('⚠️ Отмена записи доступна не позднее чем за ' + CONFIG.CANCEL_DEADLINE_HOURS +
-        ' ч до визита.\n\nДля отмены позвоните нам: +7 (952) 560-88-98');
-      return;
+      showToast('⚠️ Отмена доступна не позднее чем за ' + CONFIG.CANCEL_DEADLINE_HOURS + ' ч до визита. Позвоните: +7 (952) 560-88-98', 'error', 5000); return;
     }
   }
-  if (!confirm('Вы уверены, что хотите отменить запись?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)) return;
-  
+  if (!confirmAction('Вы уверены, что хотите отменить запись?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)) return;
+
   const chatId = getChatId();
-  
-  fetchWithTimeout(CONFIG.GS, {
-    method: 'POST',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({action: 'cancelBooking', chatId: chatId, masterId: masterId, master: masterName, date: date, time: time})
-  })
+  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
     .then(r => r.json())
     .then(d => {
-      if (d.status === 'ok') {
-        const card = ge('mybk-' + date + '-' + time.replace(':', ''));
-        if (card) card.style.display = 'none';
-        const cards = ge('myBkContent').querySelectorAll('.my-card');
-        let visible = 0;
-        cards.forEach(c => { if (c.style.display !== 'none') visible++; });
-        if (visible === 0) ge('myBkContent').innerHTML = '<div class="my-tabs"><button class="my-tab active" onclick="myBkSwitchTab(&quot;upcoming&quot;)">Предстоящие</button><button class="my-tab" onclick="myBkSwitchTab(&quot;history&quot;)">История</button></div><div class="my-empty">У вас нет предстоящих записей</div>';
-      } else if (d.error === 'too_late') {
-        alert('⚠️ ' + d.message);
+      if (d.status==='ok') {
+        _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
+        const card = ge('mybk-' + date + '-' + time.replace(':',''));
+        if (card) card.style.display='none';
+        showToast('✅ Запись отменена', 'success');
+      } else if (d.error==='too_late') {
+        showToast('⚠️ ' + d.message, 'error', 5000);
       } else {
-        alert('Не удалось отменить запись');
+        showToast('Не удалось отменить запись', 'error');
       }
     })
-    .catch(e => {
-      console.error('cancel error:', e);
-      alert('Ошибка. Попробуйте позже.');
-    });
+    .catch(() => showToast('Ошибка. Попробуйте позже.', 'error'));
 }
 
 function myBkReschedule(masterId, date, time, masterName) {
-  /* ПУНКТ 6: тот же дедлайн применяется к переносу */
   if (date && time) {
-    const parts = date.split('-');
-    const tParts = time.split(':');
-    const bookingTime = new Date(
-      parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]),
-      parseInt(tParts[0]), parseInt(tParts[1] || 0)
-    );
+    const parts=date.split('-'), tParts=time.split(':');
+    const bookingTime = new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]),parseInt(tParts[0]),parseInt(tParts[1]||0));
     const hoursLeft = (bookingTime - new Date()) / 3600000;
     if (hoursLeft < CONFIG.CANCEL_DEADLINE_HOURS && hoursLeft > 0) {
-      alert('⚠️ Перенос записи доступен не позднее чем за ' + CONFIG.CANCEL_DEADLINE_HOURS +
-        ' ч до визита.\n\nДля переноса позвоните нам: +7 (952) 560-88-98');
-      return;
+      showToast('⚠️ Перенос доступен не позднее чем за ' + CONFIG.CANCEL_DEADLINE_HOURS + ' ч до визита. Позвоните: +7 (952) 560-88-98', 'error', 5000); return;
     }
   }
-  if (!confirm('Отменить текущую запись и выбрать новое время?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)) return;
-  
+  if (!confirmAction('Отменить текущую запись и выбрать новое время?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)) return;
+
   const chatId = getChatId();
-  
-  fetchWithTimeout(CONFIG.GS, {
-    method: 'POST',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({action: 'cancelBooking', chatId: chatId, masterId: masterId, master: masterName, date: date, time: time})
-  })
+  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
     .then(r => r.json())
     .then(d => {
-      if (d.status !== 'ok') {
-        alert('Не удалось отменить запись: ' + (d.error || 'неизвестная ошибка'));
-        return;
-      }
+      if (d.status!=='ok') { showToast('Не удалось отменить: ' + (d.error||'ошибка'), 'error'); return; }
+      _myBkCache = {data:null, ts:0, tab:''};
       goPage('booking');
-      if (masterId !== null && masterId !== undefined) setTimeout(() => { bkSelMaster(parseInt(masterId)); }, 100);
+      if (masterId!==null && masterId!==undefined) requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(parseInt(masterId))));
     })
-    .catch(e => {
-      console.error('reschedule error:', e);
-      alert('Ошибка соединения. Попробуйте позже.');
-    });
+    .catch(() => showToast('Ошибка соединения. Попробуйте позже.', 'error'));
 }
 
-/* ================================================================================
+/* ────────────────────────────────────────────────────────────
    АДМИН-ПАНЕЛЬ
-   ================================================================================ */
-
+   ──────────────────────────────────────────────────────────── */
 function admTab(tab, tabEl) {
   admCurrentTab = tab;
   document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
   if (tabEl) tabEl.classList.add('active');
   ge('adm-' + tab).classList.add('active');
-  if (tab === 'summary') admLoadSummary();
-  if (tab === 'bookings') { admBkInitDateStrip(); admLoadBookings(); }
-  if (tab === 'slots') admLoadSlots();
-  if (tab === 'dayoffs') admLoadDayOffsList();
-  if (tab === 'analytics') admLoadAnalytics();
+  if (tab==='summary')   admLoadSummary();
+  if (tab==='bookings')  { admBkInitDateStrip(); admLoadBookings(); }
+  if (tab==='slots')     admLoadSlots();
+  if (tab==='dayoffs')   admLoadDayOffsList();
+  if (tab==='analytics') admLoadAnalytics();
 }
 
 function admInit() {
   if (!IS_ADMIN) return;
-  
-  const selBk = ge('admBkMaster');
-  const selSl = ge('admSlotMaster');
-  const selDayOff = ge('admDayOffMaster');
-  
-  if (selBk.options.length <= 1) {
-    MASTERS.forEach(function(m) {
-      selBk.add(new Option(m.name, m.id));
-      selSl.add(new Option(m.name, m.id));
-      selDayOff.add(new Option(m.name, m.id));
-    });
+  const selBk=ge('admBkMaster'), selSl=ge('admSlotMaster'), selDayOff=ge('admDayOffMaster');
+  if (selBk.options.length<=1) {
+    MASTERS.forEach(m => { selBk.add(new Option(m.name,m.id)); selSl.add(new Option(m.name,m.id)); selDayOff.add(new Option(m.name,m.id)); });
   }
-  
   admBkSelectedDate = formatDate_iso(new Date());
-  admLoadSummary();
-  admLoadDayOffsList();
-  admStartPolling();
-  
+  admLoadSummary(); admLoadDayOffsList(); admStartPolling();
   addClickHandler('admRefreshBtn', admRefresh);
 }
 
-/* ================================================================================
-   АВТООБНОВЛЕНИЕ АДМИН-ПАНЕЛИ
-   ================================================================================ */
-
-var ADM_POLL_INTERVAL = 15000; // 15 секунд
-var _admPollTimer = null;
-var _admLastUpdated = null;
-
+/* FIX-10: polling без race condition */
 function admStartPolling() {
   admStopPolling();
-  _admPollTimer = setInterval(function() {
-    admPollTick();
-  }, ADM_POLL_INTERVAL);
+  _admPollTimer = setInterval(admPollTick, ADM_POLL_INTERVAL);
   admSetLiveState(true);
+  _admPolling = true;
 }
 
 function admStopPolling() {
-  if (_admPollTimer) { clearInterval(_admPollTimer); _admPollTimer = null; }
+  if (_admPollTimer) { clearInterval(_admPollTimer); _admPollTimer=null; }
   admSetLiveState(false);
+  _admPolling = false;
 }
 
 function admPollTick() {
-  if (admCurrentTab === 'summary') admLoadSummary();
-  if (admCurrentTab === 'bookings') admLoadBookings();
-  if (admCurrentTab === 'analytics') admLoadAnalytics();
-  if (admCurrentTab === 'dayoffs') admLoadDayOffsList();
+  if (admCurrentTab==='summary')   admLoadSummary();
+  if (admCurrentTab==='bookings')  admLoadBookings();
+  if (admCurrentTab==='analytics') admLoadAnalytics();
+  if (admCurrentTab==='dayoffs')   admLoadDayOffsList();
 }
 
 function admSetLiveState(live) {
-  const dot = ge('admLiveDot');
-  const lbl = ge('admLiveLabel');
-  if (!dot || !lbl) return;
-  if (live) {
-    dot.classList.remove('paused');
-    lbl.classList.remove('paused');
-    lbl.textContent = 'live';
-  } else {
-    dot.classList.add('paused');
-    lbl.classList.add('paused');
-    lbl.textContent = 'пауза';
-  }
+  const dot=ge('admLiveDot'), lbl=ge('admLiveLabel');
+  if (!dot||!lbl) return;
+  dot.classList.toggle('paused',!live); lbl.classList.toggle('paused',!live);
+  lbl.textContent = live ? 'live' : 'пауза';
 }
 
 function admRefresh() {
-  const btn = ge('admRefreshBtn');
-  if (btn) { btn.disabled = true; btn.textContent = '↻ Загрузка...'; }
-  
+  const btn=ge('admRefreshBtn');
+  if (btn) { btn.disabled=true; btn.textContent='↻ Загрузка...'; }
   admPollTick();
-  
-  setTimeout(function() {
-    if (btn) { btn.disabled = false; btn.textContent = '↻ Обновить'; }
-  }, 1000);
+  setTimeout(() => { if (btn) { btn.disabled=false; btn.textContent='↻ Обновить'; } }, 1000);
 }
 
-/* Останавливаем polling когда пользователь сворачивает приложение */
 document.addEventListener('visibilitychange', function() {
   if (!IS_ADMIN) return;
   if (document.hidden) {
     admStopPolling();
   } else {
-    /* Сразу обновляем при возврате, затем запускаем polling снова */
-    admPollTick();
-    admStartPolling();
+    // FIX-10: не вызываем pollTick немедленно если polling уже идёт
+    if (!_admPolling) { admPollTick(); admStartPolling(); }
   }
 });
 
-/* ================================================================================
-   ПУНКТ 3: СВОДКА ДНЯ
-   ================================================================================ */
+var admBkSelectedDate = formatDate_iso(new Date());
 
 function admLoadSummary() {
-  const container = ge('admSummaryContent');
-  if (!container) return;
+  const container = ge('admSummaryContent'); if (!container) return;
   const chatId = getChatId();
   const todayStr = formatDate_iso(new Date());
-  const todayLabel = formatDate_display(todayStr);
 
   container.innerHTML = '<div class="adm-loading">Загрузка сводки...</div>';
 
-  const urlBookings = CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId);
-  const urlAnalytics = CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId);
-
   Promise.all([
-    fetchWithTimeout(urlBookings).then(r => r.json()),
-    fetchWithTimeout(urlAnalytics).then(r => r.json())
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId)).then(r=>r.json()),
+    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)).then(r=>r.json())
   ])
-  .then(function(results) {
-    const bkData = results[0];
-    const anData = results[1];
-
-    if (bkData.error === 'Unauthorized') {
-      container.innerHTML = '<div class="adm-loading">&#10060; Нет прав доступа</div>';
-      return;
-    }
-
-    const bookings = bkData.bookings || [];
-    const confirmed = bookings.filter(b => b.status === 'confirmed');
-    const revenueToday = anData.revenueToday || 0;
-
-    /* Загруженность мастеров */
+  .then(([bkData, anData]) => {
+    if (bkData.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
+    const bookings = (bkData.bookings||[]).filter(b=>b.status==='confirmed');
+    const revenueToday = anData.revenueToday||0;
     const masterMap = {};
-    confirmed.forEach(function(b) {
-      if (!masterMap[b.master]) masterMap[b.master] = [];
-      masterMap[b.master].push(b.time);
-    });
-    const totalSlots = SLOTS.length;
+    bookings.forEach(b => { if (!masterMap[b.master]) masterMap[b.master]=[]; masterMap[b.master].push(b.time); });
 
-    let html = '';
-
-    /* — Заголовок с датой — */
-    html += '<div class="adm-summary-date">&#128197; Сегодня — ' + escapeHtml(todayLabel) + '</div>';
-
-    /* — Три ключевых метрики — */
+    let html = '<div class="adm-summary-date">📅 Сегодня — ' + escapeHtml(formatDate_display(todayStr)) + '</div>';
     html += '<div class="adm-summary-metrics">' +
-      '<div class="adm-summary-card">' +
-        '<div class="adm-lbl">Записей</div>' +
-        '<div class="adm-val">' + confirmed.length + '</div>' +
-      '</div>' +
-      '<div class="adm-summary-card">' +
-        '<div class="adm-lbl">Выручка дня</div>' +
-        '<div class="adm-val">' + formatPrice(revenueToday) + '</div>' +
-      '</div>' +
-      '<div class="adm-summary-card">' +
-        '<div class="adm-lbl">Мастеров занято</div>' +
-        '<div class="adm-val">' + Object.keys(masterMap).length + ' / ' + MASTERS.length + '</div>' +
-      '</div>' +
+      '<div class="adm-summary-card"><div class="adm-lbl">Записей</div><div class="adm-val">' + bookings.length + '</div></div>' +
+      '<div class="adm-summary-card"><div class="adm-lbl">Выручка дня</div><div class="adm-val">' + formatPrice(revenueToday) + '</div></div>' +
+      '<div class="adm-summary-card"><div class="adm-lbl">Мастеров занято</div><div class="adm-val">' + Object.keys(masterMap).length + ' / ' + MASTERS.length + '</div></div>' +
     '</div>';
-
-    /* — Загруженность каждого мастера — */
     html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Мастера сегодня</div>';
-
-    MASTERS.forEach(function(m) {
-      const mBookings = masterMap[m.name] || [];
-      const pct = Math.round(mBookings.length / totalSlots * 100);
-      const isEmpty = mBookings.length === 0;
-
-      html += '<div class="adm-summary-master">' +
-        '<div class="adm-summary-master-top">' +
-          '<span class="adm-summary-master-name">' + escapeHtml(m.name) + '</span>' +
-          '<span class="adm-summary-master-cnt' + (isEmpty ? ' empty' : '') + '">' +
-            mBookings.length + ' зап.' +
-          '</span>' +
-        '</div>' +
-        '<div class="adm-summary-bar-bg">' +
-          '<div class="adm-summary-bar-fill' + (isEmpty ? ' empty' : '') + '" style="width:' + pct + '%"></div>' +
-        '</div>' +
-        (mBookings.length > 0
-          ? '<div class="adm-summary-times">' + mBookings.sort().map(t => '<span>' + escapeHtml(t) + '</span>').join('') + '</div>'
-          : '') +
+    MASTERS.forEach(m => {
+      const mBks = masterMap[m.name]||[];
+      const pct = Math.round(mBks.length / SLOTS.length * 100);
+      html += '<div class="adm-summary-master"><div class="adm-summary-master-top"><span class="adm-summary-master-name">' + escapeHtml(m.name) + '</span><span class="adm-summary-master-cnt' + (mBks.length===0?' empty':'') + '">' + mBks.length + ' зап.</span></div>' +
+        '<div class="adm-summary-bar-bg"><div class="adm-summary-bar-fill' + (mBks.length===0?' empty':'') + '" style="width:' + pct + '%"></div></div>' +
+        (mBks.length>0 ? '<div class="adm-summary-times">' + mBks.sort().map(t=>'<span>'+escapeHtml(t)+'</span>').join('') + '</div>' : '') +
       '</div>';
     });
-
-    /* — Ближайшие записи (следующие 3) — */
-    const now = new Date();
-    const nowMin = now.getHours() * 60 + now.getMinutes();
-    const upcoming = confirmed.filter(function(b) {
-      if (!b.time) return false;
-      const h = parseInt(b.time.split(':')[0]);
-      const m = parseInt(b.time.split(':')[1] || 0);
-      return h * 60 + m >= nowMin;
-    }).sort((a, b) => a.time < b.time ? -1 : 1).slice(0, 3);
-
-    if (upcoming.length > 0) {
+    const now = new Date(), nowMin = now.getHours()*60+now.getMinutes();
+    const upcoming = bookings.filter(b=>{ if(!b.time) return false; const tp=b.time.split(':'); return parseInt(tp[0])*60+parseInt(tp[1]||0) >= nowMin; }).sort((a,b)=>a.time<b.time?-1:1).slice(0,3);
+    if (upcoming.length>0) {
       html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Ближайшие записи</div>';
-      upcoming.forEach(function(b) {
-        html += '<div class="adm-booking">' +
-          '<div class="adm-booking-time">&#9200; ' + escapeHtml(b.time) + ' — ' + escapeHtml(b.master) + '</div>' +
-          '<div class="adm-booking-info">' + escapeHtml(b.name) + ', ' + escapeHtml(b.phone) +
-            (b.services ? '<br>' + escapeHtml(String(b.services)) : '') +
-          '</div>' +
-        '</div>';
+      upcoming.forEach(b => {
+        html += '<div class="adm-booking"><div class="adm-booking-time">⏰ ' + escapeHtml(b.time) + ' — ' + escapeHtml(b.master) + '</div>' +
+          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(String(b.phone||'')) + (b.services?'<br>'+escapeHtml(String(b.services)):'') + '</div></div>';
       });
     }
-
     container.innerHTML = html;
   })
-  .catch(function(e) {
-    console.error('admLoadSummary error:', e);
-    container.innerHTML = '<div class="adm-loading">Ошибка загрузки</div>';
-  });
+  .catch(e => { console.error('admLoadSummary:', e); container.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
 }
 
-/* Текущая выбранная дата в блоке Записи */
-var admBkSelectedDate = formatDate_iso(new Date());
-
 function admBkInitDateStrip() {
-  const strip = ge('admDateStrip');
-  if (!strip) return;
-
-  const today = new Date();
-  const todayStr = formatDate_iso(today);
-  const DAY_NAMES = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  strip.innerHTML = '';
-
-  for (let i = 0; i < 14; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    const ds = formatDate_iso(d);
-    const isToday = ds === todayStr;
-    const isActive = ds === admBkSelectedDate;
-
-    const chip = document.createElement('button');
-    chip.className = 'adm-date-chip' +
-      (isToday ? ' today' : '') +
-      (isActive ? ' active' : '');
-    chip.dataset.date = ds;
-    chip.innerHTML =
-      '<span class="adm-chip-day">' + DAY_NAMES[d.getDay()] + (isToday ? ' ·сег' : '') + '</span>' +
-      '<span class="adm-chip-num">' + d.getDate() + '</span>' +
-      '<span class="adm-chip-dot"></span>';
-
+  const strip=ge('admDateStrip'); if (!strip) return;
+  const today=new Date(), todayStr=formatDate_iso(today);
+  const DAY_NAMES=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  strip.innerHTML='';
+  for (let i=0; i<14; i++) {
+    const d=new Date(today); d.setDate(today.getDate()+i);
+    const ds=formatDate_iso(d);
+    const chip=document.createElement('button');
+    chip.className='adm-date-chip'+(ds===todayStr?' today':'')+(ds===admBkSelectedDate?' active':'');
+    chip.dataset.date=ds;
+    chip.innerHTML='<span class="adm-chip-day">'+DAY_NAMES[d.getDay()]+(ds===todayStr?' ·сег':'')+'</span><span class="adm-chip-num">'+d.getDate()+'</span><span class="adm-chip-dot"></span>';
     chip.onclick = function() {
-      admBkSelectedDate = this.dataset.date;
-      document.querySelectorAll('.adm-date-chip').forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      admLoadBookings();
+      admBkSelectedDate=this.dataset.date;
+      document.querySelectorAll('.adm-date-chip').forEach(c=>c.classList.remove('active'));
+      this.classList.add('active'); admLoadBookings();
     };
     strip.appendChild(chip);
   }
-
-  /* Прокручиваем к активному чипу */
-  const activeChip = strip.querySelector('.adm-date-chip.active');
-  if (activeChip) activeChip.scrollIntoView({inline: 'start', block: 'nearest'});
+  const ac=strip.querySelector('.adm-date-chip.active');
+  if (ac) ac.scrollIntoView({inline:'start',block:'nearest'});
 }
 
 function admBkMarkChipsWithBookings(bookings) {
-  /* Подсвечиваем зелёной точкой дни, где есть записи — вызывается после загрузки */
-  const dates = new Set(bookings.map(b => b.date || ''));
-  document.querySelectorAll('.adm-date-chip').forEach(function(chip) {
-    if (dates.has(chip.dataset.date)) {
-      chip.classList.add('has-bookings');
-    }
-  });
+  const dates=new Set(bookings.map(b=>b.date||''));
+  document.querySelectorAll('.adm-date-chip').forEach(c => c.classList.toggle('has-bookings', dates.has(c.dataset.date)));
 }
 
 function admLoadBookings() {
-  const masterId = ge('admBkMaster').value;
-  const dateStr = admBkSelectedDate || formatDate_iso(new Date());
-  const container = ge('admBookingsList');
-  container.innerHTML = '<div class="adm-loading">Загрузка...</div>';
-
-  /* Обновляем заголовок секции */
-  const titleEl = ge('admBkTitle');
-  if (titleEl) {
-    const todayStr = formatDate_iso(new Date());
-    titleEl.textContent = dateStr === todayStr
-      ? 'Записи на сегодня — ' + formatDate_display(dateStr)
-      : 'Записи — ' + formatDate_display(dateStr);
-  }
-
-  const chatId = getChatId();
-  let url = CONFIG.GS + '?action=getBookings&date=' + dateStr + '&chatId=' + encodeURIComponent(chatId);
-  if (masterId) url += '&masterId=' + masterId;
-
-  fetchWithTimeout(url)
-    .then(r => r.json())
-    .then(d => {
-      if (d.error === 'Unauthorized') {
-        container.innerHTML = '<div class="adm-loading">❌ Нет прав доступа</div>';
-        return;
-      }
-
-      const bk = d.bookings || [];
-
-      /* Помечаем дни с записями на полосе дат */
-      admBkMarkChipsWithBookings(bk);
-
-      if (bk.length === 0) {
-        container.innerHTML = '<div class="adm-loading">Записей нет</div>';
-        return;
-      }
-
-      const byMaster = {};
-      bk.forEach(function(b) {
-        if (!byMaster[b.master]) byMaster[b.master] = [];
-        byMaster[b.master].push(b);
+  const masterId=ge('admBkMaster').value;
+  const dateStr=admBkSelectedDate||formatDate_iso(new Date());
+  const container=ge('admBookingsList');
+  container.innerHTML='<div class="adm-loading">Загрузка...</div>';
+  const titleEl=ge('admBkTitle');
+  if (titleEl) titleEl.textContent = dateStr===formatDate_iso(new Date()) ? 'Записи на сегодня — '+formatDate_display(dateStr) : 'Записи — '+formatDate_display(dateStr);
+  const chatId=getChatId();
+  let url=CONFIG.GS+'?action=getBookings&date='+dateStr+'&chatId='+encodeURIComponent(chatId);
+  if (masterId) url+='&masterId='+masterId;
+  fetchWithTimeout(url).then(r=>r.json()).then(d => {
+    if (d.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
+    const bk=d.bookings||[];
+    admBkMarkChipsWithBookings(bk);
+    if (bk.length===0) { container.innerHTML='<div class="adm-loading">Записей нет</div>'; return; }
+    const byMaster={};
+    bk.forEach(b=>{ if(!byMaster[b.master]) byMaster[b.master]=[]; byMaster[b.master].push(b); });
+    Object.keys(byMaster).forEach(m=>byMaster[m].sort((a,b)=>a.time<b.time?-1:1));
+    let html='';
+    Object.keys(byMaster).sort().forEach(mn => {
+      html+='<div class="adm-master-group"><div class="adm-master-header">✂️ '+escapeHtml(mn)+' <span class="adm-master-count">('+byMaster[mn].length+' запис.)</span></div>';
+      byMaster[mn].forEach(b => {
+        const sb=b.status==='confirmed'?'✅':b.status==='cancelled'?'❌':'⏳';
+        html+='<div class="adm-booking"><div class="adm-booking-time">'+sb+' '+escapeHtml(String(b.time||''))+'</div>' +
+          '<div class="adm-booking-info">'+escapeHtml(String(b.name||''))+'<br>'+escapeHtml(String(b.phone||''))+(b.telegram?' | '+escapeHtml(String(b.telegram)):'')+'<br>'+escapeHtml(String(b.services||''))+(b.total?' | '+escapeHtml(String(b.total)):'')+
+          '</div></div>';
       });
-      Object.keys(byMaster).forEach(function(m) {
-        byMaster[m].sort((a, b) => a.time < b.time ? -1 : 1);
-      });
-
-      let html = '';
-      Object.keys(byMaster).sort().forEach(function(masterName) {
-        html += '<div class="adm-master-group"><div class="adm-master-header">✂️ ' + escapeHtml(masterName) +
-          ' <span class="adm-master-count">(' + byMaster[masterName].length + ' запис.)</span></div>';
-        byMaster[masterName].forEach(function(b) {
-          const statusBadge = b.status === 'confirmed' ? '✅' : b.status === 'cancelled' ? '❌' : '⏳';
-          html += '<div class="adm-booking">' +
-            '<div class="adm-booking-time">' + statusBadge + ' ' + escapeHtml(String(b.time || '')) + '</div>' +
-            '<div class="adm-booking-info">' +
-              escapeHtml(String(b.name || '')) + '<br>' +
-              escapeHtml(String(b.phone || '')) +
-              (b.telegram ? ' | ' + escapeHtml(String(b.telegram)) : '') + '<br>' +
-              escapeHtml(String(b.services || '')) +
-              (b.total ? ' | ' + escapeHtml(String(b.total)) : '') +
-            '</div></div>';
-        });
-        html += '</div>';
-      });
-      container.innerHTML = html;
-    })
-    .catch(e => {
-      container.innerHTML = '<div class="adm-loading">Ошибка загрузки</div>';
+      html+='</div>';
     });
+    container.innerHTML=html;
+  }).catch(()=>{ container.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
 }
 
 function admLoadSlots() {
-  const masterId = ge('admSlotMaster').value;
-  const dateStr = ge('admSlotDate').value;
-  const container = ge('admSlotGrid');
-  
-  if (!masterId || !dateStr) {
-    container.innerHTML = '<div class="adm-loading">Выберите мастера и дату</div>';
-    return;
-  }
-  
-  container.innerHTML = '<div class="adm-loading">Загрузка...</div>';
-  
-  fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + masterId + '&date=' + dateStr)
-    .then(r => r.json())
+  const masterId=ge('admSlotMaster').value, dateStr=ge('admSlotDate').value;
+  const container=ge('admSlotGrid');
+  if (!masterId||!dateStr) { container.innerHTML='<div class="adm-loading">Выберите мастера и дату</div>'; return; }
+  container.innerHTML='<div class="adm-loading">Загрузка...</div>';
+  fetchWithTimeout(CONFIG.GS+'?action=getMasterSchedule&masterId='+masterId+'&date='+dateStr)
+    .then(r=>r.json())
     .then(d => {
-      admSlotsData.booked = d.booked || d.slots || {};
-      admSlotsData.blocks = d.blocked || d.blocks || {};
+      admSlotsData.booked  = d.booked  || d.slots   || {};
+      admSlotsData.blocks  = d.blocked || d.blocks  || {};
       admSlotsData.dayoffs = d.dayoffs || [];
       admIsDayOff = admSlotsData.dayoffs.indexOf(dateStr) >= 0;
       admRenderSlotGrid(masterId, dateStr);
     })
-    .catch(e => {
-      container.innerHTML = '<div class="adm-loading">Ошибка загрузки</div>';
-    });
+    .catch(()=>{ container.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
 }
 
 function admRenderSlotGrid(masterId, dateStr) {
-  const container = ge('admSlotGrid');
-  const bookedSlots = admSlotsData.booked[dateStr] || [];
-  const blockedSlots = admSlotsData.blocks[dateStr] || [];
-  
+  const container=ge('admSlotGrid');
+  const bookedSlots  = admSlotsData.booked[dateStr]  || [];
+  const blockedSlots = admSlotsData.blocks[dateStr]  || [];
   if (admIsDayOff) {
-    container.innerHTML = 
-      '<div class="adm-dayoff-banner">' +
-        '<div class="adm-dayoff-icon">🔴</div>' +
-        '<div class="adm-dayoff-text">' +
-          '<strong>Выходной день</strong>' +
-          '<span>Слоты недоступны для записи</span>' +
-        '</div>' +
-      '</div>';
-      return;
+    container.innerHTML='<div class="adm-dayoff-banner"><div class="adm-dayoff-icon">🔴</div><div class="adm-dayoff-text"><strong>Выходной день</strong><span>Слоты недоступны для записи</span></div></div>';
+    return;
   }
-  
-  let html = '<div class="adm-slot-grid">';
-  SLOTS.forEach(function(slot) {
-    const isBooked = bookedSlots.indexOf(slot) >= 0;
-    const isBlocked = blockedSlots.indexOf(slot) >= 0;
-    let cls = 'adm-slot';
-    let status = '';
-    
-    if (isBlocked) {
-      cls += ' blocked';
-      status = '🚫';
-    } else if (isBooked) {
-      cls += ' booked';
-      status = '👤';
-    }
-    
-    html += '<button class="' + cls + '" onclick="admToggleSlot(\'' + slot + '\');return false;">' + slot + '<span class="adm-slot-status">' + status + '</span></button>';
+  let html='<div class="adm-slot-grid">';
+  SLOTS.forEach(slot => {
+    const isBooked=bookedSlots.indexOf(slot)>=0, isBlocked=blockedSlots.indexOf(slot)>=0;
+    let cls='adm-slot', status='';
+    if (isBlocked) { cls+=' blocked'; status='🚫'; }
+    else if (isBooked) { cls+=' booked'; status='👤'; }
+    html+='<button class="'+cls+'" onclick="admToggleSlot(\''+slot+'\');return false;">'+slot+'<span class="adm-slot-status">'+status+'</span></button>';
   });
-  html += '</div>';
-  container.innerHTML = html;
+  html+='</div>';
+  container.innerHTML=html;
 }
-
-
 
 function admToggleSlot(slot) {
-  const masterId = ge('admSlotMaster').value;
-  const dateStr = ge('admSlotDate').value;
-  if (!masterId || !dateStr) return;
-  
-  const blockedSlots = admSlotsData.blocks[dateStr] || [];
-  const isBlocked = blockedSlots.indexOf(slot) >= 0;
-  const action = isBlocked ? 'unblockSlot' : 'blockSlot';
-  const chatId = getChatId();
-  
-  /* ИСПРАВЛЕНО: GET запрос */
-  fetchWithTimeout(CONFIG.GS + '?action=' + action + '&masterId=' + masterId + '&date=' + dateStr + '&slot=' + slot + '&chatId=' + chatId)
-    .then(r => r.json())
-    .then(d => {
-      if (d.error === 'Unauthorized') {
-        alert('❌ Нет прав для этого действия');
-        return;
-      }
-      admLoadSlots();
-    })
-    .catch(e => { console.error('admToggleSlot error:', e); });
+  const masterId=ge('admSlotMaster').value, dateStr=ge('admSlotDate').value;
+  if (!masterId||!dateStr) return;
+  const blockedSlots=admSlotsData.blocks[dateStr]||[];
+  const isBlocked=blockedSlots.indexOf(slot)>=0;
+  const action=isBlocked?'unblockSlot':'blockSlot';
+  const chatId=getChatId();
+  fetchWithTimeout(CONFIG.GS+'?action='+action+'&masterId='+masterId+'&date='+dateStr+'&slot='+slot+'&chatId='+chatId)
+    .then(r=>r.json())
+    .then(d => { if(d.error==='Unauthorized'){showToast('❌ Нет прав для этого действия','error');return;} admLoadSlots(); })
+    .catch(e=>console.error('admToggleSlot:',e));
 }
 
-
 function admSetDayOffAction(masterId, dateStr) {
-  const master = getMaster(masterId);
-  const dateFormatted = formatDateRu(dateStr, 'full');
-  
-  if (!confirm('Установить выходной для ' + master.name + ' на ' + dateFormatted + '?')) return;
-  
-  const chatId = getChatId();
-  
-  /* ИСПРАВЛЕНО: GET запрос с правильным action */
-  fetchWithTimeout(CONFIG.GS + '?action=dayOff&masterId=' + masterId + '&master=' + encodeURIComponent(master.name) + '&date=' + dateStr + '&chatId=' + chatId)
-    .then(r => r.json())
+  const master=getMaster(masterId);
+  if (!master) { showToast('Мастер не найден','error'); return; }
+  if (!confirmAction('Установить выходной для '+master.name+' на '+formatDateRu(dateStr,'full')+'?')) return;
+  const chatId=getChatId();
+  fetchWithTimeout(CONFIG.GS+'?action=dayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+    .then(r=>r.json())
     .then(d => {
-      if (d.success || d.status === 'ok') {
-        alert('✅ Выходной день установлен');
-        admLoadSlots();
-        admLoadDayOffsList();
-      } else if (d.error === 'HasBookings') {
-        showConfirmModal(
-          '⚠️ Есть записи на эту дату',
-          'На ' + dateFormatted + ' у ' + master.name + ' есть записи:',
-          d.bookings,
-          function() { admForceSetDayOff(masterId, dateStr); }
-        );
-      } else {
-        alert('❌ Ошибка: ' + (d.message || d.error));
-      }
+      if (d.success||d.status==='ok') { showToast('✅ Выходной день установлен','success'); admLoadSlots(); admLoadDayOffsList(); }
+      else if (d.error==='HasBookings') {
+        showConfirmModal('⚠️ Есть записи на эту дату','На '+formatDateRu(dateStr,'full')+' у '+master.name+' есть записи:', d.bookings, ()=>admForceSetDayOff(masterId, dateStr));
+      } else { showToast('❌ Ошибка: '+(d.message||d.error),'error'); }
     })
-    .catch(e => {
-      console.error('admSetDayOff error:', e);
-      alert('Ошибка соединения');
-    });
+    .catch(()=>showToast('Ошибка соединения','error'));
 }
 
 function admForceSetDayOff(masterId, dateStr) {
-  const chatId = getChatId();
-  const master = getMaster(masterId);
-  
-  fetchWithTimeout(CONFIG.GS + '?action=forceDayOff&masterId=' + masterId + '&master=' + encodeURIComponent(master.name) + '&date=' + dateStr + '&chatId=' + chatId)
-    .then(r => r.json())
+  const chatId=getChatId(), master=getMaster(masterId);
+  fetchWithTimeout(CONFIG.GS+'?action=forceDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+    .then(r=>r.json())
     .then(d => {
-      if (d.success || d.status === 'ok') {
-        alert('✅ Выходной установлен. Отменено записей: ' + (d.cancelledClients ? d.cancelledClients.length : 0));
-        admLoadSlots();
-        admLoadDayOffsList();
-      } else {
-        alert('❌ Ошибка: ' + (d.message || d.error));
-      }
+      if (d.success||d.status==='ok') { showToast('✅ Выходной установлен. Отменено записей: '+(d.cancelledClients?d.cancelledClients.length:0),'success'); admLoadSlots(); admLoadDayOffsList(); }
+      else showToast('❌ Ошибка: '+(d.message||d.error),'error');
     })
-    .catch(e => {
-      console.error('admForceSetDayOff error:', e);
-      alert('Ошибка соединения');
-    });
+    .catch(()=>showToast('Ошибка соединения','error'));
 }
 
 function admRemoveDayOffAction(masterId, dateStr) {
-  const master = getMaster(masterId);
-  const dateFormatted = formatDateRu(dateStr, 'full');
-  
-  if (!confirm('Снять выходной для ' + master.name + ' на ' + dateFormatted + '?')) return;
-  
-  const chatId = getChatId();
-  
-  fetchWithTimeout(CONFIG.GS + '?action=removeDayOff&masterId=' + masterId + '&master=' + encodeURIComponent(master.name) + '&date=' + dateStr + '&chatId=' + chatId)
-    .then(r => r.json())
+  const master=getMaster(masterId);
+  if (!master) { showToast('Мастер не найден','error'); return; }
+  if (!confirmAction('Снять выходной для '+master.name+' на '+formatDateRu(dateStr,'full')+'?')) return;
+  const chatId=getChatId();
+  fetchWithTimeout(CONFIG.GS+'?action=removeDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+    .then(r=>r.json())
     .then(d => {
-      if (d.success || d.status === 'ok') {
-        alert('✅ Выходной день снят');
-        admLoadSlots();
-        admLoadDayOffsList();
-      } else {
-        alert('❌ Ошибка: ' + (d.message || d.error));
-      }
+      if (d.success||d.status==='ok') { showToast('✅ Выходной день снят','success'); admLoadSlots(); admLoadDayOffsList(); }
+      else showToast('❌ Ошибка: '+(d.message||d.error),'error');
     })
-    .catch(e => {
-      console.error('admRemoveDayOff error:', e);
-      alert('Ошибка соединения');
-    });
+    .catch(()=>showToast('Ошибка соединения','error'));
 }
 
 function admAddDayOff() {
-  const masterId = ge('admDayOffMaster').value;
-  const dateStr = ge('admDayOffDate').value;
-  if (!masterId || !dateStr) {
-    alert('Выберите мастера и дату');
-    return;
-  }
+  const masterId=ge('admDayOffMaster').value, dateStr=ge('admDayOffDate').value;
+  if (!masterId||!dateStr) { showToast('Выберите мастера и дату','error'); return; }
   admSetDayOffAction(masterId, dateStr);
 }
 
 function admRemoveDayOff() {
-  const masterId = ge('admDayOffMaster').value;
-  const dateStr = ge('admDayOffDate').value;
-  if (!masterId || !dateStr) {
-    alert('Выберите мастера и дату');
-    return;
-  }
+  const masterId=ge('admDayOffMaster').value, dateStr=ge('admDayOffDate').value;
+  if (!masterId||!dateStr) { showToast('Выберите мастера и дату','error'); return; }
   admRemoveDayOffAction(masterId, dateStr);
 }
 
 function admLoadDayOffsList() {
-  const container = ge('admDayOffsList');
-  const chatId = getChatId();
-  
-  container.innerHTML = '<div class="adm-loading">Загрузка...</div>';
-  
-  fetchWithTimeout(CONFIG.GS + '?action=getAllDayOffs&chatId=' + encodeURIComponent(chatId))
-    .then(r => r.json())
+  const container=ge('admDayOffsList'), chatId=getChatId();
+  container.innerHTML='<div class="adm-loading">Загрузка...</div>';
+  fetchWithTimeout(CONFIG.GS+'?action=getAllDayOffs&chatId='+encodeURIComponent(chatId))
+    .then(r=>r.json())
     .then(d => {
-      if (d.error === 'Unauthorized') {
-        container.innerHTML = '<div class="adm-loading">❌ Нет прав доступа</div>';
-        return;
-      }
-      
-      const dayoffs = d.dayoffs || [];
-      if (dayoffs.length === 0) {
-        container.innerHTML = '<div class="adm-loading">Нет предстоящих выходных</div>';
-        return;
-      }
-      
-      let html = '<div class="adm-dayoffs-list">';
-      dayoffs.forEach(function(item) {
-        html += 
-          '<div class="adm-dayoff-item">' +
-            '<div class="adm-dayoff-info">' +
-              '<div class="adm-dayoff-master">✂️ ' + escapeHtml(String(item.masterName || '')) + '</div>' +
-              '<div class="adm-dayoff-date">📅 ' + escapeHtml(String(item.dateFormatted || '')) + '</div>' +
-              (item.reason ? '<div class="adm-dayoff-reason">📝 ' + escapeHtml(String(item.reason)) + '</div>' : '') +
-            '</div>' +
-            '<button class="adm-btn outline" onclick="admQuickRemoveDayOff(\'' + escapeHtml(String(item.masterId)) + '\', \'' + escapeHtml(String(item.date)) + '\');return false;">✕</button>' +
-          '</div>';
+      if (d.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
+      const dayoffs=d.dayoffs||[];
+      if (dayoffs.length===0) { container.innerHTML='<div class="adm-loading">Нет предстоящих выходных</div>'; return; }
+      let html='<div class="adm-dayoffs-list">';
+      dayoffs.forEach(item => {
+        html+='<div class="adm-dayoff-item"><div class="adm-dayoff-info"><div class="adm-dayoff-master">✂️ '+escapeHtml(String(item.masterName||''))+'</div><div class="adm-dayoff-date">📅 '+escapeHtml(String(item.dateFormatted||''))+'</div>'+(item.reason?'<div class="adm-dayoff-reason">📝 '+escapeHtml(String(item.reason))+'</div>':'')+'</div><button class="adm-btn outline" onclick="admQuickRemoveDayOff(\''+escapeHtml(String(item.masterId))+'\',\''+escapeHtml(String(item.date))+'\');return false;">✕</button></div>';
       });
-      html += '</div>';
-      container.innerHTML = html;
+      html+='</div>';
+      container.innerHTML=html;
     })
-    .catch(e => {
-      console.error('admLoadDayOffsList error:', e);
-      container.innerHTML = '<div class="adm-loading">Ошибка загрузки</div>';
-    });
+    .catch(()=>{ container.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
 }
 
-function admQuickRemoveDayOff(masterId, date) {
-  admRemoveDayOffAction(masterId, date);
-}
+function admQuickRemoveDayOff(masterId, date) { admRemoveDayOffAction(masterId, date); }
 
 function showConfirmModal(title, text, bookings, onConfirm) {
-  const modal = ge('confirmModal');
-  const modalTitle = ge('modalTitle');
-  const modalText = ge('modalText');
-  const modalList = ge('modalList');
-  const confirmBtn = ge('modalConfirmBtn');
-  const cancelBtn = ge('modalCancelBtn');
-  
-  modalTitle.textContent = title;
-  modalText.textContent = text;
-  
-  if (bookings && bookings.length > 0) {
-    modalList.style.display = 'block';
-    let listHtml = '';
-    bookings.forEach(function(b) {
-      listHtml += '<div class="adm-modal-list-item">• ' + b.time + ' — ' + b.name + ' (' + b.phone + ')</div>';
-    });
-    modalList.innerHTML = listHtml;
-  } else {
-    modalList.style.display = 'none';
-  }
-  
+  const modal=ge('confirmModal'), modalTitle=ge('modalTitle'), modalText=ge('modalText'), modalList=ge('modalList'), confirmBtn=ge('modalConfirmBtn'), cancelBtn=ge('modalCancelBtn');
+  modalTitle.textContent=title; modalText.textContent=text;
+  if (bookings && bookings.length>0) {
+    modalList.style.display='block';
+    modalList.innerHTML=bookings.map(b=>'<div class="adm-modal-list-item">• '+b.time+' — '+b.name+' ('+b.phone+')</div>').join('');
+  } else { modalList.style.display='none'; }
   modal.classList.add('show');
-  
-  confirmBtn.onclick = function() {
-    modal.classList.remove('show');
-    if (onConfirm) onConfirm();
-  };
-  
-  cancelBtn.onclick = function() {
-    modal.classList.remove('show');
-  };
+  confirmBtn.onclick = () => { modal.classList.remove('show'); if(onConfirm) onConfirm(); };
+  cancelBtn.onclick  = () => { modal.classList.remove('show'); };
 }
 
 function admLoadAnalytics() {
-  const rev = ge('admRevenue');
-  const svc = ge('admTopServices');
-  const mst = ge('admMasterStats');
-  
-  rev.innerHTML = '<div class="adm-loading">Загрузка...</div>';
-  svc.innerHTML = '<div class="adm-loading">Загрузка...</div>';
-  mst.innerHTML = '<div class="adm-loading">Загрузка...</div>';
-  
-  const chatId = getChatId();
-  
-  fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId))
-    .then(r => r.json())
+  const rev=ge('admRevenue'), svc=ge('admTopServices'), mst=ge('admMasterStats');
+  [rev,svc,mst].forEach(el => { if(el) el.innerHTML='<div class="adm-loading">Загрузка...</div>'; });
+  const chatId=getChatId();
+  fetchWithTimeout(CONFIG.GS+'?action=getAnalytics&chatId='+encodeURIComponent(chatId))
+    .then(r=>r.json())
     .then(d => {
-      if (d.error === 'Unauthorized') {
-        rev.innerHTML = '<div class="adm-loading">❌ Нет прав</div>';
-        svc.innerHTML = '';
-        mst.innerHTML = '';
-        return;
-      }
-      
-      rev.innerHTML = '<div class="adm-stat-grid">' +
-        '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val">' + formatPrice(d.revenueToday || 0) + '</div></div>' +
-        '<div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val">' + formatPrice(d.revenueWeek || 0) + '</div></div>' +
-        '<div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val">' + formatPrice(d.revenueMonth || 0) + '</div></div>' +
-        '<div class="adm-stat"><div class="adm-lbl">Всего</div><div class="adm-val">' + (d.totalBookings || 0) + '</div></div>' +
-        '</div>';
-      
-      const ts = d.topServices || [];
-      if (ts.length === 0) {
-        svc.innerHTML = '<div class="adm-loading">Нет данных</div>';
-      } else {
-        let html = '';
-        ts.forEach(function(s) {
-          html += '<div class="adm-top-item"><span class="adm-top-nm">' + s.name + '</span><span class="adm-top-cnt">' + s.count + '</span></div>';
-        });
-        svc.innerHTML = html;
-      }
-      
-      const ms = d.masterStats || [];
-      if (ms.length === 0) {
-        mst.innerHTML = '<div class="adm-loading">Нет данных</div>';
-      } else {
-        let mhtml = '';
-        ms.forEach(function(m) {
-          mhtml += '<div class="adm-top-item"><span class="adm-top-nm">' + m.name + '</span><span class="adm-top-cnt">' + m.count + '</span></div>';
-        });
-        mst.innerHTML = mhtml;
-      }
+      if (d.error==='Unauthorized') { [rev,svc,mst].forEach(el=>{if(el) el.innerHTML='<div class="adm-loading">❌ Нет прав</div>';}); return; }
+      if (rev) rev.innerHTML='<div class="adm-stat-grid"><div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val">'+formatPrice(d.revenueToday||0)+'</div></div><div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val">'+formatPrice(d.revenueWeek||0)+'</div></div><div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val">'+formatPrice(d.revenueMonth||0)+'</div></div><div class="adm-stat"><div class="adm-lbl">Всего</div><div class="adm-val">'+( d.totalBookings||0)+'</div></div></div>';
+      const ts=d.topServices||[];
+      if (svc) svc.innerHTML=ts.length===0?'<div class="adm-loading">Нет данных</div>':ts.map(s=>'<div class="adm-top-item"><span class="adm-top-nm">'+s.name+'</span><span class="adm-top-cnt">'+s.count+'</span></div>').join('');
+      const ms=d.masterStats||[];
+      if (mst) mst.innerHTML=ms.length===0?'<div class="adm-loading">Нет данных</div>':ms.map(m=>'<div class="adm-top-item"><span class="adm-top-nm">'+m.name+'</span><span class="adm-top-cnt">'+m.count+'</span></div>').join('');
     })
-    .catch(e => {
-      rev.innerHTML = '<div class="adm-loading">Ошибка загрузки</div>';
-    });
+    .catch(()=>{ if(rev) rev.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
 }
 
-/* ================================================================================
+/* ────────────────────────────────────────────────────────────
    ОТЗЫВЫ
-   ================================================================================ */
-
+   ──────────────────────────────────────────────────────────── */
 function initReviews() {
-  /* Заполняем список мастеров в форме отзыва */
-  const sel = ge('revMaster');
-  if (sel && sel.options.length <= 1) {
-    MASTERS.forEach(function(m) {
-      sel.add(new Option(m.name, m.name));
-    });
-  }
-
-  const stars = document.querySelectorAll('.rev-star');
-  stars.forEach(function(star) {
-    star.onclick = function() {
-      setReviewRating(parseInt(this.getAttribute('data-rating')));
-    };
-  });
+  const sel=ge('revMaster');
+  if (sel && sel.options.length<=1) MASTERS.forEach(m => sel.add(new Option(m.name, m.name)));
+  document.querySelectorAll('.rev-star').forEach(star =>
+    star.onclick = function() { setReviewRating(parseInt(this.getAttribute('data-rating'))); }
+  );
   loadReviews();
 }
 
 function setReviewRating(rating) {
   reviewRating = rating;
-  const stars = document.querySelectorAll('.rev-star');
-  stars.forEach(function(star) {
-    const starRating = parseInt(star.getAttribute('data-rating'));
-    if (starRating <= rating) {
-      star.classList.add('active');
-    } else {
-      star.classList.remove('active');
-    }
-  });
+  document.querySelectorAll('.rev-star').forEach(star =>
+    star.classList.toggle('active', parseInt(star.getAttribute('data-rating')) <= rating)
+  );
 }
 
 function loadReviews(page) {
-  page = page || 0;
-  const container = ge('reviewsList');
-  container.innerHTML = '<div class="rev-loading">Загрузка отзывов...</div>';
-  
-  const offset = page * CONFIG.REVIEWS_PER_PAGE;
-  const url = CONFIG.GS + '?action=getReviews&offset=' + offset + '&limit=' + CONFIG.REVIEWS_PER_PAGE;
-  
-  fetchWithTimeout(url)
-    .then(r => r.json())
+  page = page||0;
+  const container=ge('reviewsList');
+  container.innerHTML='<div class="rev-loading">Загрузка отзывов...</div>';
+  const offset=page*CONFIG.REVIEWS_PER_PAGE;
+  fetchWithTimeout(CONFIG.GS+'?action=getReviews&offset='+offset+'&limit='+CONFIG.REVIEWS_PER_PAGE)
+    .then(r=>r.json())
     .then(d => {
-      const reviews = d.reviews || [];
-      if (reviews.length === 0 && page === 0) {
-        container.innerHTML = '<div class="rev-empty">Отзывов пока нет. Будьте первым!</div>';
-        return;
-      }
-      
-      let html = '';
-      reviews.forEach(function(rev) {
-        let stars = '';
-        for (let i = 0; i < 5; i++) {
-          stars += i < rev.rating ? '★' : '☆';
-        }
-        const masterBadge = rev.master
-          ? '<span class="rev-card-master">✂️ ' + escapeHtml(rev.master) + '</span>'
-          : '';
-        html += '<div class="rev-card">' +
-          '<div class="rev-card-hdr">' +
-          '<span class="rev-card-name">' + escapeHtml(rev.name) + '</span>' +
-          '<span class="rev-card-rating">' + stars + '</span>' +
-          '</div>' +
-          (masterBadge ? '<div class="rev-card-master-row">' + masterBadge + '</div>' : '') +
-          '<div class="rev-card-text">' + escapeHtml(rev.text) + '</div>' +
-          '<div class="rev-card-date">' + escapeHtml(String(rev.date || '')) + '</div>' +
-          '</div>';
-      });
-      container.innerHTML = html;
-
-      /* ИСПРАВЛЕНО: пагинация — показываем кнопку «Ещё» если сервер вернул hasMore */
-      const existingBtn = ge('revMoreBtn');
-      if (existingBtn) existingBtn.remove();
+      const reviews=d.reviews||[];
+      if (reviews.length===0 && page===0) { container.innerHTML='<div class="rev-empty">Отзывов пока нет. Будьте первым!</div>'; return; }
+      container.innerHTML = reviews.map(rev => {
+        let stars=''; for(let i=0;i<5;i++) stars+=i<rev.rating?'★':'☆';
+        const mb=rev.master?'<div class="rev-card-master-row"><span class="rev-card-master">✂️ '+escapeHtml(rev.master)+'</span></div>':'';
+        return '<div class="rev-card"><div class="rev-card-hdr"><span class="rev-card-name">'+escapeHtml(rev.name)+'</span><span class="rev-card-rating">'+stars+'</span></div>'+mb+'<div class="rev-card-text">'+escapeHtml(rev.text)+'</div><div class="rev-card-date">'+escapeHtml(String(rev.date||''))+'</div></div>';
+      }).join('');
+      const existingBtn=ge('revMoreBtn'); if(existingBtn) existingBtn.remove();
       if (d.hasMore) {
-        const btn = document.createElement('button');
-        btn.id = 'revMoreBtn';
-        btn.className = 'rev-more-btn';
-        btn.textContent = 'Показать ещё';
-        btn.onclick = function() { loadReviews(page + 1); };
-        container.after(btn);
+        const btn=document.createElement('button'); btn.id='revMoreBtn'; btn.className='rev-more-btn'; btn.textContent='Показать ещё';
+        btn.onclick=()=>loadReviews(page+1); container.after(btn);
       }
     })
-    .catch(e => {
-      console.error('loadReviews error:', e);
-      container.innerHTML = '<div class="rev-empty">Ошибка загрузки отзывов</div>';
-    });
+    .catch(e=>{ console.error('loadReviews:',e); container.innerHTML='<div class="rev-empty">Ошибка загрузки отзывов</div>'; });
 }
 
 function submitReview() {
   if (isSubmittingReview) return;
-  
-  const name = (ge('revName').value || '').trim();
-  const text = (ge('revText').value || '').trim();
-  
-  if (!name) { alert('Пожалуйста, введите ваше имя'); ge('revName').focus(); return; }
-  if (name.length < 2) { alert('Имя должно содержать минимум 2 символа'); return; }
-  if (!text) { alert('Пожалуйста, напишите текст отзыва'); ge('revText').focus(); return; }
-  if (text.length < 10) { alert('Отзыв должен содержать минимум 10 символов'); return; }
-  if (reviewRating === 0) { alert('Пожалуйста, выберите оценку'); return; }
-  
-  isSubmittingReview = true;
-  const btn = ge('revSubmit');
-  btn.disabled = true;
-  btn.textContent = 'Отправка...';
-  
-  const masterVal = (ge('revMaster') ? ge('revMaster').value : '') || '';
+  const name=(ge('revName').value||'').trim(), text=(ge('revText').value||'').trim();
+  if (!name) { showToast('Пожалуйста, введите ваше имя','error'); return; }
+  if (name.length<2) { showToast('Имя должно содержать минимум 2 символа','error'); return; }
+  if (!text) { showToast('Пожалуйста, напишите текст отзыва','error'); return; }
+  if (text.length<10) { showToast('Отзыв должен содержать минимум 10 символов','error'); return; }
+  if (reviewRating===0) { showToast('Пожалуйста, выберите оценку','error'); return; }
 
-  const payload = {
-    action: 'addReview',
-    name: name,
-    text: text,
-    rating: reviewRating,
-    master: masterVal,
-    chatId: getChatId()
-  };
-  
-  fetchWithTimeout(CONFIG.GS, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify(payload)
-  })
-    .then(r => r.json())
+  isSubmittingReview=true;
+  const btn=ge('revSubmit'); btn.disabled=true; btn.textContent='Отправка...';
+  const masterVal=(ge('revMaster')?ge('revMaster').value:'')||'';
+
+  fetchWithTimeout(CONFIG.GS, {method:'POST', mode:'cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'addReview', name, text, rating:reviewRating, master:masterVal, chatId:getChatId()})})
+    .then(r=>r.json())
     .then(d => {
-      isSubmittingReview = false;
-      btn.disabled = false;
-      btn.textContent = 'Отправить отзыв';
-      
-      if (d.error) {
-        alert('Ошибка: ' + d.error);
-        return;
-      }
-      
-      ge('revName').value = '';
-      ge('revText').value = '';
-      if (ge('revMaster')) ge('revMaster').value = '';
+      isSubmittingReview=false; btn.disabled=false; btn.textContent='Отправить отзыв';
+      if (d.error) { showToast('Ошибка: '+d.error,'error'); return; }
+      ge('revName').value=''; ge('revText').value=''; if(ge('revMaster')) ge('revMaster').value='';
       setReviewRating(0);
-      alert('✅ Спасибо за ваш отзыв!');
+      showToast('✅ Спасибо за ваш отзыв!','success');
       loadReviews(0);
     })
     .catch(e => {
-      console.error('submitReview error:', e);
-      isSubmittingReview = false;
-      btn.disabled = false;
-      btn.textContent = 'Отправить отзыв';
-      alert('Ошибка отправки. Попробуйте позже.');
+      console.error('submitReview:',e);
+      isSubmittingReview=false; btn.disabled=false; btn.textContent='Отправить отзыв';
+      showToast('Ошибка отправки. Попробуйте позже.','error');
     });
 }
 
-// Глобальные функции для onclick
-window.myBkCancel = myBkCancel;
+// Глобальные функции для onclick в innerHTML
+window.myBkCancel     = myBkCancel;
 window.myBkReschedule = myBkReschedule;
-window.myBkRepeat = myBkRepeat;
-window.myBkSwitchTab = myBkSwitchTab;
-window.admToggleSlot = admToggleSlot;
+window.myBkRepeat     = myBkRepeat;
+window.myBkSwitchTab  = myBkSwitchTab;
+window.admToggleSlot  = admToggleSlot;
 window.admQuickRemoveDayOff = admQuickRemoveDayOff;
 </script>
 </body>

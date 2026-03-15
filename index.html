@@ -862,6 +862,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   -webkit-backdrop-filter:blur(20px)!important;
   background:rgba(10,8,5,.88)!important;
 }
+
+/* ════ ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ════ */
 </style>
 </head>
 <body>
@@ -913,7 +915,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
-  <div class="home-btns" style="padding:20px 24px">
+  <div class="ref-block" id="refBlock">
+    <div class="ref-title">Приведи <em>друга</em></div>
+    <div class="ref-desc">Поделись ссылкой — друг получит скидку 20% на первый визит</div>
+    <div class="ref-code-row">
+      <div class="ref-code" id="refCode">Загрузка...</div>
+      <button class="ref-copy-btn" onclick="refCopyCode()">Копировать</button>
+    </div>
+    <button class="ref-share-btn" onclick="refShare()">✦ Поделиться ссылкой</button>
+  </div>
+  <div class="home-btns"   style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
   <div class="home-divider"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
@@ -1249,6 +1260,56 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
 </div>
 
+
+  <!-- ПАНЕЛЬ ГРАФИКА ВЫРУЧКИ -->
+  <div class="adm-panel" id="adm-revenue">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Выручка по дням недели</div>
+      <div class="chart-wrap" id="revenueChartWrap"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">По месяцам (последние 6)</div>
+      <div class="chart-wrap" id="revenueMonthChartWrap"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛЬ РАСХОДОВ -->
+  <div class="adm-panel" id="adm-expenses">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Добавить расход</div>
+      <div class="expense-form">
+        <div class="expense-row">
+          <input type="text" class="expense-inp" id="expName" placeholder="Название расхода...">
+        </div>
+        <div class="expense-row">
+          <input type="number" class="expense-inp" id="expSum" placeholder="Сумма" style="max-width:130px">
+          <select class="expense-inp" id="expCat" style="flex:1">
+            <option value="rent">Аренда</option>
+            <option value="materials">Материалы</option>
+            <option value="salary">Зарплата</option>
+            <option value="equipment">Оборудование</option>
+            <option value="marketing">Маркетинг</option>
+            <option value="other">Прочее</option>
+          </select>
+          <button class="expense-add-btn" onclick="expenseAdd()">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">Расходы за месяц</div>
+      <div class="expense-list" id="expenseList"><div class="adm-loading">Нет расходов</div></div>
+      <div class="expense-total">
+        <span class="expense-total-lbl">Итого расходов</span>
+        <span class="expense-total-val" id="expenseTotal">0 руб</span>
+      </div>
+      <div class="profit-row">
+        <span class="profit-lbl">Прибыль за месяц</span>
+        <span class="profit-val" id="profitVal">— руб</span>
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <!-- PAGE: WORKS -->
 <div class="page" id="page-works">
@@ -2501,6 +2562,8 @@ function admTab(tab, tabEl) {
   if (tab==='slots')     admLoadSlots();
   if (tab==='dayoffs')   admLoadDayOffsList();
   if (tab==='analytics') admLoadAnalytics();
+  if (tab==='revenue')   revenueInit();
+  if (tab==='expenses')  expensesInit();
   if (tab==='broadcast') bcInit();
   if (tab==='clients')   clInit();
 }
@@ -3609,6 +3672,489 @@ function initMegaWow() {
   initFingerTrail();
   enhanceGlass();
 }
+
+/* ════════════════════════════════════════
+   ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ
+   ════════════════════════════════════════ */
+
+function hideSplash() {
+    var el = document.getElementById('splash');
+    if (!el) return;
+    el.style.display = 'none';
+  }
+  // Сразу через 1.2 сек
+  setTimeout(hideSplash, 1200);
+  // Страховка через 2 сек
+  setTimeout(hideSplash, 2000);
+  // Страховка через 3 сек — принудительно
+  setTimeout(hideSplash, 3000);
+})();
+
+function initSplashFire() {
+  const container = document.getElementById('splashFire');
+  if (!container) return;
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const flame = document.createElement('div');
+    flame.className = 'splash-flame';
+    const h = 8 + Math.random() * 16;
+    const w = 3 + Math.random() * 5;
+    const dur = 0.4 + Math.random() * 0.6;
+    const delay = Math.random() * 0.5;
+    flame.style.cssText = 'height:' + h + 'px;width:' + w + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;opacity:' + (0.5 + Math.random() * 0.5);
+    container.appendChild(flame);
+  }
+  // Искры
+  const logoWrap = container.parentElement;
+  for (let i = 0; i < 8; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'splash-spark';
+    spark.style.cssText = 'left:' + (20 + Math.random() * 60) + '%;bottom:0;animation-duration:' + (0.8 + Math.random() * 1.2) + 's;animation-delay:' + (Math.random() * 1.5) + 's';
+    logoWrap.appendChild(spark);
+  }
+}
+
+function initWow2Effects() {
+  initSplashFire();
+  initTypewriter();
+  initFingerTrail();
+  initTabMorph();
+  // Карусель после загрузки мастеров
+  setTimeout(convertMastersToCarousel, 800);
+}
+
+function initLiquidBtn() {
+  const btn = document.getElementById('btnToBooking');
+  if (!btn) return;
+  btn.addEventListener('touchstart', function(e) {
+    haptic('medium');
+    const rect = btn.getBoundingClientRect();
+    const t = e.touches[0];
+    const x = ((t.clientX - rect.left) / rect.width * 100).toFixed(0);
+    btn.style.setProperty('--ripple-x', x + '%');
+    btn.classList.add('liquid-tap');
+    setTimeout(() => btn.classList.remove('liquid-tap'), 400);
+  }, {passive: true});
+}
+
+function initLiveCounter() {
+  const el = document.getElementById('liveViewCount');
+  if (!el) return;
+  // Генерируем случайное но реалистичное число на основе времени дня
+  const now = new Date();
+  const hour = now.getHours();
+  const base = Math.floor(80 + hour * 12 + Math.random() * 30);
+  let current = 0;
+  const target = base;
+  const step = Math.ceil(target / 40);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current;
+    if (current >= target) {
+      clearInterval(timer);
+      // Периодически увеличиваем на 1
+      setInterval(() => {
+        if (Math.random() > 0.6) {
+          current++;
+          el.style.animation = 'none';
+          void el.offsetWidth;
+          el.style.animation = 'countUp .3s ease';
+          el.textContent = current;
+        }
+      }, 8000);
+    }
+  }, 30);
+}
+
+function initMagneticMasters() {
+  const list = document.getElementById('mastersList');
+  if (!list) return;
+  function updateMagnetic() {
+    const listRect = list.getBoundingClientRect();
+    const centerX = listRect.left + listRect.width / 2;
+    const cards = list.querySelectorAll('.m-item');
+    cards.forEach(card => {
+      const rect = card.getBoundingClientRect();
+      const cardCenterX = rect.left + rect.width / 2;
+      const dist = Math.abs(cardCenterX - centerX);
+      const maxDist = listRect.width / 2;
+      if (dist < maxDist * 0.4) {
+        card.classList.add('mag-center');
+        card.classList.remove('mag-side');
+      } else if (dist > maxDist * 0.7) {
+        card.classList.add('mag-side');
+        card.classList.remove('mag-center');
+      } else {
+        card.classList.remove('mag-center', 'mag-side');
+      }
+    });
+  }
+  list.addEventListener('scroll', updateMagnetic, {passive: true});
+  setTimeout(updateMagnetic, 500);
+}
+
+function initTabBounce() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('touchstart', function() {
+      const svg = this.querySelector('svg');
+      if (!svg) return;
+      svg.classList.remove('bouncing');
+      void svg.offsetWidth;
+      svg.classList.add('bouncing');
+      svg.addEventListener('animationend', () => svg.classList.remove('bouncing'), {once: true});
+    }, {passive: true});
+  });
+}
+
+function initTabMorph() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.classList.remove('bounce-once');
+      void this.offsetWidth;
+      this.classList.add('bounce-once');
+      setTimeout(() => this.classList.remove('bounce-once'), 500);
+    });
+  });
+}
+
+function convertMastersToCarousel() {
+  const list = ge('mastersList');
+  if (!list || list.classList.contains('m-carousel')) return;
+
+  // Преобразуем grid в карусель
+  list.classList.remove('m-list');
+  list.className = 'm-carousel';
+
+  // Делаем элементы правильного класса
+  list.querySelectorAll('.m-item').forEach(item => {
+    item.classList.remove('m-item');
+    item.classList.add('m-carousel-item');
+    // Оборачиваем контент
+    const thumb = item.querySelector('.m-thumb');
+    if (thumb) thumb.style.cssText = 'position:relative;aspect-ratio:3/4;overflow:hidden';
+  });
+
+  // Эффект активной карточки при скролле
+  function updateActiveCard() {
+    const centerX = list.scrollLeft + list.offsetWidth / 2;
+    list.querySelectorAll('.m-carousel-item').forEach(card => {
+      const cardCenterX = card.offsetLeft + card.offsetWidth / 2;
+      const dist = Math.abs(centerX - cardCenterX);
+      const maxDist = list.offsetWidth / 2;
+      card.classList.toggle('active-card', dist < maxDist * 0.35);
+      const scale = Math.max(0.88, 1 - dist / maxDist * 0.15);
+      const opacity = Math.max(0.6, 1 - dist / maxDist * 0.4);
+      if (!card.classList.contains('active-card')) {
+        card.style.transform = 'scale(' + scale + ')';
+        card.style.opacity = opacity;
+      } else {
+        card.style.transform = '';
+        card.style.opacity = '';
+      }
+    });
+  }
+
+  list.addEventListener('scroll', updateActiveCard, {passive: true});
+  setTimeout(updateActiveCard, 100);
+}
+
+function updateActiveCard() {
+    const centerX = list.scrollLeft + list.offsetWidth / 2;
+    list.querySelectorAll('.m-carousel-item').forEach(card => {
+      const cardCenterX = card.offsetLeft + card.offsetWidth / 2;
+      const dist = Math.abs(centerX - cardCenterX);
+      const maxDist = list.offsetWidth / 2;
+      card.classList.toggle('active-card', dist < maxDist * 0.35);
+      const scale = Math.max(0.88, 1 - dist / maxDist * 0.15);
+      const opacity = Math.max(0.6, 1 - dist / maxDist * 0.4);
+      if (!card.classList.contains('active-card')) {
+        card.style.transform = 'scale(' + scale + ')';
+        card.style.opacity = opacity;
+      } else {
+        card.style.transform = '';
+        card.style.opacity = '';
+      }
+    });
+  }
+
+  list.addEventListener('scroll', updateActiveCard, {passive: true});
+  setTimeout(updateActiveCard, 100);
+}
+
+function updateMagnetic() {
+    const listRect = list.getBoundingClientRect();
+    const centerX = listRect.left + listRect.width / 2;
+    const cards = list.querySelectorAll('.m-item');
+    cards.forEach(card => {
+      const rect = card.getBoundingClientRect();
+      const cardCenterX = rect.left + rect.width / 2;
+      const dist = Math.abs(cardCenterX - centerX);
+      const maxDist = listRect.width / 2;
+      if (dist < maxDist * 0.4) {
+        card.classList.add('mag-center');
+        card.classList.remove('mag-side');
+      } else if (dist > maxDist * 0.7) {
+        card.classList.add('mag-side');
+        card.classList.remove('mag-center');
+      } else {
+        card.classList.remove('mag-center', 'mag-side');
+      }
+    });
+  }
+  list.addEventListener('scroll', updateMagnetic, {passive: true});
+  setTimeout(updateMagnetic, 500);
+}
+
+function refInit() {
+  const chatId = getChatId();
+  if (!chatId) return;
+
+  // Генерируем реферальный код из chatId
+  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
+  const el = ge('refCode');
+  if (el) el.textContent = refCode;
+
+  // Статистика из localStorage
+  try {
+    const stats = JSON.parse(localStorage.getItem('ref_stats_' + chatId) || '{"friends":0,"discounts":0}');
+    const fc = ge('refFriendsCount'), dc = ge('refDiscountsEarned');
+    if (fc) fc.textContent = stats.friends;
+    if (dc) dc.textContent = stats.discounts;
+  } catch(e) {}
+}
+
+function refCopyCode() {
+  const code = ge('refCode') ? ge('refCode').textContent : '';
+  if (!code || code === 'Загрузка...') return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code).then(() => showToast('✅ Код скопирован: ' + code, 'success'));
+  } else {
+    showToast('Ваш код: ' + code, 'info', 4000);
+  }
+  haptic('light');
+}
+
+function refShare() {
+  haptic('light');
+  const chatId = getChatId();
+  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
+  const botUser = 'barber_style_bot';
+  const url = 'https://t.me/' + botUser + '?start=ref_' + refCode;
+  const text = 'Записался в BARBER STYLE - барбершоп в Батайске! По ссылке скидка 20% на первый визит';
+
+  if (tg && tg.shareMessage) {
+    try { tg.shareMessage(text + ' ' + url); return; } catch(e) {}
+
+  }
+  if (navigator.share) {
+    navigator.share({ title: 'BARBER STYLE', text: text, url: url }).catch(() => {});
+  } else {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => showToast('✅ Ссылка скопирована!', 'success'));
+    }
+  }
+}
+
+function loadPromos() {
+  const chatId = getChatId();
+  // Загружаем акции из Settings таблицы
+  fetchWithTimeout(CONFIG.GS + '?action=getPromos')
+    .then(r => r.json())
+    .then(d => {
+      const promos = d.promos || [];
+      const block  = ge('promoBlock');
+      const list   = ge('promoList');
+      if (!block || !list) return;
+
+      if (promos.length === 0) {
+        block.style.display = 'none';
+        return;
+      }
+
+      block.style.display = 'block';
+      const icons = { sale:'🔥', new:'✨', season:'🍂', gift:'🎁', vip:'👑' };
+      list.innerHTML = promos.map(p => {
+        const ico = icons[p.type] || '✦';
+        return '<div class="promo-item">' +
+          '<div class="promo-badge">' + ico + '</div>' +
+          '<div class="promo-body">' +
+            '<div class="promo-name">' + escapeHtml(p.name) + '</div>' +
+            '<div class="promo-desc">' + escapeHtml(p.desc || '') + '</div>' +
+          '</div>' +
+          (p.price ? '<div style="text-align:right"><div class="promo-price">' + escapeHtml(p.price) + '</div>' + (p.until ? '<div class="promo-until">до ' + escapeHtml(p.until) + '</div>' : '') + '</div>' : '') +
+        '</div>';
+      }).join('');
+    })
+    .catch(() => {
+      // Если акций нет — скрываем блок тихо
+      const block = ge('promoBlock');
+      if (block) block.style.display = 'none';
+    });
+}
+
+function revenueInit() {
+  if (!_revenueLoaded) revenueLoad();
+}
+
+function revenueLoad() {
+  const chatId = getChatId();
+  ge('revenueChartWrap').innerHTML      = '<div class="adm-loading">Загрузка...</div>';
+  ge('revenueMonthChartWrap').innerHTML = '<div class="adm-loading">Загрузка...</div>';
+
+  fetchWithTimeout(CONFIG.GS + '?action=getRevenueChart&chatId=' + encodeURIComponent(chatId))
+    .then(r => r.json())
+    .then(d => {
+      if (d.error === 'Unauthorized') {
+        ge('revenueChartWrap').innerHTML = '<div class="adm-loading">❌ Нет прав</div>';
+        return;
+      }
+      _revenueLoaded = true;
+      renderRevenueChart(d.byDay   || [], 'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
+      renderRevenueChart(d.byMonth || [], 'revenueMonthChartWrap', d.monthLabels || []);
+    })
+    .catch(() => {
+      // Если нет эндпоинта — показываем заглушку с примером
+      renderRevenueMock();
+    });
+}
+
+function renderRevenueChart(data, containerId, labels) {
+  const wrap = ge(containerId);
+  if (!wrap || !data.length) { wrap.innerHTML = '<div class="adm-loading">Нет данных</div>'; return; }
+
+  const max = Math.max(...data, 1);
+  const todayDow = new Date().getDay();
+  const todayIdx = todayDow === 0 ? 6 : todayDow - 1;
+  const isWeek   = data.length === 7;
+
+  let html = '<div class="chart-bars">';
+  data.forEach((val, i) => {
+    const pct    = Math.round((val / max) * 100);
+    const isToday = isWeek && i === todayIdx;
+    const label  = labels[i] || '';
+    const valStr = val >= 1000 ? Math.round(val/1000) + 'к' : val;
+    html += '<div class="chart-bar-col">' +
+      '<div class="chart-bar-val">' + (val > 0 ? valStr : '') + '</div>' +
+      '<div class="chart-bar' + (isToday ? ' today' : '') + '" style="height:' + Math.max(pct, 3) + '%;min-height:3px;max-height:72px;width:100%;align-self:flex-end"></div>' +
+      '<div class="chart-day' + (isToday ? ' today' : '') + '">' + label + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  // Итого
+  const total = data.reduce((s, v) => s + v, 0);
+  html += '<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(201,168,76,.1)">' +
+    '<span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)">Итого</span>' +
+    '<span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold)">' + formatPrice(total) + '</span>' +
+  '</div>';
+
+  wrap.innerHTML = html;
+
+  // Анимируем столбцы
+  setTimeout(() => {
+    wrap.querySelectorAll('.chart-bar').forEach((bar, i) => {
+      bar.style.transition = 'height .6s cubic-bezier(.34,1.56,.64,1) ' + (i * 0.06) + 's';
+    });
+  }, 50);
+}
+
+function renderRevenueMock() {
+  // Показываем пример пока не реализован эндпоинт
+  const mockDay = [3200, 5400, 4800, 6200, 7100, 9800, 4200];
+  const mockMonth = [42000, 58000, 61000, 55000, 78000, 83000];
+  renderRevenueChart(mockDay,   'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
+  renderRevenueChart(mockMonth, 'revenueMonthChartWrap', ['Окт','Ноя','Дек','Янв','Фев','Мар']);
+}
+
+function expensesInit() {
+  expensesRender();
+}
+
+function expenseAdd() {
+  haptic('light');
+  const name = (ge('expName').value || '').trim();
+  const sum  = parseFloat(ge('expSum').value || '0');
+  const cat  = ge('expCat').value;
+
+  if (!name) { showToast('Введите название расхода', 'error'); return; }
+  if (!sum || sum <= 0) { showToast('Введите сумму', 'error'); return; }
+
+  try {
+    const key      = 'expenses_' + new Date().toISOString().slice(0, 7); // YYYY-MM
+    const expenses = JSON.parse(localStorage.getItem(key) || '[]');
+    expenses.push({ id: Date.now(), name, sum, cat, date: new Date().toISOString() });
+    localStorage.setItem(key, JSON.stringify(expenses));
+
+    ge('expName').value = '';
+    ge('expSum').value  = '';
+    expensesRender();
+    showToast('✅ Расход добавлен', 'success');
+  } catch(e) {
+    showToast('Ошибка сохранения', 'error');
+  }
+}
+
+function expensesRender() {
+  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
+  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
+  const list     = ge('expenseList');
+  const totalEl  = ge('expenseTotal');
+  const profitEl = ge('profitVal');
+
+  if (!list) return;
+
+  const catNames = { rent:'Аренда', materials:'Материалы', salary:'Зарплата', equipment:'Оборудование', marketing:'Маркетинг', other:'Прочее' };
+  const catIcons = { rent:'🏠', materials:'✂️', salary:'👤', equipment:'🔧', marketing:'📢', other:'📦' };
+
+  if (expenses.length === 0) {
+    list.innerHTML = '<div class="adm-loading">Расходов за этот месяц нет</div>';
+  } else {
+    list.innerHTML = expenses.map(e => {
+      const d = new Date(e.date);
+      const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0');
+      return '<div class="expense-item">' +
+        '<div><div class="expense-nm">' + (catIcons[e.cat]||'') + ' ' + escapeHtml(e.name) + '</div><div class="expense-dt">' + dateStr + ' · ' + (catNames[e.cat]||'') + '</div></div>' +
+        '<div style="display:flex;align-items:center">' +
+          '<span class="expense-sum">−' + formatPrice(e.sum) + '</span>' +
+          '<span class="expense-rm" onclick="expenseDelete(' + e.id + ')">✕</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  const totalExp = expenses.reduce((s, e) => s + e.sum, 0);
+  if (totalEl) totalEl.textContent = formatPrice(totalExp);
+
+  // Прибыль = выручка за месяц - расходы (берём из аналитики если есть)
+  if (profitEl) {
+    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(getChatId()))
+      .then(r => r.json())
+      .then(d => {
+        const revenue = d.revenueMonth || 0;
+        const profit  = revenue - totalExp;
+        profitEl.textContent = formatPrice(Math.abs(profit));
+        profitEl.className   = 'profit-val ' + (profit >= 0 ? 'positive' : 'negative');
+        profitEl.textContent = (profit >= 0 ? '' : '−') + formatPrice(Math.abs(profit));
+      })
+      .catch(() => { profitEl.textContent = '—'; });
+  }
+}
+
+function expenseDelete(id) {
+  haptic('light');
+  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
+  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
+  const filtered = expenses.filter(e => e.id !== id);
+  localStorage.setItem(key, JSON.stringify(filtered));
+  expensesRender();
+}
+
+
+window.refCopyCode = refCopyCode;
+window.refShare    = refShare;
+window.expenseAdd  = expenseAdd;
+window.expenseDelete = expenseDelete;
+
 </script>
 </body>
 </html>

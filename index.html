@@ -444,6 +444,60 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .role-badge{display:inline-block;padding:3px 8px;font-size:9px;letter-spacing:1px;text-transform:uppercase;border-radius:3px;margin-left:8px}
 .role-badge.admin{background:rgba(224,80,80,.2);color:#e05050}
 .role-badge.master{background:rgba(201,168,76,.2);color:var(--gold)}
+
+/* РАССЫЛКА */
+.bc-filter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.bc-filter{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);padding:9px 6px;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.bc-filter.active{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
+.bc-filter:active{transform:scale(.96)}
+.bc-filter-hint{font-size:9px;letter-spacing:.5px;opacity:.7;font-weight:400}
+.bc-count{font-size:12px;color:var(--gray);letter-spacing:.5px;margin-top:4px;min-height:18px}
+.bc-count strong{color:var(--gold)}
+.bc-hint{font-size:12px;color:var(--gray);margin-bottom:8px}
+.bc-hint code{background:rgba(201,168,76,.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:11px}
+.bc-textarea{width:100%;min-height:120px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:12px;outline:none;resize:vertical;border-radius:0;box-sizing:border-box;line-height:1.5}
+.bc-textarea:focus{border-color:rgba(201,168,76,.5)}
+.bc-textarea::placeholder{color:rgba(138,125,107,.35)}
+.bc-counter{font-size:10px;color:var(--gray);text-align:right;margin-top:4px;letter-spacing:.5px}
+.bc-preview{background:rgba(13,11,7,.6);border:1px solid rgba(201,168,76,.12);border-left:3px solid rgba(201,168,76,.5);padding:12px 14px;font-size:14px;color:var(--cream);line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:50px;font-style:italic}
+.bc-templates-ttl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
+.bc-templates{display:flex;gap:8px;flex-wrap:wrap}
+.bc-tpl{background:transparent;border:1px dashed rgba(201,168,76,.3);color:var(--gold);padding:7px 12px;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.5px;cursor:pointer;transition:all .15s}
+.bc-tpl:active{background:rgba(201,168,76,.1)}
+.bc-result{margin-top:12px;padding:12px 14px;font-size:14px;border-radius:4px;line-height:1.5}
+.bc-result.success{background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);color:#4caf7d}
+.bc-result.error{background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.3);color:#e05050}
+.bc-history-item{padding:10px 0;border-bottom:1px solid rgba(201,168,76,.07);font-size:13px}
+.bc-history-item:last-child{border-bottom:none}
+.bc-history-date{font-size:10px;letter-spacing:1px;color:var(--gray);margin-bottom:3px}
+.bc-history-text{color:var(--cream);margin-bottom:4px}
+.bc-history-stats{font-size:11px;color:var(--gold)}
+
+/* КЛИЕНТЫ */
+.cl-sort-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px}
+.cl-sort-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
+.cl-sort{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);padding:4px 8px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.5px;cursor:pointer;transition:all .15s}
+.cl-sort.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
+.cl-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.cl-sum-card{border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02);padding:10px;text-align:center}
+.cl-sum-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold)}
+.cl-sum-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:2px}
+.cl-card{border:1px solid rgba(201,168,76,.1);background:rgba(201,168,76,.02);margin-bottom:8px;padding:12px 14px;transition:border-color .15s}
+.cl-card:active{border-color:rgba(201,168,76,.35)}
+.cl-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.cl-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--cream)}
+.cl-badge{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:2px}
+.cl-badge.vip{background:rgba(201,168,76,.2);color:var(--gold);border:1px solid rgba(201,168,76,.3)}
+.cl-badge.постоянный{background:rgba(76,175,125,.15);color:#4caf7d;border:1px solid rgba(76,175,125,.3)}
+.cl-badge.активный{background:rgba(58,130,246,.12);color:#60a5fa;border:1px solid rgba(58,130,246,.2)}
+.cl-badge.новый{background:rgba(138,125,107,.12);color:var(--gray);border:1px solid rgba(138,125,107,.2)}
+.cl-phone{font-size:13px;color:var(--gold);margin-bottom:6px}
+.cl-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.cl-stat{text-align:center;padding:6px 4px;background:rgba(0,0,0,.15);border-radius:2px}
+.cl-stat-val{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--cream)}
+.cl-stat-lbl{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--gray);margin-top:1px}
+.cl-last{font-size:11px;color:var(--gray);margin-top:6px;letter-spacing:.5px}
+.cl-empty{text-align:center;color:var(--gray);font-style:italic;padding:30px 0;font-size:14px}
 </style>
 </head>
 <body>
@@ -625,6 +679,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <button class="adm-tab" data-admtab="slots">Слоты</button>
       <button class="adm-tab" data-admtab="dayoffs">Выходные</button>
       <button class="adm-tab" data-admtab="analytics">Аналитика</button>
+      <button class="adm-tab" data-admtab="broadcast">📢 Рассылка</button>
+      <button class="adm-tab" data-admtab="clients">👥 Клиенты</button>
     </div>
   </div>
   <div class="adm-panel active" id="adm-summary">
@@ -682,6 +738,71 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="adm-section">
       <div class="adm-section-ttl">Записи по мастерам</div>
       <div id="admMasterStats"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛЬ РАССЫЛКИ -->
+  <div class="adm-panel" id="adm-broadcast">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Аудитория</div>
+      <div class="bc-filter-grid">
+        <button class="bc-filter active" data-filter="all">Все</button>
+        <button class="bc-filter" data-filter="vip">VIP <span class="bc-filter-hint">10+ визитов</span></button>
+        <button class="bc-filter" data-filter="regular">Постоянные <span class="bc-filter-hint">5+ визитов</span></button>
+        <button class="bc-filter" data-filter="active">Активные <span class="bc-filter-hint">2+ визитов</span></button>
+        <button class="bc-filter" data-filter="new">Новые <span class="bc-filter-hint">1 визит</span></button>
+      </div>
+      <div class="bc-count" id="bcAudienceCount">Загрузка аудитории...</div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">Сообщение</div>
+      <div class="bc-hint">Используй <code>{{name}}</code> — подставится имя клиента</div>
+      <textarea class="bc-textarea" id="bcMessage" placeholder="Привет, {{name}}! 🔥 Только сегодня скидка 15% на все услуги в BARBER STYLE. Запишись прямо сейчас!"></textarea>
+      <div class="bc-counter"><span id="bcCharCount">0</span> символов</div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">Предпросмотр</div>
+      <div class="bc-preview" id="bcPreview">Введите текст выше...</div>
+    </div>
+    <div class="adm-section">
+      <div class="bc-templates-ttl">Шаблоны быстрого старта</div>
+      <div class="bc-templates">
+        <button class="bc-tpl" onclick="bcUseTemplate('promo')">🔥 Акция</button>
+        <button class="bc-tpl" onclick="bcUseTemplate('return')">↩ Возврат</button>
+        <button class="bc-tpl" onclick="bcUseTemplate('holiday')">🎉 Праздник</button>
+        <button class="bc-tpl" onclick="bcUseTemplate('new')">✨ Новинка</button>
+      </div>
+    </div>
+    <div class="adm-section">
+      <button class="adm-btn" style="width:100%;padding:14px;font-size:13px;letter-spacing:2px" id="bcSendBtn" onclick="bcSend()">
+        📢 Отправить рассылку
+      </button>
+      <div class="bc-result" id="bcResult" style="display:none"></div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">История рассылок</div>
+      <div id="bcHistory"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛЬ КЛИЕНТОВ -->
+  <div class="adm-panel" id="adm-clients">
+    <div class="adm-section">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <input type="text" class="adm-select" id="clSearchInput" placeholder="Поиск по имени или телефону..." style="margin-bottom:0;flex:1">
+        <button class="adm-btn outline" id="clSearchBtn" style="margin:0;white-space:nowrap">Найти</button>
+      </div>
+      <div class="cl-sort-row">
+        <span class="cl-sort-lbl">Сортировка:</span>
+        <button class="cl-sort active" data-sort="ltv">LTV</button>
+        <button class="cl-sort" data-sort="visits">Визиты</button>
+        <button class="cl-sort" data-sort="last">Последний визит</button>
+        <button class="cl-sort" data-sort="spent">Потрачено</button>
+      </div>
+    </div>
+    <div class="adm-section" style="padding-top:0">
+      <div class="cl-summary" id="clSummary"></div>
+      <div id="clList"><div class="adm-loading">Загрузка клиентов...</div></div>
     </div>
   </div>
 </div>
@@ -1665,6 +1786,8 @@ function admTab(tab, tabEl) {
   if (tab==='slots')     admLoadSlots();
   if (tab==='dayoffs')   admLoadDayOffsList();
   if (tab==='analytics') admLoadAnalytics();
+  if (tab==='broadcast') bcInit();
+  if (tab==='clients')   clInit();
 }
 
 function admInit() {
@@ -2066,6 +2189,315 @@ window.myBkRepeat     = myBkRepeat;
 window.myBkSwitchTab  = myBkSwitchTab;
 window.admToggleSlot  = admToggleSlot;
 window.admQuickRemoveDayOff = admQuickRemoveDayOff;
+
+/* ────────────────────────────────────────────────────────────
+   РАССЫЛКА
+   ──────────────────────────────────────────────────────────── */
+
+const BC_TEMPLATES = {
+  promo:   'Привет, {{name}}! 🔥 Только сегодня скидка 15% на все услуги в BARBER STYLE.\n\nУспей записаться — предложение ограничено!\n\n📍 г. Батайск, ул. Октябрьская, 108',
+  return:  'Привет, {{name}}! ✂️ Давно тебя не видели в BARBER STYLE.\n\nСамое время обновить образ! Наши мастера ждут тебя.\n\n📞 +7 (952) 560-88-98',
+  holiday: 'С праздником, {{name}}! 🎉\n\nКоманда BARBER STYLE поздравляет тебя и дарит скидку 10% на следующий визит!\n\n📍 г. Батайск, ул. Октябрьская, 108',
+  new:     'Привет, {{name}}! ✨ В BARBER STYLE появились новые услуги!\n\nЗаходи в приложение и записывайся — тебя ждёт обновлённое меню.'
+};
+
+let _bcFilter = 'all';
+let _bcAudienceCounts = {};
+let _bcIsSending = false;
+
+function bcInit() {
+  // Загружаем аудиторию
+  bcLoadAudience();
+
+  // Вешаем события на фильтры
+  document.querySelectorAll('.bc-filter').forEach(btn => {
+    btn.onclick = function() {
+      document.querySelectorAll('.bc-filter').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      _bcFilter = this.dataset.filter;
+      bcUpdateCount();
+    };
+  });
+
+  // Живой предпросмотр при наборе текста
+  const textarea = ge('bcMessage');
+  if (textarea) {
+    textarea.addEventListener('input', bcUpdatePreview);
+    bcUpdatePreview();
+  }
+
+  // История
+  bcLoadHistory();
+}
+
+function bcLoadAudience() {
+  const chatId = getChatId();
+  ge('bcAudienceCount').innerHTML = 'Загрузка аудитории...';
+
+  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId))
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) { ge('bcAudienceCount').innerHTML = 'Ошибка загрузки'; return; }
+      const clients = d.clients || [];
+
+      // Считаем по категориям
+      _bcAudienceCounts = { all: 0, vip: 0, regular: 0, active: 0, new: 0 };
+      clients.forEach(c => {
+        if (!c.chatId) return;
+        _bcAudienceCounts.all++;
+        if (c.category === 'vip')          _bcAudienceCounts.vip++;
+        else if (c.category === 'постоянный') _bcAudienceCounts.regular++;
+        else if (c.category === 'активный')   _bcAudienceCounts.active++;
+        else                               _bcAudienceCounts.new++;
+      });
+
+      // Обновляем подписи на кнопках фильтров
+      document.querySelectorAll('.bc-filter').forEach(btn => {
+        const f = btn.dataset.filter;
+        const count = _bcAudienceCounts[f] || 0;
+        const hint = btn.querySelector('.bc-filter-hint');
+        if (hint) hint.textContent = count + ' чел.';
+      });
+
+      bcUpdateCount();
+    })
+    .catch(() => { ge('bcAudienceCount').innerHTML = 'Ошибка загрузки'; });
+}
+
+function bcUpdateCount() {
+  const count = _bcAudienceCounts[_bcFilter] || 0;
+  const labels = { all:'все клиенты', vip:'VIP', regular:'постоянные', active:'активные', new:'новые' };
+  ge('bcAudienceCount').innerHTML = 'Получат: <strong>' + count + ' человек</strong> (' + labels[_bcFilter] + ')';
+}
+
+function bcUpdatePreview() {
+  const text = (ge('bcMessage').value || '').trim();
+  const preview = ge('bcPreview');
+  const counter = ge('bcCharCount');
+  counter.textContent = text.length;
+
+  if (!text) {
+    preview.textContent = 'Введите текст выше...';
+    preview.style.opacity = '.4';
+    return;
+  }
+
+  // Подставляем пример имени для предпросмотра
+  preview.textContent = text.replace(/\{\{name\}\}/g, 'Иван');
+  preview.style.opacity = '1';
+}
+
+function bcUseTemplate(key) {
+  const textarea = ge('bcMessage');
+  if (!textarea) return;
+  textarea.value = BC_TEMPLATES[key] || '';
+  bcUpdatePreview();
+  textarea.focus();
+}
+window.bcUseTemplate = bcUseTemplate;
+
+function bcSend() {
+  if (_bcIsSending) return;
+
+  const text = (ge('bcMessage').value || '').trim();
+  if (!text) { showToast('Введите текст сообщения', 'error'); return; }
+  if (text.length < 10) { showToast('Сообщение слишком короткое', 'error'); return; }
+
+  const count = _bcAudienceCounts[_bcFilter] || 0;
+  if (count === 0) { showToast('Нет клиентов в выбранной аудитории', 'error'); return; }
+
+  const filterLabel = { all:'всем', vip:'VIP', regular:'постоянным', active:'активным', new:'новым' }[_bcFilter];
+  if (!confirmAction('Отправить рассылку ' + filterLabel + ' клиентам (' + count + ' человек)?\n\nСообщение:\n' + text.substring(0, 100) + (text.length > 100 ? '...' : ''))) return;
+
+  _bcIsSending = true;
+  const btn = ge('bcSendBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Отправка...';
+
+  const result = ge('bcResult');
+  result.style.display = 'none';
+
+  const chatId = getChatId();
+  const url = CONFIG.GS + '?action=broadcast&chatId=' + encodeURIComponent(chatId) +
+    '&message=' + encodeURIComponent(text) +
+    '&filterCategory=' + _bcFilter;
+
+  fetchWithTimeout(url, {}, 120000) // 2 минуты таймаут — рассылка может быть долгой
+    .then(r => r.json())
+    .then(d => {
+      _bcIsSending = false;
+      btn.disabled = false;
+      btn.textContent = '📢 Отправить рассылку';
+
+      if (d.error) {
+        result.className = 'bc-result error';
+        result.textContent = '❌ Ошибка: ' + d.error;
+        result.style.display = 'block';
+        return;
+      }
+
+      result.className = 'bc-result success';
+      result.innerHTML = '✅ Рассылка завершена!\n\n📨 Доставлено: <strong>' + d.sent + '</strong>\n⏭ Пропущено: ' + d.skipped;
+      result.style.display = 'block';
+
+      // Сохраняем в историю (локально)
+      bcSaveToHistory(text, _bcFilter, d.sent, d.skipped);
+      bcLoadHistory();
+
+      showToast('✅ Рассылка отправлена ' + d.sent + ' клиентам', 'success', 4000);
+    })
+    .catch(e => {
+      _bcIsSending = false;
+      btn.disabled = false;
+      btn.textContent = '📢 Отправить рассылку';
+      result.className = 'bc-result error';
+      result.textContent = '❌ Ошибка соединения. Проверьте интернет.';
+      result.style.display = 'block';
+      console.error('bcSend error:', e);
+    });
+}
+window.bcSend = bcSend;
+
+function bcSaveToHistory(text, filter, sent, skipped) {
+  try {
+    const history = JSON.parse(localStorage.getItem('bc_history') || '[]');
+    history.unshift({
+      date: new Date().toISOString(),
+      text: text,
+      filter: filter,
+      sent: sent,
+      skipped: skipped
+    });
+    localStorage.setItem('bc_history', JSON.stringify(history.slice(0, 20)));
+  } catch(e) {}
+}
+
+function bcLoadHistory() {
+  const container = ge('bcHistory');
+  try {
+    const history = JSON.parse(localStorage.getItem('bc_history') || '[]');
+    if (history.length === 0) {
+      container.innerHTML = '<div class="adm-loading">История рассылок пуста</div>';
+      return;
+    }
+    container.innerHTML = history.map(item => {
+      const d = new Date(item.date);
+      const dateStr = d.getDate() + ' ' + ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()] + ' ' + d.getFullYear() + ', ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      const filterLabel = { all:'все', vip:'VIP', regular:'постоянные', active:'активные', new:'новые' }[item.filter] || item.filter;
+      return '<div class="bc-history-item">' +
+        '<div class="bc-history-date">' + escapeHtml(dateStr) + ' · ' + escapeHtml(filterLabel) + '</div>' +
+        '<div class="bc-history-text">' + escapeHtml(item.text.substring(0, 80)) + (item.text.length > 80 ? '...' : '') + '</div>' +
+        '<div class="bc-history-stats">📨 ' + item.sent + ' доставлено · ⏭ ' + item.skipped + ' пропущено</div>' +
+      '</div>';
+    }).join('');
+  } catch(e) {
+    container.innerHTML = '<div class="adm-loading">Ошибка загрузки истории</div>';
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   КЛИЕНТЫ — LTV, средний чек, категории
+   ──────────────────────────────────────────────────────────── */
+
+let _clAllClients = [];
+let _clSort = 'ltv';
+let _clSearch = '';
+let _clLoaded = false;
+
+function clInit() {
+  document.querySelectorAll('.cl-sort').forEach(btn => {
+    btn.onclick = function() {
+      document.querySelectorAll('.cl-sort').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      _clSort = this.dataset.sort;
+      clRender();
+    };
+  });
+
+  const searchBtn = ge('clSearchBtn');
+  const searchInput = ge('clSearchInput');
+  if (searchBtn) searchBtn.onclick = () => { _clSearch=(searchInput.value||'').trim(); clRender(); };
+  if (searchInput) searchInput.addEventListener('keydown', e => { if(e.key==='Enter'){_clSearch=(searchInput.value||'').trim(); clRender();} });
+
+  if (!_clLoaded) clLoad();
+}
+
+function clLoad() {
+  const chatId = getChatId();
+  ge('clList').innerHTML = '<div class="adm-loading">Загрузка клиентов...</div>';
+  ge('clSummary').innerHTML = '';
+
+  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId))
+    .then(r => r.json())
+    .then(d => {
+      if (d.error === 'Unauthorized') { ge('clList').innerHTML = '<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
+      _clAllClients = d.clients || [];
+      _clLoaded = true;
+      clRenderSummary();
+      clRender();
+    })
+    .catch(() => { ge('clList').innerHTML = '<div class="adm-loading">Ошибка загрузки</div>'; });
+}
+
+function clRenderSummary() {
+  const total      = _clAllClients.length;
+  const totalSpent = _clAllClients.reduce((s,c) => s+(c.totalSpent||0), 0);
+  const avgLtv     = total > 0 ? Math.round(_clAllClients.reduce((s,c) => s+(c.ltv||0), 0) / total) : 0;
+  ge('clSummary').innerHTML =
+    '<div class="cl-sum-card"><div class="cl-sum-val">' + total + '</div><div class="cl-sum-lbl">Всего клиентов</div></div>' +
+    '<div class="cl-sum-card"><div class="cl-sum-val">' + formatPrice(totalSpent) + '</div><div class="cl-sum-lbl">Выручка всего</div></div>' +
+    '<div class="cl-sum-card"><div class="cl-sum-val">' + formatPrice(avgLtv) + '</div><div class="cl-sum-lbl">Средний LTV</div></div>';
+}
+
+function clRender() {
+  let clients = _clAllClients;
+
+  if (_clSearch) {
+    const s = _clSearch.toLowerCase();
+    clients = clients.filter(c =>
+      (c.name||'').toLowerCase().includes(s) ||
+      (c.phone||'').includes(_clSearch) ||
+      (c.telegram||'').toLowerCase().includes(s)
+    );
+  }
+
+  clients = clients.slice().sort((a,b) => {
+    if (_clSort==='ltv')    return (b.ltv||0)-(a.ltv||0);
+    if (_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
+    if (_clSort==='spent')  return (b.totalSpent||0)-(a.totalSpent||0);
+    if (_clSort==='last')   return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
+    return 0;
+  });
+
+  if (clients.length === 0) {
+    ge('clList').innerHTML = '<div class="cl-empty">' + (_clSearch ? 'Клиенты не найдены' : 'Нет данных') + '</div>';
+    return;
+  }
+
+  const todayMs = Date.now();
+
+  ge('clList').innerHTML = clients.map(c => {
+    const lastVisitStr = c.lastVisit ? formatDate(c.lastVisit, 'short') : '—';
+    const daysSinceLast = c.lastVisit ? Math.floor((todayMs - new Date(c.lastVisit).getTime()) / 86400000) : null;
+    const isLost = daysSinceLast !== null && daysSinceLast >= 20;
+    const lostBadge = isLost ? ' <span style="font-size:9px;color:#e05050">⚠️ ' + daysSinceLast + ' дн. назад</span>' : '';
+
+    return '<div class="cl-card">' +
+      '<div class="cl-card-top">' +
+        '<div class="cl-name">' + escapeHtml(c.name||'—') + '</div>' +
+        '<span class="cl-badge ' + escapeHtml(c.category||'новый') + '">' + escapeHtml(c.category||'новый') + '</span>' +
+      '</div>' +
+      '<div class="cl-phone">' + escapeHtml(c.phone||'') + (c.telegram?' · '+escapeHtml(c.telegram):'') + '</div>' +
+      '<div class="cl-stats">' +
+        '<div class="cl-stat"><div class="cl-stat-val">' + (c.totalBookings||0) + '</div><div class="cl-stat-lbl">Визитов</div></div>' +
+        '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +
+        '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
+        '<div class="cl-stat"><div class="cl-stat-val" style="color:var(--gold)">' + formatPrice(c.ltv||0) + '</div><div class="cl-stat-lbl">LTV/год</div></div>' +
+      '</div>' +
+      '<div class="cl-last">Последний визит: ' + escapeHtml(lastVisitStr) + lostBadge + '</div>' +
+    '</div>';
+  }).join('');
+}
 </script>
 </body>
 </html>

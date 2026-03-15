@@ -583,6 +583,17 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .works-lightbox-prev{left:12px}
 .works-lightbox-next{right:12px}
 .works-lightbox-counter{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:2px;color:rgba(201,168,76,.6);text-transform:uppercase}
+
+/* СПИННЕР — золотое кольцо с короной */
+@keyframes spinRing{to{transform:rotate(360deg)}}
+@keyframes crownPulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(.9)}}
+.bk-spinner{display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 0}
+.bk-spinner.show{display:flex}
+.bk-spinner-ring{position:relative;width:56px;height:56px}
+.bk-spinner-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(201,168,76,.15)}
+.bk-spinner-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:#c9a84c;border-right-color:rgba(201,168,76,.5);animation:spinRing 1s linear infinite}
+.bk-spinner-crown{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;animation:crownPulse 1.5s ease-in-out infinite;line-height:1}
+.bk-spinner-txt{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.6);font-family:'Cormorant Garamond',serif}
 </style>
 </head>
 <body>
@@ -660,39 +671,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
   <div class="m-list" id="mastersList"></div>
 
-  <!-- БЛОК НАШИХ РАБОТ -->
-  <div class="works-section">
-    <div class="works-hdr">
-      <h2 class="works-ttl">Наши <em>работы</em></h2>
-    </div>
-    <div class="works-grid" id="worksGrid">
-      <div class="works-item" onclick="worksOpen(0)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work1.jpg" alt="Работа 1" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-      <div class="works-item" onclick="worksOpen(1)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work2.jpg" alt="Работа 2" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-      <div class="works-item" onclick="worksOpen(2)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work3.jpg" alt="Работа 3" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-      <div class="works-item" onclick="worksOpen(3)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work4.jpg" alt="Работа 4" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ЛАЙТБОКС -->
-  <div class="works-lightbox" id="worksLightbox" onclick="worksLightboxBgClick(event)">
-    <button class="works-lightbox-close" onclick="worksClose()">✕</button>
-    <button class="works-lightbox-nav works-lightbox-prev" onclick="worksPrev(event)">‹</button>
-    <img id="worksLightboxImg" src="" alt="">
-    <button class="works-lightbox-nav works-lightbox-next" onclick="worksNext(event)">›</button>
-    <div class="works-lightbox-counter" id="worksCounter"></div>
-  </div>
 </div>
 
 <!-- PAGE: PRICE -->
@@ -772,6 +750,12 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="bk-form" style="padding-top:14px">
       <div class="bk-fg"><label class="bk-lbl">Ваше имя</label><input class="bk-inp" type="text" id="bkName" placeholder="Иван Иванов"></div>
       <div class="bk-fg"><label class="bk-lbl">Телефон</label><input class="bk-inp" type="tel" id="bkPhone" placeholder="+7 (___) ___-__-__"></div>
+      <div class="bk-spinner" id="bkSpinner">
+        <div class="bk-spinner-ring">
+          <span class="bk-spinner-crown">♛</span>
+        </div>
+        <div class="bk-spinner-txt">Оформляем запись...</div>
+      </div>
       <button class="bk-sub" id="bkSub" disabled>Записаться</button>
     </div>
   </div>
@@ -961,6 +945,47 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
 </div>
 
+
+<!-- PAGE: WORKS -->
+<div class="page" id="page-works">
+  <div class="sec-hdr">
+    <div class="sec-lbl">✦ Портфолио</div>
+    <h2 class="sec-ttl">Наши <em>работы</em></h2>
+  </div>
+  <div class="works-section">
+    <div class="works-grid" id="worksGrid">
+      <div class="works-item" onclick="worksOpen(0)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work1.jpg" alt="Работа 1" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+      <div class="works-item" onclick="worksOpen(1)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work2.jpg" alt="Работа 2" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+      <div class="works-item" onclick="worksOpen(2)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work3.jpg" alt="Работа 3" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+      <div class="works-item" onclick="worksOpen(3)">
+        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work4.jpg" alt="Работа 4" loading="lazy">
+        <div class="works-item-overlay"></div>
+      </div>
+    </div>
+    <div style="padding:16px;text-align:center;color:var(--gray);font-size:12px;letter-spacing:1px">
+      Нажми на фото чтобы увеличить
+    </div>
+  </div>
+</div>
+
+<!-- ЛАЙТБОКС -->
+<div class="works-lightbox" id="worksLightbox" onclick="worksLightboxBgClick(event)">
+  <button class="works-lightbox-close" onclick="worksClose()">✕</button>
+  <button class="works-lightbox-nav works-lightbox-prev" onclick="worksPrev(event)">‹</button>
+  <img id="worksLightboxImg" src="" alt="">
+  <button class="works-lightbox-nav works-lightbox-next" onclick="worksNext(event)">›</button>
+  <div class="works-lightbox-counter" id="worksCounter"></div>
+</div>
+
 <!-- PAGE: MY BOOKINGS -->
 <div class="page" id="page-mybookings">
   <div class="sec-hdr">
@@ -991,11 +1016,11 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </button>
   <button class="tab" id="tab-masters" data-page="masters">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-    Мастер
+    Мастера
   </button>
-  <button class="tab" id="tab-price" data-page="price">
-    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r=".5" fill="currentColor"/><circle cx="3" cy="12" r=".5" fill="currentColor"/><circle cx="3" cy="18" r=".5" fill="currentColor"/></svg>
-    Прайс
+  <button class="tab" id="tab-works" data-page="works">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+    Работы
   </button>
   <button class="tab" id="tab-booking" data-page="booking">
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1745,7 +1770,9 @@ function bkSubmit() {
   const master = getMaster(S.mid);
   if (!name||!isPhoneValid(phone)||!S.slot||!S.date||!master||S.cart.length===0) { isSubmitting=false; return; }
 
-  const btn = ge('bkSub'); btn.disabled=true; btn.textContent='Отправка...';
+  const btn = ge('bkSub'); btn.disabled=true; btn.textContent='';
+  btn.style.display='none';
+  ge('bkSpinner').classList.add('show');;
 
   const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   const tgUsername = tgUser && tgUser.username ? '@'+tgUser.username : '';
@@ -1766,6 +1793,7 @@ function bkSubmit() {
       btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
 
       if (d.error==='slot_taken'||d.error==='slot_unavailable') {
+        btn.style.display=''; ge('bkSpinner').classList.remove('show'); btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
         showToast('⚠️ ' + (d.message||'Это время уже занято. Выберите другое.'), 'error', 4000);
         loadAllMastersData(); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
@@ -1777,10 +1805,12 @@ function bkSubmit() {
         showToast('⚠️ У вас уже есть запись на это время!', 'error'); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
       if (d.status==='rate_limit') { showToast('⚠️ ' + d.error, 'error'); return; }
-      if (d.error)                 { showToast('Ошибка: ' + d.error, 'error'); return; }
+      if (d.error)                 { btn.style.display=''; ge('bkSpinner').classList.remove('show'); btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false; showToast('Ошибка: ' + d.error, 'error'); return; }
 
       // Успех
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
+      ge('bkSpinner').classList.remove('show');
+      btn.style.display='';
       ge('bkFormWrap').style.display = 'none';
       ge('bkSucc').classList.add('show');
       // Анимация иконки
@@ -1807,13 +1837,15 @@ function bkSubmit() {
     })
     .catch(e => {
       console.error('bkSubmit:', e);
-      btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
+      btn.disabled=false; btn.textContent='Записаться';
+      btn.style.display=''; ge('bkSpinner').classList.remove('show');
+      isSubmitting=false;
       showToast('Ошибка соединения. Проверьте интернет и попробуйте ещё раз.', 'error');
     });
 }
 
 function bkReset() {
-  ge('bkFormWrap').style.display='block'; ge('bkSucc').classList.remove('show');
+  ge('bkFormWrap').style.display='block'; ge('bkSucc').classList.remove('show'); ge('bkSpinner').classList.remove('show'); ge('bkSub').style.display='';
   ge('bkName').value=''; ge('bkPhone').value=''; ge('bkPhone').classList.remove('invalid');
   const oldBtn = ge('bkSucc') && ge('bkSucc').querySelector('.succ-mybk-btn');
   if (oldBtn) oldBtn.remove();

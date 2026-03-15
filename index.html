@@ -151,7 +151,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .h-orn{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .h-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent)}
 .h-phi{font-family:'Playfair Display',serif;font-size:18px;color:rgba(201,168,76,.6);font-style:italic}
-.h-t1{font-family:'Playfair Display',serif;font-size:clamp(18px,5.5vw,26px);font-style:italic;font-weight:700;background:linear-gradient(135deg,#f5efe6 0%,#c9a84c 50%,#f5efe6 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite;line-height:1.4;margin-bottom:10px}
+.h-t1{font-family:'Playfair Display',serif;font-size:clamp(18px,5.5vw,26px);font-style:italic;font-weight:700;background:linear-gradient(135deg,#f5efe6 0%,#c9a84c 50%,#f5efe6 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.4;margin-bottom:10px;opacity:0;filter:blur(20px);animation:fogReveal 2s cubic-bezier(.25,.1,.25,1) 1.3s forwards}
 .h-orn2{display:flex;align-items:center;gap:12px;margin-top:14px}
 @keyframes shimmer{to{background-position:200% center}}
 
@@ -493,8 +493,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-dayoff-reason{font-size:11px;color:var(--gray);margin-top:4px;font-style:italic}
 
 /* МОДАЛЬНОЕ ОКНО */
-.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;pointer-events:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
-.adm-modal.show{display:flex;pointer-events:auto}
+.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
+.adm-modal.show{display:flex}
 .adm-modal-content{background:var(--dark);border:1px solid rgba(201,168,76,.3);padding:24px;max-width:400px;width:100%;border-radius:8px;max-height:80vh;overflow-y:auto}
 .adm-modal-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:16px}
 .adm-modal-text{font-size:14px;color:var(--cream);margin-bottom:20px;line-height:1.6}
@@ -621,8 +621,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .works-more:active{background:rgba(201,168,76,.06)}
 
 /* ЛАЙТБОКС */
-.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;pointer-events:none;align-items:center;justify-content:center;padding:20px}
-.works-lightbox.open{display:flex;pointer-events:auto}
+.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px}
+.works-lightbox.open{display:flex}
 .works-lightbox img{max-width:100%;max-height:85vh;object-fit:contain;border:1px solid rgba(201,168,76,.2)}
 .works-lightbox-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.8);color:var(--gold);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%}
 .works-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.7);color:var(--gold);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -663,7 +663,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* СТРАНИЦА ПРОФИЛЯ МАСТЕРА */
 @keyframes profileIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-#masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px;pointer-events:none}
+#masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px}
 #masterProfile.open{display:block;animation:profileIn .25s ease}
 .mp-hero{position:relative;width:100%;aspect-ratio:3/4;max-height:65vh;overflow:hidden}
 .mp-hero img{width:100%;height:100%;object-fit:cover;object-position:top center}
@@ -775,7 +775,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .btn-g-ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:liquidRipple .6s ease forwards}
 
 /* П.4 TYPEWRITER */
-
 .h-t1-typed{display:inline}
 .h-t1-cursor{display:none}
 
@@ -862,22 +861,154 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   -webkit-backdrop-filter:blur(20px)!important;
   background:rgba(10,8,5,.88)!important;
 }
+
+/* ПОИСК КЛИЕНТА */
+.srch-form{display:flex;gap:8px;margin-bottom:14px}
+.srch-inp{flex:1;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px 12px;outline:none}
+.srch-inp:focus{border-color:rgba(201,168,76,.5)}
+.srch-inp::placeholder{color:rgba(138,125,107,.35)}
+.srch-btn{background:var(--gold);color:var(--black);border:none;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;white-space:nowrap}
+.srch-card{border:1px solid rgba(201,168,76,.15);padding:14px;margin-bottom:10px;background:rgba(201,168,76,.02)}
+.srch-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cream);margin-bottom:3px}
+.srch-phone{font-size:13px;color:var(--gold);margin-bottom:10px}
+.srch-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.srch-stat{text-align:center;padding:7px 4px;background:rgba(0,0,0,.2)}
+.srch-stat-v{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--cream)}
+.srch-stat-l{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:2px}
+.srch-bk{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(201,168,76,.06)}
+.srch-bk:last-child{border-bottom:none}
+.srch-bk-d{font-size:12px;color:var(--cream);font-weight:700}
+.srch-bk-s{font-size:11px;color:var(--gray);margin-top:1px}
+.srch-bk-p{font-family:'Playfair Display',serif;font-size:14px;color:var(--gold);font-weight:700;white-space:nowrap;margin-left:8px}
+
+/* СРАВНЕНИЕ ПЕРИОДОВ */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.cmp-card{border:1px solid rgba(201,168,76,.15);padding:12px;background:rgba(0,0,0,.2)}
+.cmp-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.cmp-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--cream)}
+.cmp-diff{font-size:11px;margin-top:4px}
+.cmp-up{color:#4caf7d}
+.cmp-down{color:#e05050}
+.cmp-same{color:var(--gray)}
+.cmp-bar{height:3px;background:rgba(201,168,76,.1);margin-top:6px;border-radius:2px;overflow:hidden}
+.cmp-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .6s ease}
+.cmp-chart{display:flex;align-items:flex-end;gap:3px;height:60px;margin-bottom:6px}
+.cmp-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cmp-bar-b{width:100%;background:rgba(201,168,76,.3);border-radius:2px 2px 0 0;min-height:3px;transition:height .5s ease}
+.cmp-bar-b.today{background:var(--gold)}
+.cmp-bar-day{font-size:7px;text-transform:uppercase;color:var(--gray)}
+.cmp-bar-day.today{color:var(--gold)}
+
+/* ТОП КЛИЕНТОВ */
+.top-tabs{display:flex;gap:6px;margin-bottom:14px}
+.top-tab{flex:1;padding:8px 4px;text-align:center;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;font-family:'Cormorant Garamond',serif}
+.top-tab.active{background:rgba(201,168,76,.08);border-color:var(--gold);color:var(--gold)}
+.top-card{border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02);padding:12px 14px;margin-bottom:8px;position:relative}
+.top-rank{position:absolute;top:10px;right:12px;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:rgba(201,168,76,.12)}
+.top-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--cream);margin-bottom:3px}
+.top-phone{font-size:12px;color:var(--gold);margin-bottom:8px}
+.top-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.top-stat{text-align:center;padding:6px 3px;background:rgba(0,0,0,.2)}
+.top-stat-v{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--cream)}
+.top-stat-l{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:1px}
+
+/* РУЧНАЯ ЗАПИСЬ */
+.mbk-row{margin-bottom:10px}
+.mbk-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.mbk-inp{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px 12px;outline:none;box-sizing:border-box}
+.mbk-inp:focus{border-color:rgba(201,168,76,.5)}
+.mbk-inp::placeholder{color:rgba(138,125,107,.35)}
+.mbk-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:6px;font-family:'Cormorant Garamond',serif;transition:all .2s}
+.mbk-btn:active{background:var(--gold-l)}
+.mbk-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* АНАЛИТИКА МАСТЕРОВ */
+.mst-table{width:100%;border-collapse:collapse}
+.mst-table th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);padding:6px 8px;text-align:left;border-bottom:1px solid rgba(201,168,76,.1)}
+.mst-table td{padding:9px 8px;border-bottom:1px solid rgba(201,168,76,.06);font-size:14px;color:var(--cream)}
+.mst-table tr:last-child td{border-bottom:none}
+.mst-leader{color:var(--gold);font-weight:700}
+.mst-bar-w{height:3px;background:rgba(201,168,76,.1);margin-top:3px;border-radius:2px;overflow:hidden}
+.mst-bar-f{height:100%;background:var(--gold);border-radius:2px;transition:width .6s ease}
+
+/* КНОПКА ОТМЕНЫ В СВОДКЕ */
+.adm-booking-cancel{width:100%;background:rgba(224,80,80,.08);border:1px solid rgba(224,80,80,.2);color:#e05050;padding:7px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;margin-top:8px;transition:all .15s}
+.adm-booking-cancel:active{background:rgba(224,80,80,.2)}
+.adm-booking-badge{font-size:9px;padding:2px 7px;border-radius:2px;letter-spacing:1px}
+.adm-booking-badge.soon{background:rgba(224,80,80,.15);border:1px solid rgba(224,80,80,.3);color:#e05050}
+.adm-booking-badge.mins{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--gold)}
+
+
+/* ТУМАН — слоган */
+@keyframes fogReveal{
+  0%  { opacity:0; filter:blur(24px); }
+  35% { opacity:.4; filter:blur(10px); }
+  100%{ opacity:1; filter:blur(0px); }
+}
+
+
+@keyframes splashFadeIn{0%{opacity:0;transform:scale(.92)}60%{opacity:1;transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+@keyframes splashFadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
+@keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
+.splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
+.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards}
+.splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px auto;display:block}
+.splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards;text-align:center;width:100%}
+
+/* ПЕРЕНОС ЗАПИСИ */
+#rescheduleModal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3500;display:none;align-items:center;justify-content:center;padding:20px;pointer-events:none}
+#rescheduleModal.open{display:flex;pointer-events:auto}
+.resc-box{background:#0d0b07;border:1px solid rgba(201,168,76,.25);padding:20px;width:100%;max-width:360px;max-height:85vh;overflow-y:auto}
+.resc-ttl{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:14px}
+.resc-row{margin-bottom:10px}
+.resc-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:5px}
+.resc-inp{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px 12px;outline:none;box-sizing:border-box}
+.resc-inp:focus{border-color:rgba(201,168,76,.5)}
+.resc-btns{display:flex;gap:8px;margin-top:14px}
+.resc-btn-ok{flex:1;background:var(--gold);color:var(--black);border:none;padding:12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif}
+.resc-btn-ok:disabled{opacity:.4;cursor:not-allowed}
+.resc-btn-cancel{flex:1;background:transparent;color:var(--gray);border:1px solid rgba(201,168,76,.2);padding:12px;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif}
+
+/* ЖИВОЕ ОБНОВЛЕНИЕ — пульс */
+@keyframes livePing{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
+.adm-new-badge{display:inline-block;background:#4caf7d;color:#fff;font-size:9px;letter-spacing:1px;padding:2px 7px;margin-left:8px;animation:livePing .8s ease infinite}
+
+/* КНОПКА НАПИСАТЬ */
+.adm-booking-msg{background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
+.adm-booking-msg:active{background:rgba(201,168,76,.1)}
+.adm-booking-resc{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
+.adm-booking-resc:active{background:rgba(201,168,76,.2)}
+.adm-booking-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 </style>
 </head>
+
+<!-- МОДАЛКА ПЕРЕНОСА ЗАПИСИ -->
+<div id="rescheduleModal">
+  <div class="resc-box">
+    <div class="resc-ttl">Перенос записи</div>
+    <div id="rescClientInfo" style="font-size:13px;color:var(--gray);margin-bottom:12px;padding:8px;border:1px solid rgba(201,168,76,.1)"></div>
+    <div class="resc-row">
+      <div class="resc-lbl">Новая дата</div>
+      <input type="date" class="resc-inp" id="rescDate">
+    </div>
+    <div class="resc-row">
+      <div class="resc-lbl">Новое время</div>
+      <select class="resc-inp" id="rescSlot"><option value="">Выберите дату</option></select>
+    </div>
+    <div class="resc-btns">
+      <button class="resc-btn-cancel" onclick="rescClose()">Отмена</button>
+      <button class="resc-btn-ok" id="rescConfirmBtn" onclick="rescConfirm()" disabled>Перенести</button>
+    </div>
+  </div>
+</div>
 <body>
 <script>
-// Скрываем splash надёжно — выполняется до основного JS
 (function(){
-  function hs(){
-    var e=document.getElementById('splash');
-    if(e){e.style.display='none';e.style.pointerEvents='none';}
-  }
-  // Множество таймеров для надёжности
-  setTimeout(hs, 1500);
-  setTimeout(hs, 2500);
-  setTimeout(hs, 4000);
-  window.addEventListener('load', function(){ setTimeout(hs, 300); });
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(hs, 1000); });
+  function hs(){var e=document.getElementById('splash');if(e){e.style.display='none';}}
+  setTimeout(hs,1500);
+  setTimeout(hs,2500);
+  window.addEventListener('load',function(){setTimeout(hs,300);});
 })();
 </script>
 
@@ -910,6 +1041,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <div class="splash-logo">BARBER<br>STYLE</div>
   <div class="splash-line"></div>
   <div class="splash-city">✦ Батайск ✦</div>
+</div>
 </div>
 
 <div id="bgParticles"></div>
@@ -1135,8 +1267,20 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
         <div><span class="adm-menu-nm">Рассылка</span><span class="adm-menu-desc">Сообщения клиентам</span></div>
       </button>
       <button class="adm-menu-item" data-admtab="clients">
-        <span class="adm-menu-ico">👥</span>
-        <div><span class="adm-menu-nm">Клиенты</span><span class="adm-menu-desc">LTV, средний чек</span></div>
+        <span class="adm-menu-ico">🔍</span>
+        <div><span class="adm-menu-nm">Поиск клиента</span><span class="adm-menu-desc">История и выручка</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="manual">
+        <span class="adm-menu-ico">✏️</span>
+        <div><span class="adm-menu-nm">Ручная запись</span><span class="adm-menu-desc">Запись по телефону</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="compare">
+        <span class="adm-menu-ico">📊</span>
+        <div><span class="adm-menu-nm">Сравнение</span><span class="adm-menu-desc">Неделя / месяц</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="topclients">
+        <span class="adm-menu-ico">🏆</span>
+        <div><span class="adm-menu-nm">Топ клиентов</span><span class="adm-menu-desc">По выручке и визитам</span></div>
       </button>
     </div>
   </div>
@@ -1245,23 +1389,77 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <!-- ПАНЕЛЬ КЛИЕНТОВ -->
   <div class="adm-panel" id="adm-clients">
     <div class="adm-section">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <input type="text" class="adm-select" id="clSearchInput" placeholder="Поиск по имени или телефону..." style="margin-bottom:0;flex:1">
-        <button class="adm-btn outline" id="clSearchBtn" style="margin:0;white-space:nowrap">Найти</button>
+      <div class="adm-section-ttl">Поиск клиента</div>
+      <div class="srch-form">
+        <input type="text" class="srch-inp" id="srchInp" placeholder="Имя или телефон...">
+        <button class="srch-btn" onclick="srchRun()">Найти</button>
       </div>
-      <div class="cl-sort-row">
-        <span class="cl-sort-lbl">Сортировка:</span>
-        <button class="cl-sort active" data-sort="ltv">LTV</button>
-        <button class="cl-sort" data-sort="visits">Визиты</button>
-        <button class="cl-sort" data-sort="last">Последний визит</button>
-        <button class="cl-sort" data-sort="spent">Потрачено</button>
-      </div>
-    </div>
-    <div class="adm-section" style="padding-top:0">
-      <div class="cl-summary" id="clSummary"></div>
-      <div id="clList"><div class="adm-loading">Загрузка клиентов...</div></div>
+      <div id="srchResult"></div>
     </div>
   </div>
+  <div class="adm-panel" id="adm-manual">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Ручная запись</div>
+      <div class="mbk-row">
+        <div class="mbk-lbl">Имя клиента</div>
+        <input type="text" class="mbk-inp" id="mbkName" placeholder="Иван Иванов">
+      </div>
+      <div class="mbk-row">
+        <div class="mbk-lbl">Телефон</div>
+        <input type="tel" class="mbk-inp" id="mbkPhone" placeholder="+7 (___) ___-__-__">
+      </div>
+      <div class="mbk-row">
+        <div class="mbk-lbl">Мастер</div>
+        <select class="mbk-inp" id="mbkMaster"></select>
+      </div>
+      <div class="mbk-row">
+        <div class="mbk-lbl">Дата</div>
+        <input type="date" class="mbk-inp" id="mbkDate">
+      </div>
+      <div class="mbk-row">
+        <div class="mbk-lbl">Время</div>
+        <select class="mbk-inp" id="mbkSlot"><option value="">Сначала выберите мастера и дату</option></select>
+      </div>
+      <div class="mbk-row">
+        <div class="mbk-lbl">Услуги (опционально)</div>
+        <input type="text" class="mbk-inp" id="mbkServices" placeholder="Стрижка, борода...">
+      </div>
+      <button class="mbk-btn" id="mbkSubmitBtn" onclick="manualBkSubmit()">✦ Записать клиента</button>
+      <div id="mbkResult" style="margin-top:10px;font-size:13px;text-align:center"></div>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛЬ СРАВНЕНИЯ ПЕРИОДОВ -->
+  <div class="adm-panel" id="adm-compare">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Эта неделя vs прошлая</div>
+      <div class="cmp-grid" id="cmpWeek"><div class="adm-loading" style="grid-column:span 2">Загрузка...</div></div>
+      <div class="adm-section-ttl" style="margin-top:8px">Этот месяц vs прошлый</div>
+      <div class="cmp-grid" id="cmpMonth"><div class="adm-loading" style="grid-column:span 2">Загрузка...</div></div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">Динамика за 14 дней</div>
+      <div id="cmpDays"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+    <div class="adm-section">
+      <div class="adm-section-ttl">По мастерам (месяц)</div>
+      <div id="cmpMasters"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+  </div>
+
+  <!-- ПАНЕЛЬ ТОП КЛИЕНТОВ -->
+  <div class="adm-panel" id="adm-topclients">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Топ клиентов</div>
+      <div class="top-tabs">
+        <button class="top-tab active" onclick="topSwitch('bySum',this)">По выручке</button>
+        <button class="top-tab" onclick="topSwitch('byVisits',this)">По визитам</button>
+        <button class="top-tab" onclick="topSwitch('byLast',this)">Давно не был</button>
+      </div>
+      <div id="topList"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+  </div>
+
 </div>
 
 
@@ -1448,9 +1646,35 @@ function showToast(msg, type, duration) {
   }, duration);
 }
 
-/* Глобальная замена confirm для критичных действий */
+/* Глобальная замена confirm для критичных действий.
+   Использует #confirmModal вместо window.confirm —
+   window.confirm не работает на iOS в Telegram WebApp.
+   Возвращает Promise<boolean>. */
 function confirmAction(msg) {
-  return window.confirm(msg);
+  return new Promise(function(resolve) {
+    var modal      = ge('confirmModal');
+    var modalTitle = ge('modalTitle');
+    var modalText  = ge('modalText');
+    var modalList  = ge('modalList');
+    var confirmBtn = ge('modalConfirmBtn');
+    var cancelBtn  = ge('modalCancelBtn');
+    if (!modal || !confirmBtn || !cancelBtn) {
+      // fallback: если DOM ещё не готов
+      resolve(window.confirm(msg));
+      return;
+    }
+    modalTitle.textContent = 'Подтверждение';
+    modalText.textContent  = msg;
+    if (modalList) modalList.style.display = 'none';
+    modal.classList.add('show');
+    function cleanup() {
+      modal.classList.remove('show');
+      confirmBtn.onclick = null;
+      cancelBtn.onclick  = null;
+    }
+    confirmBtn.onclick = function() { cleanup(); resolve(true);  };
+    cancelBtn.onclick  = function() { cleanup(); resolve(false); };
+  });
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -1645,13 +1869,10 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', function(){
-  try {
-    initApp();
-  } catch(e) {
-    console.error('initApp error:', e);
-    // Скрываем splash даже при ошибке
-    var s = document.getElementById('splash');
-    if (s) { s.style.display = 'none'; s.style.pointerEvents = 'none'; }
+  try { initApp(); } catch(e) {
+    console.error('initApp:', e);
+    var s=document.getElementById('splash');
+    if(s) s.style.display='none';
   }
 });
 
@@ -1697,12 +1918,6 @@ function initTabs() {
   }
 
   addClickHandler('btnToBooking', () => goPage('booking'));
-  const _lqBtn = ge('btnToBooking');
-  if (_lqBtn) {
-    _lqBtn.addEventListener('touchstart', function(e){
-      try { addLiquidRipple(e); } catch(x){}
-    }, {passive:true});
-  }
   addClickHandler('phoneLink', makeCall);
   addClickHandler('succPhoneLink', makeCall);
   addClickHandler('callFab', makeCall);
@@ -2440,24 +2655,26 @@ function myBkCancel(masterId, date, time, masterName) {
       showToast('⚠️ Отмена доступна не позднее чем за ' + CONFIG.CANCEL_DEADLINE_HOURS + ' ч до визита. Позвоните: +7 (952) 560-88-98', 'error', 5000); return;
     }
   }
-  if (!confirmAction('Вы уверены, что хотите отменить запись?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)) return;
-
-  const chatId = getChatId();
-  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
-    .then(r => r.json())
-    .then(d => {
-      if (d.status==='ok') {
-        _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
-        const card = ge('mybk-' + date + '-' + time.replace(':',''));
-        if (card) card.style.display='none';
-        showToast('✅ Запись отменена', 'success');
-      } else if (d.error==='too_late') {
-        showToast('⚠️ ' + d.message, 'error', 5000);
-      } else {
-        showToast('Не удалось отменить запись', 'error');
-      }
-    })
-    .catch(() => showToast('Ошибка. Попробуйте позже.', 'error'));
+  confirmAction('Вы уверены, что хотите отменить запись?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)
+    .then(function(confirmed) {
+      if (!confirmed) return;
+      const chatId = getChatId();
+      fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
+        .then(r => r.json())
+        .then(d => {
+          if (d.status==='ok') {
+            _myBkCache = {data:null, ts:0, tab:''};
+            const card = ge('mybk-' + date + '-' + time.replace(':',''));
+            if (card) card.style.display='none';
+            showToast('✅ Запись отменена', 'success');
+          } else if (d.error==='too_late') {
+            showToast('⚠️ ' + d.message, 'error', 5000);
+          } else {
+            showToast('Не удалось отменить запись', 'error');
+          }
+        })
+        .catch(() => showToast('Ошибка. Попробуйте позже.', 'error'));
+    });
 }
 
 function myBkReschedule(masterId, date, time, masterName) {
@@ -2469,18 +2686,20 @@ function myBkReschedule(masterId, date, time, masterName) {
       showToast('⚠️ Перенос доступен не позднее чем за ' + CONFIG.CANCEL_DEADLINE_HOURS + ' ч до визита. Позвоните: +7 (952) 560-88-98', 'error', 5000); return;
     }
   }
-  if (!confirmAction('Отменить текущую запись и выбрать новое время?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)) return;
-
-  const chatId = getChatId();
-  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
-    .then(r => r.json())
-    .then(d => {
-      if (d.status!=='ok') { showToast('Не удалось отменить: ' + (d.error||'ошибка'), 'error'); return; }
-      _myBkCache = {data:null, ts:0, tab:''};
-      goPage('booking');
-      if (masterId!==null && masterId!==undefined) requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(parseInt(masterId))));
-    })
-    .catch(() => showToast('Ошибка соединения. Попробуйте позже.', 'error'));
+  confirmAction('Отменить текущую запись и выбрать новое время?\n\n' + masterName + ' — ' + formatDate_full(date) + ' в ' + time)
+    .then(function(confirmed) {
+      if (!confirmed) return;
+      const chatId = getChatId();
+      fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
+        .then(r => r.json())
+        .then(d => {
+          if (d.status!=='ok') { showToast('Не удалось отменить: ' + (d.error||'ошибка'), 'error'); return; }
+          _myBkCache = {data:null, ts:0, tab:''};
+          goPage('booking');
+          if (masterId!==null && masterId!==undefined) requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(parseInt(masterId))));
+        })
+        .catch(() => showToast('Ошибка соединения. Попробуйте позже.', 'error'));
+    });
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -2754,17 +2973,20 @@ function admToggleSlot(slot) {
 function admSetDayOffAction(masterId, dateStr) {
   const master=getMaster(masterId);
   if (!master) { showToast('Мастер не найден','error'); return; }
-  if (!confirmAction('Установить выходной для '+master.name+' на '+formatDateRu(dateStr,'full')+'?')) return;
-  const chatId=getChatId();
-  fetchWithTimeout(CONFIG.GS+'?action=dayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
-    .then(r=>r.json())
-    .then(d => {
-      if (d.success||d.status==='ok') { showToast('✅ Выходной день установлен','success'); admLoadSlots(); admLoadDayOffsList(); }
-      else if (d.error==='HasBookings') {
-        showConfirmModal('⚠️ Есть записи на эту дату','На '+formatDateRu(dateStr,'full')+' у '+master.name+' есть записи:', d.bookings, ()=>admForceSetDayOff(masterId, dateStr));
-      } else { showToast('❌ Ошибка: '+(d.message||d.error),'error'); }
-    })
-    .catch(()=>showToast('Ошибка соединения','error'));
+  confirmAction('Установить выходной для '+master.name+' на '+formatDateRu(dateStr,'full')+'?')
+    .then(function(confirmed) {
+      if (!confirmed) return;
+      const chatId=getChatId();
+      fetchWithTimeout(CONFIG.GS+'?action=dayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+        .then(r=>r.json())
+        .then(d => {
+          if (d.success||d.status==='ok') { showToast('✅ Выходной день установлен','success'); admLoadSlots(); admLoadDayOffsList(); }
+          else if (d.error==='HasBookings') {
+            showConfirmModal('⚠️ Есть записи на эту дату','На '+formatDateRu(dateStr,'full')+' у '+master.name+' есть записи:', d.bookings, ()=>admForceSetDayOff(masterId, dateStr));
+          } else { showToast('❌ Ошибка: '+(d.message||d.error),'error'); }
+        })
+        .catch(()=>showToast('Ошибка соединения','error'));
+    });
 }
 
 function admForceSetDayOff(masterId, dateStr) {
@@ -2781,15 +3003,18 @@ function admForceSetDayOff(masterId, dateStr) {
 function admRemoveDayOffAction(masterId, dateStr) {
   const master=getMaster(masterId);
   if (!master) { showToast('Мастер не найден','error'); return; }
-  if (!confirmAction('Снять выходной для '+master.name+' на '+formatDateRu(dateStr,'full')+'?')) return;
-  const chatId=getChatId();
-  fetchWithTimeout(CONFIG.GS+'?action=removeDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
-    .then(r=>r.json())
-    .then(d => {
-      if (d.success||d.status==='ok') { showToast('✅ Выходной день снят','success'); admLoadSlots(); admLoadDayOffsList(); }
-      else showToast('❌ Ошибка: '+(d.message||d.error),'error');
-    })
-    .catch(()=>showToast('Ошибка соединения','error'));
+  confirmAction('Снять выходной для '+master.name+' на '+formatDateRu(dateStr,'full')+'?')
+    .then(function(confirmed) {
+      if (!confirmed) return;
+      const chatId=getChatId();
+      fetchWithTimeout(CONFIG.GS+'?action=removeDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+        .then(r=>r.json())
+        .then(d => {
+          if (d.success||d.status==='ok') { showToast('✅ Выходной день снят','success'); admLoadSlots(); admLoadDayOffsList(); }
+          else showToast('❌ Ошибка: '+(d.message||d.error),'error');
+        })
+        .catch(()=>showToast('Ошибка соединения','error'));
+    });
 }
 
 function admAddDayOff() {
@@ -3060,53 +3285,56 @@ function bcSend() {
   if (count === 0) { showToast('Нет клиентов в выбранной аудитории', 'error'); return; }
 
   const filterLabel = { all:'всем', vip:'VIP', regular:'постоянным', active:'активным', new:'новым' }[_bcFilter];
-  if (!confirmAction('Отправить рассылку ' + filterLabel + ' клиентам (' + count + ' человек)?\n\nСообщение:\n' + text.substring(0, 100) + (text.length > 100 ? '...' : ''))) return;
+  confirmAction('Отправить рассылку ' + filterLabel + ' клиентам (' + count + ' человек)?\n\nСообщение:\n' + text.substring(0, 100) + (text.length > 100 ? '...' : ''))
+    .then(function(confirmed) {
+      if (!confirmed) return;
 
-  _bcIsSending = true;
-  const btn = ge('bcSendBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Отправка...';
+      _bcIsSending = true;
+      const btn = ge('bcSendBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Отправка...';
 
-  const result = ge('bcResult');
-  result.style.display = 'none';
+      const result = ge('bcResult');
+      result.style.display = 'none';
 
-  const chatId = getChatId();
-  const url = CONFIG.GS + '?action=broadcast&chatId=' + encodeURIComponent(chatId) +
-    '&message=' + encodeURIComponent(text) +
-    '&filterCategory=' + _bcFilter;
+      const chatId = getChatId();
+      const url = CONFIG.GS + '?action=broadcast&chatId=' + encodeURIComponent(chatId) +
+        '&message=' + encodeURIComponent(text) +
+        '&filterCategory=' + _bcFilter;
 
-  fetchWithTimeout(url, {}, 120000) // 2 минуты таймаут — рассылка может быть долгой
-    .then(r => r.json())
-    .then(d => {
-      _bcIsSending = false;
-      btn.disabled = false;
-      btn.textContent = '📢 Отправить рассылку';
+      fetchWithTimeout(url, {}, 120000) // 2 минуты таймаут — рассылка может быть долгой
+        .then(r => r.json())
+        .then(d => {
+          _bcIsSending = false;
+          btn.disabled = false;
+          btn.textContent = '📢 Отправить рассылку';
 
-      if (d.error) {
-        result.className = 'bc-result error';
-        result.textContent = '❌ Ошибка: ' + d.error;
-        result.style.display = 'block';
-        return;
-      }
+          if (d.error) {
+            result.className = 'bc-result error';
+            result.textContent = '❌ Ошибка: ' + d.error;
+            result.style.display = 'block';
+            return;
+          }
 
-      result.className = 'bc-result success';
-      result.innerHTML = '✅ Рассылка завершена!\n\n📨 Доставлено: <strong>' + d.sent + '</strong>\n⏭ Пропущено: ' + d.skipped;
-      result.style.display = 'block';
+          result.className = 'bc-result success';
+          result.innerHTML = '✅ Рассылка завершена!\n\n📨 Доставлено: <strong>' + d.sent + '</strong>\n⏭ Пропущено: ' + d.skipped;
+          result.style.display = 'block';
 
-      // Сохраняем в историю (локально)
-      bcSaveToHistory(text, _bcFilter, d.sent, d.skipped);
-      bcLoadHistory();
+          // Сохраняем в историю (локально)
+          bcSaveToHistory(text, _bcFilter, d.sent, d.skipped);
+          bcLoadHistory();
 
-      showToast('✅ Рассылка отправлена ' + d.sent + ' клиентам', 'success', 4000);
-    })
-    .catch(e => {
-      _bcIsSending = false;
-      btn.disabled = false;
-      btn.textContent = '📢 Отправить рассылку';
-      result.className = 'bc-result error';
-      result.textContent = '❌ Ошибка соединения. Проверьте интернет.';
-      result.style.display = 'block';
-      console.error('bcSend error:', e);
+          showToast('✅ Рассылка отправлена ' + d.sent + ' клиентам', 'success', 4000);
+        })
+        .catch(e => {
+          _bcIsSending = false;
+          btn.disabled = false;
+          btn.textContent = '📢 Отправить рассылку';
+          result.className = 'bc-result error';
+          result.textContent = '❌ Ошибка соединения. Проверьте интернет.';
+          result.style.display = 'block';
+          console.error('bcSend error:', e);
+        });
     });
 }
 window.bcSend = bcSend;
@@ -3511,51 +3739,16 @@ function initWowEffects() {
     btn.appendChild(r);
     setTimeout(() => r.remove(), 650);
   }
-  // Liquid ripple добавляется в initTabs
+  // ripple добавляется в initTabs
 })();
 
 /* П.4: Typewriter эффект для главного слогана */
 function initTypewriter() {
-  const el = ge('h1TypeWriter');
+  var el = ge('h1TypeWriter');
   if (!el) return;
-  const text1 = 'Место, где рождается';
-  const text2 = 'настоящий мужской образ.';
-  let i = 0, line = 1;
-  el.innerHTML = '<span class="h-t1-typed" id="typedLine1"></span>';
-  const typed1 = ge('typedLine1');
-
-  function typeChar() {
-    if (line === 1) {
-      if (i < text1.length) {
-        typed1.textContent += text1[i++];
-        setTimeout(typeChar, 55 + Math.random() * 30);
-      } else {
-        // Переходим на вторую строку
-        line = 2; i = 0;
-        el.innerHTML = '<span class="h-t1-typed">' + text1 + '</span><br><span class="h-t1-typed" id="typedLine2"></span>';
-        setTimeout(typeChar, 180);
-      }
-    } else {
-      const typed2 = ge('typedLine2');
-      if (!typed2) return;
-      if (i < text2.length) {
-        typed2.textContent += text2[i++];
-        setTimeout(typeChar, 50 + Math.random() * 25);
-      } else {
-        // Убираем курсор через 2 сек
-        setTimeout(() => {
-          const cursor = el.querySelector('.h-t1-cursor');
-          if (cursor) cursor.style.opacity = '0';
-        }, 2000);
-      }
-    }
-  }
-
-  // Запускаем после splash screen
-  setTimeout(typeChar, 2000);
+  el.innerHTML = 'Место, где рождается<br>мужской стиль.';
 }
 
-/* П.5: Золотое конфетти */
 function launchConfetti() {
   const container = ge('confettiContainer');
   if (!container) return;
@@ -3633,6 +3826,545 @@ function initMegaWow() {
   initFingerTrail();
   enhanceGlass();
 }
+
+/* ════════════════════════════════════════════════════════
+   НОВЫЕ ФИЧИ АДМИНКИ
+   ════════════════════════════════════════════════════════ */
+
+/* --- admTab расширение --- */
+var _origAdmTab = admTab;
+admTab = function(tab, tabEl) {
+  _origAdmTab(tab, tabEl);
+  if (tab === 'clients')    { var i=document.getElementById('srchInp'); if(i) setTimeout(function(){i.focus();},300); }
+  if (tab === 'manual')     manualBkInit();
+  if (tab === 'compare')    compareInit();
+  if (tab === 'topclients') topClientsInit();
+};
+
+/* ────────────────────────────────────────────────────────
+   1. КНОПКА ОТМЕНЫ В СВОДКЕ
+   ──────────────────────────────────────────────────────── */
+function admQuickCancel(bookingId, clientName, btn) {
+  if (!confirm('Отменить запись клиента ' + clientName + '?')) return;
+  haptic('medium');
+  btn.disabled = true; btn.textContent = 'Отмена...';
+  var chatId = getChatId();
+  fetchWithTimeout(CONFIG.GS + '?action=cancelBooking&bookingId=' + encodeURIComponent(bookingId) +
+    '&chatId=' + encodeURIComponent(chatId) + '&reason=admin')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) { showToast('Ошибка: ' + d.error, 'error'); btn.disabled=false; btn.textContent='Отменить запись'; return; }
+      showToast('Запись отменена', 'success'); haptic('success');
+      admLoadSummary();
+    })
+    .catch(function(){ showToast('Ошибка соединения', 'error'); btn.disabled=false; btn.textContent='Отменить запись'; });
+}
+window.admQuickCancel = admQuickCancel;
+
+/* Патчим admLoadSummary — добавляем кнопку отмены в ближайшие записи */
+var _origAdmLoadSummary = admLoadSummary;
+admLoadSummary = function() {
+  var chatId = getChatId();
+  var container = ge('admSummaryContent');
+  if (!container) return;
+  var todayStr = formatDate_iso(new Date());
+  container.innerHTML = '<div class="adm-loading">Загрузка сводки...</div>';
+
+  Promise.all([
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId)).then(function(r){return r.json();}),
+    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)).then(function(r){return r.json();})
+  ])
+  .then(function(results) {
+    var bkData = results[0], anData = results[1];
+    if (bkData.error === 'Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав</div>'; return; }
+    var bookings = (bkData.bookings||[]).filter(function(b){return b.status==='confirmed';});
+    var revenueToday = anData.revenueToday || 0;
+    var now = new Date(), nowMin = now.getHours()*60+now.getMinutes();
+
+    // Метрики
+    var html = '<div class="adm-summary-date">Сводка на ' + now.toLocaleDateString('ru-RU', {day:'numeric',month:'long'}) + '</div>';
+    html += '<div class="adm-summary-metrics">';
+    html += '<div class="adm-summary-card"><div class="adm-lbl">Записей</div><div class="adm-val">' + bookings.length + '</div></div>';
+    html += '<div class="adm-summary-card"><div class="adm-lbl">Выручка</div><div class="adm-val">' + formatPrice(revenueToday) + '</div></div>';
+    var masters = {};
+    bookings.forEach(function(b){ masters[b.master] = (masters[b.master]||0)+1; });
+    var masterCount = Object.keys(masters).length;
+    html += '<div class="adm-summary-card"><div class="adm-lbl">Мастеров</div><div class="adm-val">' + masterCount + '</div></div>';
+    html += '</div>';
+
+    // По мастерам
+    Object.keys(masters).forEach(function(mName) {
+      var mBks = bookings.filter(function(b){return b.master===mName;});
+      var total = MASTERS ? MASTERS.length : 1;
+      var pct = Math.round(mBks.length / Math.max(bookings.length,1) * 100);
+      html += '<div class="adm-summary-master">';
+      html += '<div class="adm-summary-master-top"><span class="adm-summary-master-name">' + escapeHtml(mName) + '</span>';
+      html += '<span class="adm-summary-master-cnt">' + mBks.length + ' записей</span></div>';
+      html += '<div class="adm-summary-bar-bg"><div class="adm-summary-bar-fill" style="width:'+pct+'%"></div></div>';
+      html += '<div class="adm-summary-times">' + mBks.sort(function(a,b){return a.time<b.time?-1:1;}).map(function(b){return '<span>'+escapeHtml(b.time||'')+'</span>';}).join('') + '</div>';
+      html += '</div>';
+    });
+
+    // Ближайшие записи с кнопкой отмены
+    var upcoming = bookings.filter(function(b){
+      if (!b.time) return false;
+      var tp = b.time.split(':');
+      return parseInt(tp[0])*60+parseInt(tp[1]||0) >= nowMin;
+    }).sort(function(a,b){return a.time<b.time?-1:1;}).slice(0,5);
+
+    if (upcoming.length > 0) {
+      html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Ближайшие записи</div>';
+      upcoming.forEach(function(b) {
+        var tp = (b.time||'').split(':');
+        var minsLeft = tp.length>=2 ? parseInt(tp[0])*60+parseInt(tp[1]||0)-nowMin : -1;
+        var badge = '';
+        if (minsLeft>=0 && minsLeft<=15) badge = '<span class="adm-booking-badge soon">СКОРО</span>';
+        else if (minsLeft>0) badge = '<span class="adm-booking-badge mins">'+minsLeft+' мин</span>';
+        var safeId   = b.id ? String(b.id) : '';
+        var safeName = escapeHtml(String(b.name||'')).replace(/'/g,'&#39;');
+        var safeMaster = escapeHtml(String(b.master||'')).replace(/'/g,'&#39;');
+        var safeDate = escapeHtml(String(b.date||todayStr));
+        var safePhone = String(b.phone||'').replace(/\D/g,'');
+        var cancelBtn = safeId ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
+        var rescBtn   = safeId ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
+        var msgBtn    = safePhone ? '<button class="adm-booking-msg" onclick="admMsgClient(\''+safePhone+'\',\''+safeName+'\')">' + '✉ Написать</button>' : '';
+        html += '<div class="adm-booking">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+            '<div class="adm-booking-time">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
+          '</div>' +
+          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(String(b.phone||'')) +
+            (b.services ? '<br>' + escapeHtml(String(b.services)) : '') + '</div>' +
+          '<div class="adm-booking-actions">' + rescBtn + msgBtn + cancelBtn + '</div>' +
+        '</div>';
+      });
+    }
+
+    container.innerHTML = html;
+  })
+  .catch(function(e){ container.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; console.error(e); });
+};
+
+/* ────────────────────────────────────────────────────────
+   2. ПОИСК КЛИЕНТА
+   ──────────────────────────────────────────────────────── */
+function srchRun() {
+  var q = ((document.getElementById('srchInp')||{}).value||'').trim();
+  var result = document.getElementById('srchResult');
+  if (!q) { if(result) result.innerHTML='<div style="color:var(--gray);font-size:13px;padding:8px 0">Введите имя или телефон</div>'; return; }
+  if (result) result.innerHTML = '<div class="adm-loading">Поиск...</div>';
+  haptic('light');
+  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(q) + '&chatId=' + encodeURIComponent(getChatId()))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.clients || !d.clients.length) { result.innerHTML='<div style="color:var(--gray);font-size:13px;padding:8px 0">Не найдено</div>'; return; }
+      var html = '';
+      d.clients.forEach(function(c) {
+        var last = c.lastVisit ? new Date(c.lastVisit).toLocaleDateString('ru-RU') : '—';
+        html += '<div class="srch-card"><div class="srch-name">' + escapeHtml(c.name||'—') + '</div>' +
+          '<div class="srch-phone">' + escapeHtml(c.phone||'—') + '</div>' +
+          '<div class="srch-stats">' +
+            '<div class="srch-stat"><div class="srch-stat-v">' + (c.totalVisits||0) + '</div><div class="srch-stat-l">Визитов</div></div>' +
+            '<div class="srch-stat"><div class="srch-stat-v">' + formatPrice(c.totalSpent||0) + '</div><div class="srch-stat-l">Потрачено</div></div>' +
+            '<div class="srch-stat"><div class="srch-stat-v">' + last + '</div><div class="srch-stat-l">Последний</div></div>' +
+          '</div>';
+        if (c.bookings && c.bookings.length) {
+          html += '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin:8px 0 6px">История</div>';
+          c.bookings.slice(0,5).forEach(function(b){
+            html += '<div class="srch-bk"><div><div class="srch-bk-d">' + escapeHtml(b.date||'') + ' ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' +
+              '<div class="srch-bk-s">' + escapeHtml(b.services||'') + '</div></div>' +
+              '<div class="srch-bk-p">' + formatPrice(b.total||0) + '</div></div>';
+          });
+        }
+        html += '</div>';
+      });
+      result.innerHTML = html;
+    })
+    .catch(function(){ if(result) result.innerHTML='<div class="adm-loading">Ошибка</div>'; });
+}
+window.srchRun = srchRun;
+
+document.addEventListener('DOMContentLoaded', function(){
+  var i = document.getElementById('srchInp');
+  if (i) i.addEventListener('keydown', function(e){ if(e.key==='Enter') srchRun(); });
+});
+
+/* ────────────────────────────────────────────────────────
+   3. РУЧНАЯ ЗАПИСЬ
+   ──────────────────────────────────────────────────────── */
+function manualBkInit() {
+  var mSel = document.getElementById('mbkMaster');
+  if (mSel && mSel.options.length <= 1 && typeof MASTERS !== 'undefined') {
+    MASTERS.forEach(function(m){ var o=document.createElement('option'); o.value=m.id; o.textContent=m.name; mSel.appendChild(o); });
+  }
+  var today = formatDate_iso(new Date());
+  var d = document.getElementById('mbkDate');
+  if (d && !d.value) d.value = today;
+  var mSel2 = document.getElementById('mbkMaster');
+  if (mSel2) mSel2.addEventListener('change', manualBkLoadSlots);
+  var dInp = document.getElementById('mbkDate');
+  if (dInp) dInp.addEventListener('change', manualBkLoadSlots);
+}
+
+function manualBkLoadSlots() {
+  var mId   = (document.getElementById('mbkMaster')||{}).value;
+  var date  = (document.getElementById('mbkDate')||{}).value;
+  var sSel  = document.getElementById('mbkSlot');
+  if (!sSel) return;
+  if (!mId || !date) { sSel.innerHTML='<option value="">Выберите мастера и дату</option>'; return; }
+  sSel.innerHTML = '<option value="">Загрузка...</option>';
+  fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + encodeURIComponent(mId) + '&date=' + encodeURIComponent(date))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      sSel.innerHTML = '<option value="">Выберите время</option>';
+      (d.freeSlots||[]).forEach(function(s){ var o=document.createElement('option'); o.value=s; o.textContent=s; sSel.appendChild(o); });
+      if (!(d.freeSlots||[]).length) sSel.innerHTML='<option value="">Нет свободных слотов</option>';
+    })
+    .catch(function(){ sSel.innerHTML='<option value="">Ошибка загрузки</option>'; });
+}
+
+function manualBkSubmit() {
+  var name  = ((document.getElementById('mbkName')||{}).value||'').trim();
+  var phone = ((document.getElementById('mbkPhone')||{}).value||'').trim();
+  var mId   = ((document.getElementById('mbkMaster')||{}).value||'');
+  var date  = ((document.getElementById('mbkDate')||{}).value||'');
+  var slot  = ((document.getElementById('mbkSlot')||{}).value||'');
+  var svcs  = ((document.getElementById('mbkServices')||{}).value||'').trim();
+  var res   = document.getElementById('mbkResult');
+  var btn   = document.getElementById('mbkSubmitBtn');
+  if (!name||!phone||!mId||!date||!slot) { showToast('Заполните все поля', 'error'); return; }
+  haptic('light');
+  if (btn) { btn.disabled=true; btn.textContent='Записываем...'; }
+  var master = MASTERS ? (MASTERS.find(function(m){return String(m.id)===String(mId);})||{}) : {};
+  fetchWithTimeout(CONFIG.GS, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'createBooking', name:name, phone:phone, master:master.name||'', masterId:mId,
+      date:date, slot:slot, services:svcs||'Ручная запись', chatId:getChatId(), isManual:true})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (btn) { btn.disabled=false; btn.textContent='✦ Записать клиента'; }
+    if (d.error) { showToast('Ошибка: '+d.error,'error'); return; }
+    showToast('Клиент записан!','success'); haptic('success');
+    if (res) res.innerHTML='<div style="color:#4caf7d;text-align:center;padding:8px">✓ Запись создана</div>';
+    setTimeout(function(){ if(res) res.innerHTML=''; }, 3000);
+    document.getElementById('mbkName').value='';
+    document.getElementById('mbkPhone').value='';
+    document.getElementById('mbkSlot').innerHTML='<option value="">Выберите время</option>';
+  })
+  .catch(function(){ if(btn){btn.disabled=false;btn.textContent='✦ Записать клиента';} showToast('Ошибка соединения','error'); });
+}
+window.manualBkSubmit = manualBkSubmit;
+
+/* ────────────────────────────────────────────────────────
+   4. СРАВНЕНИЕ ПЕРИОДОВ
+   ──────────────────────────────────────────────────────── */
+var _cmpLoaded = false;
+function compareInit() { if (!_cmpLoaded) compareLoad(); }
+function compareLoad() {
+  var chatId = getChatId();
+  ['cmpWeek','cmpMonth','cmpDays','cmpMasters'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.innerHTML='<div class="adm-loading">Загрузка...</div>';
+  });
+  fetchWithTimeout(CONFIG.GS + '?action=getCompareStats&chatId=' + encodeURIComponent(chatId))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error==='Unauthorized') { showToast('Нет прав','error'); return; }
+      _cmpLoaded = true;
+      renderCmpPeriod('cmpWeek',  d.thisWeek,  d.lastWeek,  'Эта неделя',  'Прошлая');
+      renderCmpPeriod('cmpMonth', d.thisMonth, d.lastMonth, 'Этот месяц', 'Прошлый');
+      renderCmpDays(d.last14days||[]);
+      renderCmpMasters(d.mastersStats||[]);
+    })
+    .catch(function(){ showToast('Ошибка загрузки','error'); });
+}
+
+function renderCmpPeriod(elId, cur, prev, curLbl, prevLbl) {
+  var el = document.getElementById(elId); if (!el) return;
+  var diff = cur - prev, pct = prev>0 ? Math.round(diff/prev*100) : 0;
+  var diffHtml = diff > 0
+    ? '<span class="cmp-diff cmp-up">▲ +' + formatPrice(diff) + ' (+' + pct + '%)</span>'
+    : diff < 0
+    ? '<span class="cmp-diff cmp-down">▼ ' + formatPrice(diff) + ' (' + pct + '%)</span>'
+    : '<span class="cmp-diff cmp-same">Без изменений</span>';
+  var barPct = prev>0 ? Math.min(100, Math.round(cur/prev*100)) : 100;
+  el.innerHTML =
+    '<div class="cmp-card"><div class="cmp-lbl">' + curLbl + '</div><div class="cmp-val">' + formatPrice(cur) + '</div>' + diffHtml +
+    '<div class="cmp-bar"><div class="cmp-bar-fill" style="width:' + barPct + '%"></div></div></div>' +
+    '<div class="cmp-card"><div class="cmp-lbl">' + prevLbl + '</div><div class="cmp-val">' + formatPrice(prev) + '</div>' +
+    '<div class="cmp-bar"><div class="cmp-bar-fill" style="width:100%"></div></div></div>';
+}
+
+function renderCmpDays(days) {
+  var el = document.getElementById('cmpDays'); if (!el) return;
+  if (!days.length) { el.innerHTML='<div class="adm-loading">Нет данных</div>'; return; }
+  var max = Math.max.apply(null, days.map(function(d){return d.revenue||0;})) || 1;
+  var todayStr = formatDate_iso(new Date());
+  var html = '<div class="cmp-chart">';
+  days.forEach(function(d){
+    var pct = Math.round((d.revenue||0)/max*100);
+    var isToday = d.date === todayStr;
+    html += '<div class="cmp-bar-col">' +
+      '<div class="cmp-bar-b' + (isToday?' today':'') + '" style="height:' + Math.max(pct,3) + '%;max-height:52px;width:100%;align-self:flex-end"></div>' +
+      '<div class="cmp-bar-day' + (isToday?' today':'') + '">' + escapeHtml(d.label||'') + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  var total = days.reduce(function(s,d){return s+(d.revenue||0);},0);
+  html += '<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(201,168,76,.1)">' +
+    '<span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)">14 дней</span>' +
+    '<span style="font-family:\'Playfair Display\',serif;font-size:16px;font-weight:700;color:var(--gold)">' + formatPrice(total) + '</span></div>';
+  el.innerHTML = html;
+}
+
+function renderCmpMasters(stats) {
+  var el = document.getElementById('cmpMasters'); if (!el) return;
+  if (!stats.length) { el.innerHTML='<div class="adm-loading">Нет данных</div>'; return; }
+  var maxRev = Math.max.apply(null, stats.map(function(m){return m.revenue||0;})) || 1;
+  var html = '<table class="mst-table"><thead><tr><th>Мастер</th><th>Записей</th><th>Выручка</th><th>Ср.чек</th></tr></thead><tbody>';
+  stats.forEach(function(m,i){
+    var pct = Math.round((m.revenue||0)/maxRev*100);
+    html += '<tr><td class="' + (i===0?'mst-leader':'') + '">' + escapeHtml(m.name) + (i===0?' 👑':'') + '</td>' +
+      '<td>' + (m.bookings||0) + '</td>' +
+      '<td><div>' + formatPrice(m.revenue||0) + '</div><div class="mst-bar-w"><div class="mst-bar-f" style="width:'+pct+'%"></div></div></td>' +
+      '<td>' + (m.bookings ? formatPrice(Math.round((m.revenue||0)/m.bookings)) : '—') + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+/* ────────────────────────────────────────────────────────
+   5. ТОП КЛИЕНТОВ
+   ──────────────────────────────────────────────────────── */
+var _topData = null, _topTab = 'bySum';
+function topClientsInit() { if (!_topData) topClientsLoad(); }
+function topClientsLoad() {
+  var list = document.getElementById('topList');
+  if (list) list.innerHTML = '<div class="adm-loading">Загрузка...</div>';
+  fetchWithTimeout(CONFIG.GS + '?action=getTopClients&chatId=' + encodeURIComponent(getChatId()))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error==='Unauthorized') { if(list) list.innerHTML='<div class="adm-loading">Нет прав</div>'; return; }
+      _topData = d;
+      topRender();
+    })
+    .catch(function(){ if(list) list.innerHTML='<div class="adm-loading">Ошибка</div>'; });
+}
+
+function topSwitch(tab, btn) {
+  _topTab = tab;
+  document.querySelectorAll('.top-tab').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  haptic('select');
+  if (_topData) topRender(); else topClientsLoad();
+}
+window.topSwitch = topSwitch;
+
+function topRender() {
+  var list = document.getElementById('topList'); if (!list || !_topData) return;
+  var clients = _topData[_topTab] || [];
+  if (!clients.length) { list.innerHTML='<div class="adm-loading">Нет данных</div>'; return; }
+  var medals = ['🥇','🥈','🥉'];
+  var html = '';
+  clients.forEach(function(c, i) {
+    var last = c.lastVisit ? new Date(c.lastVisit).toLocaleDateString('ru-RU') : '—';
+    var days = c.lastVisit ? Math.floor((Date.now()-new Date(c.lastVisit))/86400000) : '?';
+    html += '<div class="top-card"><div class="top-rank">' + (i<3?medals[i]:(i+1)+'.') + '</div>' +
+      '<div class="top-name">' + escapeHtml(c.name||'—') + '</div>' +
+      '<div class="top-phone">' + escapeHtml(c.phone||'—') + '</div>' +
+      '<div class="top-stats">' +
+        '<div class="top-stat"><div class="top-stat-v">' + (c.visits||c.totalVisits||0) + '</div><div class="top-stat-l">Визитов</div></div>' +
+        '<div class="top-stat"><div class="top-stat-v">' + formatPrice(c.total||c.totalSpent||0) + '</div><div class="top-stat-l">Потрачено</div></div>' +
+        '<div class="top-stat"><div class="top-stat-v">' + (_topTab==='byLast'?days+' д':last) + '</div><div class="top-stat-l">' + (_topTab==='byLast'?'Не был':'Последний') + '</div></div>' +
+      '</div></div>';
+  });
+  list.innerHTML = html;
+}
+
+
+/* ════════════════════════════════════════════════════════
+   П.1: ПЕРЕНОС ЗАПИСИ
+   ════════════════════════════════════════════════════════ */
+var _rescBookingId = null, _rescMaster = null;
+
+function rescOpen(bookingId, clientName, master, currentDate) {
+  _rescBookingId = bookingId;
+  _rescMaster    = master;
+  haptic('light');
+
+  var info = document.getElementById('rescClientInfo');
+  if (info) info.textContent = clientName + ' · ' + master + ' · ' + currentDate;
+
+  // Ставим минимальную дату = сегодня
+  var dateInp = document.getElementById('rescDate');
+  if (dateInp) {
+    dateInp.min   = formatDate_iso(new Date());
+    dateInp.value = '';
+    dateInp.onchange = rescLoadSlots;
+  }
+
+  var slotSel = document.getElementById('rescSlot');
+  if (slotSel) slotSel.innerHTML = '<option value="">Сначала выберите дату</option>';
+
+  var confirmBtn = document.getElementById('rescConfirmBtn');
+  if (confirmBtn) confirmBtn.disabled = true;
+
+  var modal = document.getElementById('rescheduleModal');
+  if (modal) modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+window.rescOpen = rescOpen;
+
+function rescClose() {
+  var modal = document.getElementById('rescheduleModal');
+  if (modal) modal.classList.remove('open');
+  document.body.style.overflow = '';
+  _rescBookingId = null;
+}
+window.rescClose = rescClose;
+
+function rescLoadSlots() {
+  var date   = (document.getElementById('rescDate') || {}).value;
+  var slotSel = document.getElementById('rescSlot');
+  var confirmBtn = document.getElementById('rescConfirmBtn');
+  if (!date || !_rescMaster || !slotSel) return;
+
+  // Находим id мастера по имени
+  var master = (typeof MASTERS !== 'undefined') ? MASTERS.find(function(m){ return m.name === _rescMaster; }) : null;
+  var masterId = master ? master.id : '';
+
+  slotSel.innerHTML = '<option value="">Загрузка слотов...</option>';
+  if (confirmBtn) confirmBtn.disabled = true;
+
+  fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + encodeURIComponent(masterId) + '&date=' + encodeURIComponent(date))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var slots = d.freeSlots || [];
+      if (!slots.length) {
+        slotSel.innerHTML = '<option value="">Нет свободных слотов</option>';
+        return;
+      }
+      slotSel.innerHTML = '<option value="">Выберите время</option>' +
+        slots.map(function(s){ return '<option value="' + s + '">' + s + '</option>'; }).join('');
+      slotSel.onchange = function() {
+        if (confirmBtn) confirmBtn.disabled = !slotSel.value;
+      };
+    })
+    .catch(function(){ slotSel.innerHTML = '<option value="">Ошибка загрузки</option>'; });
+}
+
+function rescConfirm() {
+  var date = (document.getElementById('rescDate') || {}).value;
+  var slot = (document.getElementById('rescSlot') || {}).value;
+  var btn  = document.getElementById('rescConfirmBtn');
+  if (!date || !slot || !_rescBookingId) return;
+
+  haptic('medium');
+  if (btn) { btn.disabled = true; btn.textContent = 'Переносим...'; }
+
+  fetchWithTimeout(CONFIG.GS + '?action=rescheduleBooking&bookingId=' + encodeURIComponent(_rescBookingId) +
+    '&newDate=' + encodeURIComponent(date) + '&newSlot=' + encodeURIComponent(slot) +
+    '&chatId=' + encodeURIComponent(getChatId()))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) {
+        showToast('Ошибка: ' + d.error, 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Перенести'; }
+        return;
+      }
+      showToast('✅ Запись перенесена', 'success');
+      haptic('success');
+      rescClose();
+      admLoadSummary();
+    })
+    .catch(function(){
+      showToast('Ошибка соединения', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Перенести'; }
+    });
+}
+window.rescConfirm = rescConfirm;
+
+/* ════════════════════════════════════════════════════════
+   П.2: ЖИВОЕ ОБНОВЛЕНИЕ СВОДКИ — каждые 2 минуты
+   ════════════════════════════════════════════════════════ */
+var _summaryAutoTimer = null;
+var _summaryLastCount = -1;
+
+function summaryAutoStart() {
+  summaryAutoStop();
+  _summaryAutoTimer = setInterval(function() {
+    var chatId = getChatId();
+    var todayStr = formatDate_iso(new Date());
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var bookings = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; });
+        var count = bookings.length;
+        // Если количество записей изменилось — обновляем сводку и показываем уведомление
+        if (_summaryLastCount >= 0 && count !== _summaryLastCount) {
+          admLoadSummary();
+          if (count > _summaryLastCount) {
+            haptic('success');
+            showToast('🔔 Новая запись!', 'success', 4000);
+            // Мигаем заголовком сводки
+            var ttl = document.querySelector('#adm-summary .adm-section-ttl');
+            if (ttl) {
+              var badge = document.createElement('span');
+              badge.className = 'adm-new-badge';
+              badge.textContent = '+' + (count - _summaryLastCount);
+              ttl.appendChild(badge);
+              setTimeout(function(){ badge.remove(); }, 5000);
+            }
+          }
+        }
+        _summaryLastCount = count;
+      })
+      .catch(function(){});
+  }, 2 * 60 * 1000); // каждые 2 минуты
+}
+
+function summaryAutoStop() {
+  if (_summaryAutoTimer) { clearInterval(_summaryAutoTimer); _summaryAutoTimer = null; }
+}
+
+/* Патчим admInit — запускаем авто-обновление при входе в админку */
+var _origAdmInit = typeof admInit === 'function' ? admInit : null;
+admInit = function() {
+  if (_origAdmInit) _origAdmInit();
+  summaryAutoStart();
+};
+
+/* Патчим goPage — останавливаем когда уходим из админки */
+var _origGoPage2 = goPage;
+goPage = function(id) {
+  _origGoPage2(id);
+  if (id !== 'admin') summaryAutoStop();
+  else summaryAutoStart();
+};
+
+/* ════════════════════════════════════════════════════════
+   П.8: БЫСТРОЕ СООБЩЕНИЕ КЛИЕНТУ
+   ════════════════════════════════════════════════════════ */
+function admMsgClient(phone, name) {
+  haptic('light');
+  // Убираем все нецифровые символы
+  var cleaned = String(phone).replace(/\D/g, '');
+  if (!cleaned) { showToast('Нет номера телефона', 'error'); return; }
+
+  // Добавляем 7 если начинается с 8 или 9
+  if (cleaned.startsWith('8')) cleaned = '7' + cleaned.slice(1);
+  if (cleaned.startsWith('9')) cleaned = '7' + cleaned;
+
+  // Открываем Telegram с этим номером
+  var url = 'https://t.me/+' + cleaned;
+
+  if (tg && tg.openLink) {
+    tg.openLink(url);
+  } else {
+    window.open(url, '_blank');
+  }
+}
+window.admMsgClient = admMsgClient;
+
 </script>
 </body>
 </html>

@@ -23,8 +23,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   left:0;
   right:0;
   z-index:1000;
-  background:#0d0b07;
-  border-top:1px solid rgba(201,168,76,.2);
+  background:rgba(13,11,7,.85);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-top:1px solid rgba(201,168,76,.25);
   padding-bottom:env(safe-area-inset-bottom,0px);
   min-height:72px;
   padding-top:8px;
@@ -41,7 +43,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   cursor:pointer;
   color:rgba(138,125,107,.45);
   font-size:11px;
-  letter-spacing:.6px;
+  letter-spacing:1px;
   text-transform:uppercase;
   border:none;
   background:none;
@@ -118,10 +120,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes shimmer{to{background-position:200% center}}
 
 .home-btns{display:flex;gap:12px;padding:20px 24px}
-.btn-g{flex:1;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .2s}
-.btn-g:active{background:var(--gold-l)}
+.btn-g{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.btn-g::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .15s}
+.btn-g:active::after{background:rgba(255,255,255,.15)}
+.btn-g:active{transform:scale(.99)}
 .btn-o{flex:1;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer}
 
+.home-divider{display:flex;align-items:center;gap:12px;padding:0 24px;margin:4px 0}.home-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent)}.home-divider-ico{font-size:10px;color:rgba(201,168,76,.4)}
 .info-block{margin:0 24px 20px;border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02)}
 .info-row{display:flex;align-items:flex-start;gap:14px;padding:13px 16px;border-bottom:1px solid rgba(201,168,76,.07)}
 .info-row:last-child{border-bottom:none}
@@ -129,8 +134,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .info-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:2px}
 .info-val{font-size:14px;color:var(--cream)}
 .info-val a{color:var(--gold)}
-.soc{display:flex;gap:10px;padding:0 24px 24px}
-.soc a{flex:1;padding:12px;text-align:center;border:1px solid rgba(201,168,76,.22);color:var(--gold);font-size:13px;font-weight:600;letter-spacing:.5px}
+.soc{display:flex;gap:8px;padding:0 24px 24px}
+.soc a{flex:1;padding:14px 8px;text-align:center;border:1px solid rgba(201,168,76,.22);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:5px}
+.soc a:active{background:rgba(201,168,76,.1);border-color:var(--gold)}
+.soc-ico{font-size:18px;display:block}
 
 /* CALL BUTTON */
 .call-fab{position:fixed;bottom:88px;right:16px;z-index:101;width:52px;height:52px;border-radius:50%;background:var(--gold);color:var(--black);border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(201,168,76,.35);transition:transform .15s;-webkit-tap-highlight-color:rgba(201,168,76,.15);touch-action:manipulation}
@@ -144,21 +151,23 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* MASTERS */
 .m-list{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.m-item{border:1px solid rgba(201,168,76,.15);background:#0d0b07;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;flex-direction:column}
-.m-item:active{border-color:var(--gold);transform:scale(.98)}
-.m-thumb{width:100%;aspect-ratio:3/4;overflow:hidden;flex-shrink:0}
-.m-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.m-item{border:1px solid rgba(201,168,76,.15);background:#0d0b07;overflow:hidden;cursor:pointer;transition:border-color .25s,transform .15s;display:flex;flex-direction:column;position:relative}
+.m-item:active{border-color:var(--gold);transform:scale(.97)}
+.m-thumb{width:100%;aspect-ratio:3/4;overflow:hidden;flex-shrink:0;position:relative}
+.m-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform .4s ease}
+.m-item:active .m-thumb img{transform:scale(1.03)}
 .m-thumb-placeholder{width:100%;aspect-ratio:3/4;background:rgba(201,168,76,.06);display:flex;align-items:center;justify-content:center;font-size:32px;opacity:.25}
-.m-body{padding:10px 10px 12px;flex:1;display:flex;flex-direction:column}
+.m-thumb-overlay{position:absolute;bottom:0;left:0;right:0;padding:28px 10px 10px;background:linear-gradient(0deg,rgba(10,8,5,.92) 0%,rgba(10,8,5,.5) 60%,transparent 100%)}
 .m-nm{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream);line-height:1.2}
-.m-sp{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-top:4px}
-.m-rating{display:flex;align-items:center;gap:3px;margin-top:6px;font-size:12px;color:var(--gold)}
-.m-rating-num{color:var(--gray);font-size:11px;margin-left:2px}
+.m-sp{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-top:3px}
+.m-rating{display:flex;align-items:center;gap:3px;margin-top:4px;font-size:11px;color:var(--gold)}
+.m-rating-num{color:rgba(138,125,107,.8);font-size:10px;margin-left:2px}
 .ms-rating{font-size:10px;color:var(--gold);margin-top:3px;letter-spacing:.5px}
 
 /* PRICE */
 .ptabs{display:flex;padding:14px 16px 0;gap:8px}
-.ptab{flex:1;padding:10px 4px;text-align:center;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.ptab{flex:1;padding:12px 4px;text-align:center;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ptab-ico{font-size:20px;display:block}
 .ptab.active{background:rgba(201,168,76,.08);border-color:var(--gold);color:var(--gold)}
 .ppanel{display:none;padding:10px 16px 0}
 .ppanel.active{display:block}
@@ -180,7 +189,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .ms-s{font-size:9px;color:var(--gold);letter-spacing:1px}
 
 /* BOOKING - STATUS BAR */
-.sel-bar{display:flex;background:rgba(0,0,0,.25);border-top:1px solid rgba(201,168,76,.1);border-bottom:1px solid rgba(201,168,76,.1)}
+.sel-bar{display:flex;background:rgba(13,11,7,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid rgba(201,168,76,.15);border-bottom:1px solid rgba(201,168,76,.15);position:sticky;top:0;z-index:100}
 .sb-item{flex:1;padding:10px 14px;border-right:1px solid rgba(201,168,76,.07)}
 .sb-item:last-child{border-right:none}
 .sb-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
@@ -202,7 +211,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cal-d.emp{visibility:hidden}
 .cal-d.pst{visibility:hidden}
 .cal-d.avl{cursor:pointer;color:var(--cream)}
-.cal-d.avl::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--green)}
+.cal-d.avl::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.7}
 .cal-d.full{visibility:hidden}
 /* ВЫХОДНОЙ ДЕНЬ — КРАСНЫЙ ЦВЕТ */
 .cal-d.dayoff{
@@ -229,7 +238,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .time-wrap{padding:0 16px 14px}
 .t-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
 .t-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.t-btn{border:1px solid rgba(201,168,76,.18);padding:11px 4px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;color:var(--cream);background:transparent;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+@keyframes slotIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.t-btn{border:1px solid rgba(201,168,76,.18);padding:11px 4px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;color:var(--cream);background:transparent;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;animation:slotIn .2s ease both}
 .t-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--black)}
 .t-btn.busy{background:rgba(224,80,80,.15);border-color:#e05050;color:#e05050;cursor:not-allowed;text-decoration:line-through;opacity:.7}
 .t-btn.past{display:none}
@@ -613,9 +623,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <span class="h-line"></span>
     </div>
   </div>
-  <div class="home-btns">
-    <button class="btn-g" id="btnToBooking" style="flex:unset;width:100%;max-width:280px;margin:0 auto">✦ Записаться</button>
+  <div class="home-btns" style="padding:20px 24px">
+    <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
+  <div class="home-divider"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="info-block">
     <div class="info-row">
       <div class="info-ico">📍</div>
@@ -631,11 +642,12 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="soc">
-    <a href="https://t.me/barber_sty1le" target="_blank">Telegram</a>
-    <a href="https://www.instagram.com/barber_stayle161?igsh=MWMwbno5d215dnhzag==" target="_blank">Instagram</a>
-    <a href="https://vk.com/club211199483" target="_blank">VКонтакте</a>
-    <a href="https://yandex.ru/maps/?text=Батайск+Октябрьская+108" target="_blank">Карта</a>
+    <a href="https://t.me/barber_sty1le" target="_blank"><span class="soc-ico">✈</span>TG</a>
+    <a href="https://www.instagram.com/barber_stayle161?igsh=MWMwbno5d215dnhzag==" target="_blank"><span class="soc-ico">◎</span>INST</a>
+    <a href="https://vk.com/club211199483" target="_blank"><span class="soc-ico">◈</span>VK</a>
+    <a href="https://yandex.ru/maps/?text=Батайск+Октябрьская+108" target="_blank"><span class="soc-ico">⊕</span>MAP</a>
   </div>
+  <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="reviews-section">
     <div class="reviews-hdr">
       <div class="sec-lbl">✦ Что говорят клиенты</div>
@@ -680,9 +692,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <h2 class="sec-ttl">Прайс-<em>лист</em></h2>
   </div>
   <div class="ptabs">
-    <button class="ptab active" data-category="head">✂ Голова</button>
-    <button class="ptab" data-category="face">🪒 Лицо</button>
-    <button class="ptab" data-category="wax">🕯 Воск</button>
+    <button class="ptab active" data-category="head"><span class="ptab-ico">✂</span>Голова</button>
+    <button class="ptab" data-category="face"><span class="ptab-ico">🪒</span>Лицо</button>
+    <button class="ptab" data-category="wax"><span class="ptab-ico">🕯</span>Воск</button>
   </div>
   <div class="ppanel active" id="pt-head"></div>
   <div class="ppanel" id="pt-face"></div>
@@ -703,6 +715,11 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <button class="succ-again" id="btnBkReset">Записаться ещё раз</button>
   </div>
   <div id="bkFormWrap">
+    <div class="sel-bar">
+      <div class="sb-item"><div class="sb-lbl">Мастер</div><div class="sb-val" id="sbMaster">—</div></div>
+      <div class="sb-item"><div class="sb-lbl">Дата</div><div class="sb-val" id="sbDate">—</div></div>
+      <div class="sb-item"><div class="sb-lbl">Время</div><div class="sb-val" id="sbTime">—</div></div>
+    </div>
     <div class="ms-sel">
       <div class="ms-lbl">1. Выберите мастера</div>
       <div class="ms-grid" id="msGrid"></div>
@@ -741,11 +758,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
         <span class="cart-total-l">Итого</span>
         <span class="cart-total-v" id="cartSum">0 ₽</span>
       </div>
-    </div>
-    <div class="sel-bar">
-      <div class="sb-item"><div class="sb-lbl">Мастер</div><div class="sb-val" id="sbMaster">—</div></div>
-      <div class="sb-item"><div class="sb-lbl">Дата</div><div class="sb-val" id="sbDate">—</div></div>
-      <div class="sb-item"><div class="sb-lbl">Время</div><div class="sb-val" id="sbTime">—</div></div>
     </div>
     <div class="bk-form" style="padding-top:14px">
       <div class="bk-fg"><label class="bk-lbl">Ваше имя</label><input class="bk-inp" type="text" id="bkName" placeholder="Иван Иванов"></div>
@@ -1426,16 +1438,12 @@ function renderMasters() {
   MASTERS.forEach(m => {
     const d = document.createElement('div');
     d.className = 'm-item';
-    const photoHtml = m.photo
-      ? '<div class="m-thumb"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" loading="lazy"></div>'
-      : '<div class="m-thumb m-thumb-placeholder">✂</div>';
     const ratingHtml = getMasterRatingHtml(m.name);
-    d.innerHTML = photoHtml +
-      '<div class="m-body">' +
-        '<div class="m-nm">' + escapeHtml(m.name) + '</div>' +
-        '<div class="m-sp">' + escapeHtml(m.spec) + '</div>' +
-        ratingHtml +
-      '</div>';
+    const overlayHtml = '<div class="m-thumb-overlay"><div class="m-nm">' + escapeHtml(m.name) + '</div><div class="m-sp">' + escapeHtml(m.spec) + '</div>' + ratingHtml + '</div>';
+    const photoHtml = m.photo
+      ? '<div class="m-thumb"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" loading="lazy">' + overlayHtml + '</div>'
+      : '<div class="m-thumb m-thumb-placeholder">✂' + overlayHtml + '</div>';
+    d.innerHTML = photoHtml;
     d.onclick = function() { goPage('booking'); requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(m.id))); };
     g.appendChild(d);
   });
@@ -1919,7 +1927,11 @@ function _renderMyBkData(d) {
     const cardId = 'mybk-' + dateOnly + '-' + (timeOnly.replace(':','')||'0000');
 
     html += '<div class="my-card' + (isPast?' my-card-past':'') + '" id="' + cardId + '">';
-    html += '<div class="my-card-hdr"><span class="my-card-master">✂️ ' + escapeHtml(b.master||'') + '</span><span class="my-card-date">' + escapeHtml(displayDate) + '</span></div>';
+    const statusBadge = isPast
+      ? '<span style="font-size:9px;padding:2px 7px;background:rgba(138,125,107,.12);border:1px solid rgba(138,125,107,.2);color:var(--gray);letter-spacing:1px;text-transform:uppercase">Завершено</span>'
+      : '<span style="font-size:9px;padding:2px 7px;background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);color:#4caf7d;letter-spacing:1px;text-transform:uppercase">✓ Подтверждено</span>';
+    html += '<div class="my-card-hdr"><span class="my-card-master">✂️ ' + escapeHtml(b.master||'') + '</span>' + statusBadge + '</div>';
+    html += '<div style="font-size:12px;color:var(--gold);margin-bottom:6px;letter-spacing:.5px">' + escapeHtml(displayDate) + '</div>';
     if (timeOnly) html += '<div class="my-card-time">⏰ ' + escapeHtml(timeOnly) + '</div>';
     if (b.services) html += '<div class="my-card-info">📋 Услуги: <span>' + escapeHtml(String(b.services)) + '</span></div>';
     if (b.total !== undefined && b.total !== '') {

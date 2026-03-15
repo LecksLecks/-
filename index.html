@@ -663,7 +663,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   transition:opacity .5s ease,transform .5s ease;
   box-sizing:border-box;
 }
-#splash.hiding{animation:splashFadeOut .5s ease forwards;pointer-events:none}
+#splash.hiding{opacity:0!important;pointer-events:none!important}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
 .splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;text-align:center;
   background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -1093,6 +1093,11 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
 </div>
 
+<script>
+// Аварийное скрытие splash — выполняется до основного JS
+setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.display='none';},1200);
+setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.display='none';},2500);
+</script>
 <div id="bgParticles"></div>
 <div class="page active page-visible" id="page-home">
   <div class="home-hero">
@@ -1651,31 +1656,25 @@ const CONFIG = {
 /* ────────────────────────────────────────────────────────────
    SPLASH SCREEN
    ──────────────────────────────────────────────────────────── */
-function splashHide() {
-  const el = ge('splash');
-  if (!el) return;
-  // Сразу скрываем без анимации — надёжнее
-  el.style.opacity = '0';
-  el.style.transition = 'opacity 0.4s ease';
-  setTimeout(() => {
+// SPLASH — скрываем сразу как только страница готова
+(function() {
+  function hideSplash() {
+    var el = document.getElementById('splash');
+    if (!el) return;
     el.style.display = 'none';
-    el.style.pointerEvents = 'none';
-  }, 450);
-}
+  }
+  // Сразу через 1.2 сек
+  setTimeout(hideSplash, 1200);
+  // Страховка через 2 сек
+  setTimeout(hideSplash, 2000);
+  // Страховка через 3 сек — принудительно
+  setTimeout(hideSplash, 3000);
+})();
 
-// Несколько уровней защиты — splash точно скроется
-setTimeout(splashHide, 1500);                    // основной таймер
-window.addEventListener('load', function() {
-  setTimeout(splashHide, 800);                   // после загрузки страницы
-});
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(splashHide, 1500);                  // после DOM
-});
-// Аварийное скрытие — если через 3 сек всё ещё видно
-setTimeout(function() {
-  const el = ge('splash');
-  if (el) { el.style.display = 'none'; el.style.pointerEvents = 'none'; }
-}, 3000);
+function splashHide() {
+  var el = document.getElementById('splash');
+  if (el) el.style.display = 'none';
+}
 /* ────────────────────────────────────────────────────────────
    HAPTIC FEEDBACK
    ──────────────────────────────────────────────────────────── */

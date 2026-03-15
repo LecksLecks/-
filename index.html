@@ -640,11 +640,93 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .bk-spinner-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:#c9a84c;border-right-color:rgba(201,168,76,.5);animation:spinRing 1s linear infinite}
 .bk-spinner-crown{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22px;animation:crownPulse 1.5s ease-in-out infinite;line-height:1}
 .bk-spinner-txt{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.6);font-family:'Cormorant Garamond',serif}
+
+/* SPLASH SCREEN */
+@keyframes splashFadeIn{0%{opacity:0;transform:scale(.92)}60%{opacity:1;transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+@keyframes splashFadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
+@keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
+#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  background:#0a0805;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(201,168,76,.012) 2px,rgba(201,168,76,.012) 3px),
+    repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(201,168,76,.008) 2px,rgba(201,168,76,.008) 3px),
+    linear-gradient(180deg,#120e09 0%,#0a0805 60%,#070503 100%);
+  pointer-events:all;transition:opacity .5s ease,transform .5s ease}
+#splash.hiding{animation:splashFadeOut .5s ease forwards;pointer-events:none}
+.splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
+.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;
+  background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards}
+.splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px 0}
+.splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards}
+
+/* СТРАНИЦА ПРОФИЛЯ МАСТЕРА */
+@keyframes profileIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px}
+#masterProfile.open{display:block;animation:profileIn .25s ease}
+.mp-hero{position:relative;width:100%;aspect-ratio:3/4;max-height:65vh;overflow:hidden}
+.mp-hero img{width:100%;height:100%;object-fit:cover;object-position:top center}
+.mp-hero-gradient{position:absolute;bottom:0;left:0;right:0;padding:40px 20px 20px;background:linear-gradient(0deg,rgba(10,8,5,1) 0%,rgba(10,8,5,.7) 50%,transparent 100%)}
+.mp-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--cream);line-height:1.1}
+.mp-spec{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-top:6px}
+.mp-rating{display:flex;align-items:center;gap:4px;margin-top:8px;font-size:14px;color:var(--gold)}
+.mp-close{position:absolute;top:16px;left:16px;width:36px;height:36px;border-radius:50%;background:rgba(10,8,5,.7);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1}
+.mp-body{padding:16px 20px}
+.mp-section-ttl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:10px;margin-top:20px}
+.mp-book-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:20px;font-family:'Cormorant Garamond',serif;transition:all .2s}
+.mp-book-btn:active{transform:scale(.99);background:var(--gold-l)}
+.mp-placeholder{width:100%;aspect-ratio:3/4;max-height:65vh;background:linear-gradient(180deg,rgba(201,168,76,.08),rgba(201,168,76,.03));display:flex;align-items:center;justify-content:center;font-size:64px;opacity:.2}
+
+/* ЧАСТИЦЫ ПРИ ДОБАВЛЕНИИ УСЛУГИ */
+@keyframes particleFly{
+  0%{opacity:1;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}
+}
+.svc-particle{position:fixed;width:5px;height:5px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:999;animation:particleFly .6s ease forwards}
+
+/* ПРОГРЕСС ЗАПИСИ */
+.bk-progress{height:2px;background:rgba(201,168,76,.1);position:relative;overflow:hidden}
+.bk-progress-fill{height:100%;background:linear-gradient(90deg,rgba(201,168,76,.4),var(--gold));width:0%;transition:width .4s cubic-bezier(.34,1.56,.64,1)}
+
+/* ПОДЕЛИТЬСЯ МАСТЕРОМ */
+.m-share-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(10,8,5,.6);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;backdrop-filter:blur(4px)}
+.m-share-btn:active{background:rgba(201,168,76,.2)}
 </style>
 </head>
 <body>
 
+
+<!-- СТРАНИЦА ПРОФИЛЯ МАСТЕРА -->
+<div id="masterProfile">
+  <div class="mp-hero" id="mpHero">
+    <button class="mp-close" onclick="masterProfileClose()">‹</button>
+    <div id="mpHeroImg"></div>
+    <div class="mp-hero-gradient">
+      <div class="mp-name" id="mpName"></div>
+      <div class="mp-spec" id="mpSpec"></div>
+      <div class="mp-rating" id="mpRating"></div>
+    </div>
+  </div>
+  <div class="mp-body">
+    <div class="mp-section-ttl">Специализация</div>
+    <div id="mpDesc" style="font-size:15px;color:var(--cream);line-height:1.6"></div>
+    <div class="mp-section-ttl">Популярные услуги</div>
+    <div id="mpServices" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    <button class="mp-book-btn" id="mpBookBtn">✦ Записаться к этому мастеру</button>
+  </div>
+</div>
+
 <!-- PAGE: HOME -->
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-crown">♛</div>
+  <div class="splash-logo">BARBER<br>STYLE</div>
+  <div class="splash-line"></div>
+  <div class="splash-city">✦ Батайск ✦</div>
+</div>
+
 <div class="page active page-visible" id="page-home">
   <div class="home-hero">
     <div class="home-crown">♛</div>
@@ -756,6 +838,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <div class="sb-item"><div class="sb-lbl">Дата</div><div class="sb-val" id="sbDate">—</div></div>
       <div class="sb-item"><div class="sb-lbl">Время</div><div class="sb-val" id="sbTime">—</div></div>
     </div>
+    <div class="bk-progress"><div class="bk-progress-fill" id="bkProgressFill"></div></div>
     <div class="ms-sel">
       <div class="ms-lbl">1. Выберите мастера</div>
       <div class="ms-grid" id="msGrid"></div>
@@ -1116,6 +1199,33 @@ const CONFIG = {
   MY_BK_CACHE_TTL_MS: 30000   // FIX-08: кэш "Моих записей"
 };
 
+
+
+/* ────────────────────────────────────────────────────────────
+   SPLASH SCREEN
+   ──────────────────────────────────────────────────────────── */
+function splashHide() {
+  const el = ge('splash');
+  if (!el) return;
+  el.classList.add('hiding');
+  setTimeout(() => { el.style.display = 'none'; }, 500);
+}
+setTimeout(splashHide, 1800);
+/* ────────────────────────────────────────────────────────────
+   HAPTIC FEEDBACK
+   ──────────────────────────────────────────────────────────── */
+function haptic(type) {
+  try {
+    if (tg && tg.HapticFeedback) {
+      if (type === 'light')    tg.HapticFeedback.impactOccurred('light');
+      if (type === 'medium')   tg.HapticFeedback.impactOccurred('medium');
+      if (type === 'heavy')    tg.HapticFeedback.impactOccurred('heavy');
+      if (type === 'success')  tg.HapticFeedback.notificationOccurred('success');
+      if (type === 'error')    tg.HapticFeedback.notificationOccurred('error');
+      if (type === 'select')   tg.HapticFeedback.selectionChanged();
+    }
+  } catch(e) {}
+}
 /* ────────────────────────────────────────────────────────────
    FIX-01: TOAST-УВЕДОМЛЕНИЯ вместо alert()
    ──────────────────────────────────────────────────────────── */
@@ -1432,6 +1542,7 @@ function goPage(id) {
   const pg = ge('page-' + id);
   const tb = ge('tab-' + id);
   if (tb) tb.classList.add('active');
+  haptic('select');
   if (pg) {
     pg.classList.add('active');
     // Запускаем анимацию через rAF чтобы браузер успел применить display:block
@@ -1468,6 +1579,89 @@ function getMasterRatingHtml(masterName) {
   return h + '<span class="m-rating-num">' + r.avg.toFixed(1) + ' (' + r.count + ')</span></div>';
 }
 
+
+/* ────────────────────────────────────────────────────────────
+   ПРОФИЛЬ МАСТЕРА
+   ──────────────────────────────────────────────────────────── */
+var _mpCurrentMaster = null;
+
+function masterProfileOpen(mid) {
+  haptic('light');
+  const m = getMaster(mid);
+  if (!m) return;
+  _mpCurrentMaster = m;
+
+  // Фото
+  const heroImg = ge('mpHeroImg');
+  if (m.photo) {
+    heroImg.innerHTML = '<img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '">';
+  } else {
+    heroImg.innerHTML = '<div class="mp-placeholder">✂</div>';
+  }
+
+  ge('mpName').textContent = m.name;
+  ge('mpSpec').textContent = m.spec;
+
+  // Рейтинг
+  const r = MASTER_RATINGS[m.name];
+  if (r && r.count > 0) {
+    let stars = '';
+    const s = Math.round(r.avg);
+    for (let i=1;i<=5;i++) stars += '<span style="color:' + (i<=s?'var(--gold)':'rgba(201,168,76,.2)') + '">★</span>';
+    ge('mpRating').innerHTML = stars + '<span style="color:var(--gray);font-size:12px;margin-left:4px">' + r.avg.toFixed(1) + ' (' + r.count + ' отзывов)</span>';
+  } else {
+    ge('mpRating').innerHTML = '<span style="color:var(--gray);font-size:12px">Нет отзывов</span>';
+  }
+
+  // Описание
+  ge('mpDesc').textContent = m.spec;
+
+  // Услуги мастера (первые 6 из head)
+  const svcs = (PRICES['head'] || []).slice(0, 6);
+  ge('mpServices').innerHTML = svcs.map(s =>
+    '<span style="padding:5px 10px;border:1px solid rgba(201,168,76,.2);font-size:11px;color:var(--gold);letter-spacing:.5px">' + escapeHtml(s[0]) + '</span>'
+  ).join('');
+
+  // Кнопка записи
+  ge('mpBookBtn').onclick = function() {
+    masterProfileClose();
+    goPage('booking');
+    requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(m.id)));
+  };
+
+  ge('masterProfile').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function masterProfileClose() {
+  haptic('light');
+  ge('masterProfile').classList.remove('open');
+  document.body.style.overflow = '';
+}
+window.masterProfileClose = masterProfileClose;
+
+function masterShare(mid) {
+  haptic('light');
+  const m = getMaster(mid);
+  if (!m) return;
+  const botUsername = 'barber_style_bot'; // замени на своего бота
+  const shareUrl = 'https://t.me/' + botUsername + '?startapp=master_' + mid;
+  const shareText = '✂️ ' + m.name + ' — мастер барбершопа BARBER STYLE\n\nЗапишись онлайн:';
+  if (tg && tg.shareMessage) {
+    try { tg.shareMessage(shareText + '\n' + shareUrl); return; } catch(e) {}
+  }
+  if (navigator.share) {
+    navigator.share({ title: 'BARBER STYLE — ' + m.name, text: shareText, url: shareUrl }).catch(()=>{});
+  } else {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareUrl).then(() => showToast('✅ Ссылка скопирована!', 'success'));
+    } else {
+      showToast('Ссылка: ' + shareUrl, 'info', 5000);
+    }
+  }
+}
+window.masterShare = masterShare;
+
 function renderMasters() {
   const g = ge('mastersList');
   g.innerHTML = '';
@@ -1475,12 +1669,16 @@ function renderMasters() {
     const d = document.createElement('div');
     d.className = 'm-item';
     const ratingHtml = getMasterRatingHtml(m.name);
+    const shareBtn = '<button class="m-share-btn" onclick="masterShare(' + m.id + ');return false;" title="Поделиться">↗</button>';
     const overlayHtml = '<div class="m-thumb-overlay"><div class="m-nm">' + escapeHtml(m.name) + '</div><div class="m-sp">' + escapeHtml(m.spec) + '</div>' + ratingHtml + '</div>';
     const photoHtml = m.photo
-      ? '<div class="m-thumb"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" loading="lazy">' + overlayHtml + '</div>'
-      : '<div class="m-thumb m-thumb-placeholder">✂' + overlayHtml + '</div>';
+      ? '<div class="m-thumb" style="position:relative"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" loading="lazy">' + overlayHtml + shareBtn + '</div>'
+      : '<div class="m-thumb m-thumb-placeholder" style="position:relative">✂' + overlayHtml + shareBtn + '</div>';
     d.innerHTML = photoHtml;
-    d.onclick = function() { goPage('booking'); requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(m.id))); };
+    d.onclick = function(e) {
+      if (e.target.classList.contains('m-share-btn')) return;
+      masterProfileOpen(m.id);
+    };
     g.appendChild(d);
   });
 }
@@ -1551,6 +1749,7 @@ function loadServerSlots(masterId) {
 }
 
 function bkSelMaster(mid) {
+  haptic('select');
   S.mid = mid; S.date = ''; S.slot = ''; S.cart = []; svcExpanded = false;
   loadServerSlots(mid); renderMsGrid(); calRender(); renderTimeGrid(); renderSvcList(); renderCart(); updateBar(); bkValidate();
   // П.8: скроллим к календарю после выбора мастера
@@ -1661,7 +1860,7 @@ function calNext() {
   S.cm++; if(S.cm>11){S.cm=0;S.cy++;} S.date=''; S.slot=''; calRender(); clearTime(); updateBar(); bkValidate();
 }
 function clearTime() { ge('tLbl').textContent='3. Выберите время'; ge('tGrid').innerHTML=''; }
-function bkPickDate(ds) { S.date=ds; S.slot=''; calRender(); renderTimeGrid(); updateBar(); bkValidate(); }
+function bkPickDate(ds) { haptic('select'); S.date=ds; S.slot=''; calRender(); renderTimeGrid(); updateBar(); bkValidate(); }
 
 /* FIX-03: занятые слоты показываем как busy-кнопки */
 function renderTimeGrid() {
@@ -1710,7 +1909,7 @@ function renderTimeGrid() {
   if (freeCount === 0) ge('tLbl').textContent = parseInt(p[2]) + ' ' + MN[parseInt(p[1])-1] + ': нет свободного времени';
 }
 
-function bkPickTime(slot) { S.slot=slot; renderTimeGrid(); updateBar(); bkValidate(); }
+function bkPickTime(slot) { haptic('light'); S.slot=slot; renderTimeGrid(); updateBar(); bkValidate(); }
 
 function renderSvcList() {
   const wrap = ge('svcList'); wrap.innerHTML='';
@@ -1746,9 +1945,31 @@ function renderSvcList() {
   }
 }
 
+
+function spawnParticles(el) {
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  for (let i = 0; i < 5; i++) {
+    const p = document.createElement('div');
+    p.className = 'svc-particle';
+    const angle = (Math.random() * 360) * Math.PI / 180;
+    const dist = 30 + Math.random() * 40;
+    p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;--tx:' + Math.cos(angle)*dist + 'px;--ty:' + Math.sin(angle)*dist + 'px';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 650);
+  }
+}
 function toggleSvc(key) {
+  haptic('light');
   const idx = S.cart.indexOf(key);
+  const adding = idx < 0;
   if (idx>=0) S.cart.splice(idx,1); else S.cart.push(key);
+  if (adding) {
+    const chk = document.querySelector('.svc-chk[data-key="' + key + '"]');
+    spawnParticles(chk);
+  }
   renderSvcList(); renderCart(); bkValidate();
 }
 
@@ -1791,14 +2012,18 @@ function bkValidate() {
   const btn = ge('bkSub');
   const ready = S.mid!==null && S.date && S.slot && S.cart.length>0 && n && isPhoneValid(p);
   btn.disabled = !ready;
-  // П.10: кнопка оживает пошагово
   btn.classList.remove('step1','step2','step3');
+  // Прогресс-бар
+  let step = 0;
+  if (S.mid !== null) step++;
+  if (S.date) step++;
+  if (S.slot) step++;
+  if (S.cart.length > 0) step++;
+  if (n && isPhoneValid(p)) step++;
+  const pct = ready ? 100 : Math.round(step / 5 * 95);
+  const fill = ge('bkProgressFill');
+  if (fill) fill.style.width = pct + '%';
   if (!ready) {
-    let step = 0;
-    if (S.mid !== null) step++;
-    if (S.date) step++;
-    if (S.slot) step++;
-    if (S.cart.length > 0) step++;
     if (step >= 1) btn.classList.add('step1');
     if (step >= 2) btn.classList.add('step2');
     if (step >= 3) btn.classList.add('step3');
@@ -1853,6 +2078,7 @@ function bkSubmit() {
 
       // Успех
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
+      haptic('success');
       ge('bkSpinner').classList.remove('show');
       btn.style.display='';
       ge('bkFormWrap').style.display = 'none';

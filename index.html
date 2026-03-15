@@ -58,8 +58,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   bottom:0;
   left:0;
   right:0;
-  z-index:10000;
-  pointer-events:auto;
+  z-index:1000;
   background:rgba(13,11,7,.85);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
@@ -467,9 +466,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* ВЫДВИЖНОЕ МЕНЮ */
 .adm-drawer{position:fixed;inset:0;z-index:500;pointer-events:none}
 .adm-drawer.open{pointer-events:auto}
-.adm-drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .25s;pointer-events:none}
-.adm-drawer.open .adm-drawer-overlay{opacity:1;pointer-events:auto}
-.adm-drawer-menu{position:absolute;top:0;left:0;bottom:0;width:76%;max-width:300px;background:rgba(10,8,5,.97);border-right:1px solid rgba(201,168,76,.2);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);pointer-events:none}
+.adm-drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .25s}
+.adm-drawer.open .adm-drawer-overlay{opacity:1}
+.adm-drawer-menu{position:absolute;top:0;left:0;bottom:0;width:76%;max-width:300px;background:rgba(10,8,5,.97);border-right:1px solid rgba(201,168,76,.2);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
 .adm-drawer.open .adm-drawer-menu{transform:translateX(0)}
 .adm-drawer-ttl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(201,168,76,.5);padding:20px 20px 12px;border-bottom:1px solid rgba(201,168,76,.1)}
 .adm-menu-item{display:flex;align-items:center;gap:12px;padding:14px 20px;background:transparent;border:none;border-bottom:1px solid rgba(201,168,76,.06);cursor:pointer;text-align:left;transition:background .15s;-webkit-tap-highlight-color:transparent;width:100%}
@@ -494,8 +493,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-dayoff-reason{font-size:11px;color:var(--gray);margin-top:4px;font-style:italic}
 
 /* МОДАЛЬНОЕ ОКНО */
-.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;pointer-events:none;}
-.adm-modal.show{display:flex;pointer-events:auto;}
+.adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;pointer-events:none}
+.adm-modal.show{display:flex;pointer-events:auto}
 .adm-modal-content{background:var(--dark);border:1px solid rgba(201,168,76,.3);padding:24px;max-width:400px;width:100%;border-radius:8px;max-height:80vh;overflow-y:auto}
 .adm-modal-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:16px}
 .adm-modal-text{font-size:14px;color:var(--cream);margin-bottom:20px;line-height:1.6}
@@ -616,14 +615,14 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .works-item{position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer;background:rgba(201,168,76,.04)}
 .works-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
 .works-item:active img{transform:scale(1.04)}
-.works-item-overlay{position:absolute;inset:0;background:rgba(10,8,5,0);transition:background .2s;pointer-events:none}
+.works-item-overlay{position:absolute;inset:0;background:rgba(10,8,5,0);transition:background .2s}
 .works-item:active .works-item-overlay{background:rgba(10,8,5,.25)}
 .works-more{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border:1px dashed rgba(201,168,76,.25);margin-top:4px;color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;background:transparent;width:100%;font-family:'Cormorant Garamond',serif;transition:background .2s}
 .works-more:active{background:rgba(201,168,76,.06)}
 
 /* ЛАЙТБОКС */
-.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;pointer-events:none;}
-.works-lightbox.open{display:flex;pointer-events:auto;}
+.works-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;pointer-events:none}
+.works-lightbox.open{display:flex;pointer-events:auto}
 .works-lightbox img{max-width:100%;max-height:85vh;object-fit:contain;border:1px solid rgba(201,168,76,.2)}
 .works-lightbox-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.8);color:var(--gold);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%}
 .works-lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border:1px solid rgba(201,168,76,.3);background:rgba(10,8,5,.7);color:var(--gold);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -647,7 +646,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes splashFadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
 @keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
-#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#0a0805;pointer-events:none;}
+#splash{position:fixed;inset:0;z-index:9999;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  background:#0a0805;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(201,168,76,.012) 2px,rgba(201,168,76,.012) 3px),
+    repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(201,168,76,.008) 2px,rgba(201,168,76,.008) 3px),
+    linear-gradient(180deg,#120e09 0%,#0a0805 60%,#070503 100%);
+  pointer-events:all;transition:opacity .5s ease,transform .5s ease}
 #splash.hiding{animation:splashFadeOut .5s ease forwards;pointer-events:none}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
 .splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;
@@ -658,8 +663,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* СТРАНИЦА ПРОФИЛЯ МАСТЕРА */
 @keyframes profileIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-#masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px;pointer-events:none;}
-#masterProfile.open{display:block;animation:profileIn .25s ease;pointer-events:auto;}
+#masterProfile{position:fixed;inset:0;z-index:400;background:#0a0805;overflow-y:auto;display:none;padding-bottom:100px;pointer-events:none}
+#masterProfile.open{display:block;animation:profileIn .25s ease;pointer-events:auto}
 .mp-hero{position:relative;width:100%;aspect-ratio:3/4;max-height:65vh;overflow:hidden}
 .mp-hero img{width:100%;height:100%;object-fit:cover;object-position:top center}
 .mp-hero-gradient{position:absolute;bottom:0;left:0;right:0;padding:40px 20px 20px;background:linear-gradient(0deg,rgba(10,8,5,1) 0%,rgba(10,8,5,.7) 50%,transparent 100%)}
@@ -857,22 +862,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   -webkit-backdrop-filter:blur(20px)!important;
   background:rgba(10,8,5,.88)!important;
 }
-
-/* ════ ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ════ */
 </style>
 </head>
 <body>
 <script>
-// КРИТИЧНО: выполняется до основного JS
-// Скрывает splash независимо от ошибок в остальном коде
 (function(){
-  function hs(){
-    var e=document.getElementById('splash');
-    if(e){e.style.cssText='display:none!important;opacity:0!important;pointer-events:none!important;';}
-  }
-  setTimeout(hs,1500);
-  setTimeout(hs,2500);
-  setTimeout(hs,4000);
+  function hs(){var e=document.getElementById('splash');if(e){e.style.display='none';e.style.pointerEvents='none';}}
+  setTimeout(hs,1500);setTimeout(hs,2500);setTimeout(hs,4000);
   window.addEventListener('load',function(){setTimeout(hs,500);});
 })();
 </script>
@@ -924,8 +920,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
-  
-  <div class="home-btns"   style="padding:20px 24px">
+  <div class="home-btns" style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
   <div class="home-divider"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
@@ -1261,56 +1256,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
 </div>
 
-
-  <!-- ПАНЕЛЬ ГРАФИКА ВЫРУЧКИ -->
-  <div class="adm-panel" id="adm-revenue">
-    <div class="adm-section">
-      <div class="adm-section-ttl">Выручка по дням недели</div>
-      <div class="chart-wrap" id="revenueChartWrap"><div class="adm-loading">Загрузка...</div></div>
-    </div>
-    <div class="adm-section">
-      <div class="adm-section-ttl">По месяцам (последние 6)</div>
-      <div class="chart-wrap" id="revenueMonthChartWrap"><div class="adm-loading">Загрузка...</div></div>
-    </div>
-  </div>
-
-  <!-- ПАНЕЛЬ РАСХОДОВ -->
-  <div class="adm-panel" id="adm-expenses">
-    <div class="adm-section">
-      <div class="adm-section-ttl">Добавить расход</div>
-      <div class="expense-form">
-        <div class="expense-row">
-          <input type="text" class="expense-inp" id="expName" placeholder="Название расхода...">
-        </div>
-        <div class="expense-row">
-          <input type="number" class="expense-inp" id="expSum" placeholder="Сумма" style="max-width:130px">
-          <select class="expense-inp" id="expCat" style="flex:1">
-            <option value="rent">Аренда</option>
-            <option value="materials">Материалы</option>
-            <option value="salary">Зарплата</option>
-            <option value="equipment">Оборудование</option>
-            <option value="marketing">Маркетинг</option>
-            <option value="other">Прочее</option>
-          </select>
-          <button class="expense-add-btn" onclick="expenseAdd()">+</button>
-        </div>
-      </div>
-    </div>
-    <div class="adm-section">
-      <div class="adm-section-ttl">Расходы за месяц</div>
-      <div class="expense-list" id="expenseList"><div class="adm-loading">Нет расходов</div></div>
-      <div class="expense-total">
-        <span class="expense-total-lbl">Итого расходов</span>
-        <span class="expense-total-val" id="expenseTotal">0 руб</span>
-      </div>
-      <div class="profit-row">
-        <span class="profit-lbl">Прибыль за месяц</span>
-        <span class="profit-val" id="profitVal">— руб</span>
-      </div>
-    </div>
-  </div>
-
-</div>
 
 <!-- PAGE: WORKS -->
 <div class="page" id="page-works">
@@ -1676,11 +1621,8 @@ function initApp() {
   bkInit();
   initReviews();
   loadAppData();
-  try { refInit(); } catch(e) { console.warn("refInit error:", e); }
-  try { loadPromos(); } catch(e) { console.warn("loadPromos error:", e); }
-  try { initWow2Effects(); } catch(e) { console.warn("initWow2Effects error:", e); }
-  try { initWowEffects(); } catch(e) { console.warn("initWowEffects:", e); }
-  try { initMegaWow(); } catch(e) { console.warn("initMegaWow:", e); }
+  initWowEffects();
+  initMegaWow();
 
   // FIX-09: deep link ?startapp=master_N
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
@@ -1694,12 +1636,11 @@ function initApp() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  try { initApp(); } catch(e) { 
-    console.error('initApp error:', e);
-    // Даже при ошибке скрываем splash
-    var s = document.getElementById('splash');
-    if (s) s.style.display = 'none';
+document.addEventListener('DOMContentLoaded', function(){
+  try { initApp(); } catch(e) {
+    console.error('initApp:', e);
+    var s=document.getElementById('splash');
+    if(s){s.style.display='none';s.style.pointerEvents='none';}
   }
 });
 
@@ -2573,8 +2514,6 @@ function admTab(tab, tabEl) {
   if (tab==='slots')     admLoadSlots();
   if (tab==='dayoffs')   admLoadDayOffsList();
   if (tab==='analytics') admLoadAnalytics();
-  if (tab==='revenue')   revenueInit();
-  if (tab==='expenses')  expensesInit();
   if (tab==='broadcast') bcInit();
   if (tab==='clients')   clInit();
 }
@@ -3406,9 +3345,20 @@ function initParallax() {
 
 /* П.5: Touch ripple */
 function initRipple() {
-  // Отключено — может перехватывать касания
+  document.addEventListener('touchstart', function(e) {
+    const t = e.touches[0];
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    r.style.left = t.clientX + 'px';
+    r.style.top  = t.clientY + 'px';
+    r.style.width  = '10px';
+    r.style.height = '10px';
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 520);
+  }, {passive: true});
 }
 
+/* П.6: Reveal анимация заголовков */
 function revealPageHeaders(pageId) {
   const page = ge('page-' + pageId);
   if (!page) return;
@@ -3635,9 +3585,30 @@ function launchConfetti() {
 
 /* П.6: Золотой след за пальцем */
 function initFingerTrail() {
-  // Отключено — может блокировать клики
+  let trailTimeout;
+  let lastX = 0, lastY = 0;
+  let trailCount = 0;
+
+  document.addEventListener('touchmove', function(e) {
+    const t = e.touches[0];
+    const x = t.clientX, y = t.clientY;
+    const dx = x - lastX, dy = y - lastY;
+    if (Math.sqrt(dx*dx + dy*dy) < 8) return; // только если сдвинулся
+    lastX = x; lastY = y;
+
+    if (trailCount > 12) return; // лимит одновременных частиц
+    trailCount++;
+
+    const trail = document.createElement('div');
+    trail.className = 'finger-trail';
+    const size = 18 + Math.random() * 12;
+    trail.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + x + 'px;top:' + y + 'px;margin-left:-' + size/2 + 'px;margin-top:-' + size/2 + 'px';
+    document.body.appendChild(trail);
+    setTimeout(() => { trail.remove(); trailCount--; }, 520);
+  }, {passive: true});
 }
 
+/* П.8: Glassmorphism — уже в CSS, здесь усиливаем бэкграунд body */
 function enhanceGlass() {
   // Добавляем blur-слой поверх фона для усиления эффекта стекла
   const glassLayer = document.createElement('div');
@@ -3651,441 +3622,6 @@ function initMegaWow() {
   initFingerTrail();
   enhanceGlass();
 }
-
-/* ════════════════════════════════════════
-   ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ
-   ════════════════════════════════════════ */
-
-function hideSplash() {
-    var el = document.getElementById('splash');
-    if (!el) return;
-    el.style.display = 'none';
-  }
-  // Сразу через 1.2 сек
-  setTimeout(hideSplash, 1200);
-  // Страховка через 2 сек
-  setTimeout(hideSplash, 2000);
-  // Страховка через 3 сек — принудительно
-  setTimeout(hideSplash, 3000);
-})();
-
-function initSplashFire() {
-  const container = document.getElementById('splashFire');
-  if (!container) return;
-  const count = 18;
-  for (let i = 0; i < count; i++) {
-    const flame = document.createElement('div');
-    flame.className = 'splash-flame';
-    const h = 8 + Math.random() * 16;
-    const w = 3 + Math.random() * 5;
-    const dur = 0.4 + Math.random() * 0.6;
-    const delay = Math.random() * 0.5;
-    flame.style.cssText = 'height:' + h + 'px;width:' + w + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;opacity:' + (0.5 + Math.random() * 0.5);
-    container.appendChild(flame);
-  }
-  // Искры
-  const logoWrap = container.parentElement;
-  for (let i = 0; i < 8; i++) {
-    const spark = document.createElement('div');
-    spark.className = 'splash-spark';
-    spark.style.cssText = 'left:' + (20 + Math.random() * 60) + '%;bottom:0;animation-duration:' + (0.8 + Math.random() * 1.2) + 's;animation-delay:' + (Math.random() * 1.5) + 's';
-    logoWrap.appendChild(spark);
-  }
-}
-
-function initWow2Effects() {
-  initSplashFire();
-  initTypewriter();
-  initFingerTrail();
-  initTabMorph();
-  // Карусель после загрузки мастеров
-  setTimeout(convertMastersToCarousel, 800);
-}
-
-function initLiquidBtn() {
-  const btn = document.getElementById('btnToBooking');
-  if (!btn) return;
-  btn.addEventListener('touchstart', function(e) {
-    haptic('medium');
-    const rect = btn.getBoundingClientRect();
-    const t = e.touches[0];
-    const x = ((t.clientX - rect.left) / rect.width * 100).toFixed(0);
-    btn.style.setProperty('--ripple-x', x + '%');
-    btn.classList.add('liquid-tap');
-    setTimeout(() => btn.classList.remove('liquid-tap'), 400);
-  }, {passive: true});
-}
-
-function initLiveCounter() {
-  const el = document.getElementById('liveViewCount');
-  if (!el) return;
-  // Генерируем случайное но реалистичное число на основе времени дня
-  const now = new Date();
-  const hour = now.getHours();
-  const base = Math.floor(80 + hour * 12 + Math.random() * 30);
-  let current = 0;
-  const target = base;
-  const step = Math.ceil(target / 40);
-  const timer = setInterval(() => {
-    current = Math.min(current + step, target);
-    el.textContent = current;
-    if (current >= target) {
-      clearInterval(timer);
-      // Периодически увеличиваем на 1
-      setInterval(() => {
-        if (Math.random() > 0.6) {
-          current++;
-          el.style.animation = 'none';
-          void el.offsetWidth;
-          el.style.animation = 'countUp .3s ease';
-          el.textContent = current;
-        }
-      }, 8000);
-    }
-  }, 30);
-}
-
-function initMagneticMasters() {
-  const list = document.getElementById('mastersList');
-  if (!list) return;
-  function updateMagnetic() {
-    const listRect = list.getBoundingClientRect();
-    const centerX = listRect.left + listRect.width / 2;
-    const cards = list.querySelectorAll('.m-item');
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      const cardCenterX = rect.left + rect.width / 2;
-      const dist = Math.abs(cardCenterX - centerX);
-      const maxDist = listRect.width / 2;
-      if (dist < maxDist * 0.4) {
-        card.classList.add('mag-center');
-        card.classList.remove('mag-side');
-      } else if (dist > maxDist * 0.7) {
-        card.classList.add('mag-side');
-        card.classList.remove('mag-center');
-      } else {
-        card.classList.remove('mag-center', 'mag-side');
-      }
-    });
-  }
-  list.addEventListener('scroll', updateMagnetic, {passive: true});
-  setTimeout(updateMagnetic, 500);
-}
-
-function initTabBounce() {
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('touchstart', function() {
-      const svg = this.querySelector('svg');
-      if (!svg) return;
-      svg.classList.remove('bouncing');
-      void svg.offsetWidth;
-      svg.classList.add('bouncing');
-      svg.addEventListener('animationend', () => svg.classList.remove('bouncing'), {once: true});
-    }, {passive: true});
-  });
-}
-
-function initTabMorph() {
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      this.classList.remove('bounce-once');
-      void this.offsetWidth;
-      this.classList.add('bounce-once');
-      setTimeout(() => this.classList.remove('bounce-once'), 500);
-    });
-  });
-}
-
-function convertMastersToCarousel() {
-  const list = ge('mastersList');
-  if (!list || list.classList.contains('m-carousel')) return;
-
-  // Преобразуем grid в карусель
-  list.classList.remove('m-list');
-  list.className = 'm-carousel';
-
-  // Делаем элементы правильного класса
-  list.querySelectorAll('.m-item').forEach(item => {
-    item.classList.remove('m-item');
-    item.classList.add('m-carousel-item');
-    // Оборачиваем контент
-    const thumb = item.querySelector('.m-thumb');
-    if (thumb) thumb.style.cssText = 'position:relative;aspect-ratio:3/4;overflow:hidden';
-  });
-
-  // Эффект активной карточки при скролле
-  function updateActiveCard() {
-    const centerX = list.scrollLeft + list.offsetWidth / 2;
-    list.querySelectorAll('.m-carousel-item').forEach(card => {
-      const cardCenterX = card.offsetLeft + card.offsetWidth / 2;
-      const dist = Math.abs(centerX - cardCenterX);
-      const maxDist = list.offsetWidth / 2;
-      card.classList.toggle('active-card', dist < maxDist * 0.35);
-      const scale = Math.max(0.88, 1 - dist / maxDist * 0.15);
-      const opacity = Math.max(0.6, 1 - dist / maxDist * 0.4);
-      if (!card.classList.contains('active-card')) {
-        card.style.transform = 'scale(' + scale + ')';
-        card.style.opacity = opacity;
-      } else {
-        card.style.transform = '';
-        card.style.opacity = '';
-      }
-    });
-  }
-
-  list.addEventListener('scroll', updateActiveCard, {passive: true});
-  setTimeout(updateActiveCard, 100);
-}
-
-function updateActiveCard() {
-    const centerX = list.scrollLeft + list.offsetWidth / 2;
-    list.querySelectorAll('.m-carousel-item').forEach(card => {
-      const cardCenterX = card.offsetLeft + card.offsetWidth / 2;
-      const dist = Math.abs(centerX - cardCenterX);
-      const maxDist = list.offsetWidth / 2;
-      card.classList.toggle('active-card', dist < maxDist * 0.35);
-      const scale = Math.max(0.88, 1 - dist / maxDist * 0.15);
-      const opacity = Math.max(0.6, 1 - dist / maxDist * 0.4);
-      if (!card.classList.contains('active-card')) {
-        card.style.transform = 'scale(' + scale + ')';
-        card.style.opacity = opacity;
-      } else {
-        card.style.transform = '';
-        card.style.opacity = '';
-      }
-    });
-  }
-
-  list.addEventListener('scroll', updateActiveCard, {passive: true});
-  setTimeout(updateActiveCard, 100);
-}
-
-function updateMagnetic() {
-    const listRect = list.getBoundingClientRect();
-    const centerX = listRect.left + listRect.width / 2;
-    const cards = list.querySelectorAll('.m-item');
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      const cardCenterX = rect.left + rect.width / 2;
-      const dist = Math.abs(cardCenterX - centerX);
-      const maxDist = listRect.width / 2;
-      if (dist < maxDist * 0.4) {
-        card.classList.add('mag-center');
-        card.classList.remove('mag-side');
-      } else if (dist > maxDist * 0.7) {
-        card.classList.add('mag-side');
-        card.classList.remove('mag-center');
-      } else {
-        card.classList.remove('mag-center', 'mag-side');
-      }
-    });
-  }
-  list.addEventListener('scroll', updateMagnetic, {passive: true});
-  setTimeout(updateMagnetic, 500);
-}
-
-
-
-
-function loadPromos() {
-  const chatId = getChatId();
-  // Загружаем акции из Settings таблицы
-  fetchWithTimeout(CONFIG.GS + '?action=getPromos')
-    .then(r => r.json())
-    .then(d => {
-      const promos = d.promos || [];
-      const block  = ge('promoBlock');
-      const list   = ge('promoList');
-      if (!block || !list) return;
-
-      if (promos.length === 0) {
-        block.style.display = 'none';
-        return;
-      }
-
-      block.style.display = 'block';
-      const icons = { sale:'🔥', new:'✨', season:'🍂', gift:'🎁', vip:'👑' };
-      list.innerHTML = promos.map(p => {
-        const ico = icons[p.type] || '✦';
-        return '<div class="promo-item">' +
-          '<div class="promo-badge">' + ico + '</div>' +
-          '<div class="promo-body">' +
-            '<div class="promo-name">' + escapeHtml(p.name) + '</div>' +
-            '<div class="promo-desc">' + escapeHtml(p.desc || '') + '</div>' +
-          '</div>' +
-          (p.price ? '<div style="text-align:right"><div class="promo-price">' + escapeHtml(p.price) + '</div>' + (p.until ? '<div class="promo-until">до ' + escapeHtml(p.until) + '</div>' : '') + '</div>' : '') +
-        '</div>';
-      }).join('');
-    })
-    .catch(() => {
-      // Если акций нет — скрываем блок тихо
-      const block = ge('promoBlock');
-      if (block) block.style.display = 'none';
-    });
-}
-
-function revenueInit() {
-  if (!_revenueLoaded) revenueLoad();
-}
-
-function revenueLoad() {
-  const chatId = getChatId();
-  ge('revenueChartWrap').innerHTML      = '<div class="adm-loading">Загрузка...</div>';
-  ge('revenueMonthChartWrap').innerHTML = '<div class="adm-loading">Загрузка...</div>';
-
-  fetchWithTimeout(CONFIG.GS + '?action=getRevenueChart&chatId=' + encodeURIComponent(chatId))
-    .then(r => r.json())
-    .then(d => {
-      if (d.error === 'Unauthorized') {
-        ge('revenueChartWrap').innerHTML = '<div class="adm-loading">❌ Нет прав</div>';
-        return;
-      }
-      _revenueLoaded = true;
-      renderRevenueChart(d.byDay   || [], 'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
-      renderRevenueChart(d.byMonth || [], 'revenueMonthChartWrap', d.monthLabels || []);
-    })
-    .catch(() => {
-      // Если нет эндпоинта — показываем заглушку с примером
-      renderRevenueMock();
-    });
-}
-
-function renderRevenueChart(data, containerId, labels) {
-  const wrap = ge(containerId);
-  if (!wrap || !data.length) { wrap.innerHTML = '<div class="adm-loading">Нет данных</div>'; return; }
-
-  const max = Math.max(...data, 1);
-  const todayDow = new Date().getDay();
-  const todayIdx = todayDow === 0 ? 6 : todayDow - 1;
-  const isWeek   = data.length === 7;
-
-  let html = '<div class="chart-bars">';
-  data.forEach((val, i) => {
-    const pct    = Math.round((val / max) * 100);
-    const isToday = isWeek && i === todayIdx;
-    const label  = labels[i] || '';
-    const valStr = val >= 1000 ? Math.round(val/1000) + 'к' : val;
-    html += '<div class="chart-bar-col">' +
-      '<div class="chart-bar-val">' + (val > 0 ? valStr : '') + '</div>' +
-      '<div class="chart-bar' + (isToday ? ' today' : '') + '" style="height:' + Math.max(pct, 3) + '%;min-height:3px;max-height:72px;width:100%;align-self:flex-end"></div>' +
-      '<div class="chart-day' + (isToday ? ' today' : '') + '">' + label + '</div>' +
-    '</div>';
-  });
-  html += '</div>';
-
-  // Итого
-  const total = data.reduce((s, v) => s + v, 0);
-  html += '<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(201,168,76,.1)">' +
-    '<span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)">Итого</span>' +
-    '<span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold)">' + formatPrice(total) + '</span>' +
-  '</div>';
-
-  wrap.innerHTML = html;
-
-  // Анимируем столбцы
-  setTimeout(() => {
-    wrap.querySelectorAll('.chart-bar').forEach((bar, i) => {
-      bar.style.transition = 'height .6s cubic-bezier(.34,1.56,.64,1) ' + (i * 0.06) + 's';
-    });
-  }, 50);
-}
-
-function renderRevenueMock() {
-  // Показываем пример пока не реализован эндпоинт
-  const mockDay = [3200, 5400, 4800, 6200, 7100, 9800, 4200];
-  const mockMonth = [42000, 58000, 61000, 55000, 78000, 83000];
-  renderRevenueChart(mockDay,   'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
-  renderRevenueChart(mockMonth, 'revenueMonthChartWrap', ['Окт','Ноя','Дек','Янв','Фев','Мар']);
-}
-
-function expensesInit() {
-  expensesRender();
-}
-
-function expenseAdd() {
-  haptic('light');
-  const name = (ge('expName').value || '').trim();
-  const sum  = parseFloat(ge('expSum').value || '0');
-  const cat  = ge('expCat').value;
-
-  if (!name) { showToast('Введите название расхода', 'error'); return; }
-  if (!sum || sum <= 0) { showToast('Введите сумму', 'error'); return; }
-
-  try {
-    const key      = 'expenses_' + new Date().toISOString().slice(0, 7); // YYYY-MM
-    const expenses = JSON.parse(localStorage.getItem(key) || '[]');
-    expenses.push({ id: Date.now(), name, sum, cat, date: new Date().toISOString() });
-    localStorage.setItem(key, JSON.stringify(expenses));
-
-    ge('expName').value = '';
-    ge('expSum').value  = '';
-    expensesRender();
-    showToast('✅ Расход добавлен', 'success');
-  } catch(e) {
-    showToast('Ошибка сохранения', 'error');
-  }
-}
-
-function expensesRender() {
-  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
-  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
-  const list     = ge('expenseList');
-  const totalEl  = ge('expenseTotal');
-  const profitEl = ge('profitVal');
-
-  if (!list) return;
-
-  const catNames = { rent:'Аренда', materials:'Материалы', salary:'Зарплата', equipment:'Оборудование', marketing:'Маркетинг', other:'Прочее' };
-  const catIcons = { rent:'🏠', materials:'✂️', salary:'👤', equipment:'🔧', marketing:'📢', other:'📦' };
-
-  if (expenses.length === 0) {
-    list.innerHTML = '<div class="adm-loading">Расходов за этот месяц нет</div>';
-  } else {
-    list.innerHTML = expenses.map(e => {
-      const d = new Date(e.date);
-      const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0');
-      return '<div class="expense-item">' +
-        '<div><div class="expense-nm">' + (catIcons[e.cat]||'') + ' ' + escapeHtml(e.name) + '</div><div class="expense-dt">' + dateStr + ' · ' + (catNames[e.cat]||'') + '</div></div>' +
-        '<div style="display:flex;align-items:center">' +
-          '<span class="expense-sum">−' + formatPrice(e.sum) + '</span>' +
-          '<span class="expense-rm" onclick="expenseDelete(' + e.id + ')">✕</span>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
-
-  const totalExp = expenses.reduce((s, e) => s + e.sum, 0);
-  if (totalEl) totalEl.textContent = formatPrice(totalExp);
-
-  // Прибыль = выручка за месяц - расходы (берём из аналитики если есть)
-  if (profitEl) {
-    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(getChatId()))
-      .then(r => r.json())
-      .then(d => {
-        const revenue = d.revenueMonth || 0;
-        const profit  = revenue - totalExp;
-        profitEl.textContent = formatPrice(Math.abs(profit));
-        profitEl.className   = 'profit-val ' + (profit >= 0 ? 'positive' : 'negative');
-        profitEl.textContent = (profit >= 0 ? '' : '−') + formatPrice(Math.abs(profit));
-      })
-      .catch(() => { profitEl.textContent = '—'; });
-  }
-}
-
-function expenseDelete(id) {
-  haptic('light');
-  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
-  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
-  const filtered = expenses.filter(e => e.id !== id);
-  localStorage.setItem(key, JSON.stringify(filtered));
-  expensesRender();
-}
-
-
-window.refShare    = refShare;
-window.expenseAdd  = expenseAdd;
-window.expenseDelete = expenseDelete;
-
 </script>
 </body>
 </html>

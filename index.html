@@ -1654,10 +1654,28 @@ const CONFIG = {
 function splashHide() {
   const el = ge('splash');
   if (!el) return;
-  el.classList.add('hiding');
-  setTimeout(() => { el.style.display = 'none'; }, 500);
+  // Сразу скрываем без анимации — надёжнее
+  el.style.opacity = '0';
+  el.style.transition = 'opacity 0.4s ease';
+  setTimeout(() => {
+    el.style.display = 'none';
+    el.style.pointerEvents = 'none';
+  }, 450);
 }
-setTimeout(splashHide, 1800);
+
+// Несколько уровней защиты — splash точно скроется
+setTimeout(splashHide, 1500);                    // основной таймер
+window.addEventListener('load', function() {
+  setTimeout(splashHide, 800);                   // после загрузки страницы
+});
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(splashHide, 1500);                  // после DOM
+});
+// Аварийное скрытие — если через 3 сек всё ещё видно
+setTimeout(function() {
+  const el = ge('splash');
+  if (el) { el.style.display = 'none'; el.style.pointerEvents = 'none'; }
+}, 3000);
 /* ────────────────────────────────────────────────────────────
    HAPTIC FEEDBACK
    ──────────────────────────────────────────────────────────── */

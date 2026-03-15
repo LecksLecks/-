@@ -32,6 +32,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 .tab{
   flex:1;
+  position:relative;
   padding:14px 4px 12px;
   display:flex;
   flex-direction:column;
@@ -66,6 +67,15 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .tab.active{
   color:var(--gold);
 }
+.tab.active::before{
+  content:'';
+  position:absolute;
+  top:0;left:50%;
+  transform:translateX(-50%);
+  width:24px;height:2px;
+  background:var(--gold);
+  border-radius:0 0 2px 2px;
+}
 
 .tab svg{
   width:26px;
@@ -89,8 +99,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 }
 
 /* PAGES */
-.page{display:none;padding-bottom:90px;min-height:100vh}
+.page{display:none;padding-bottom:90px;min-height:100vh;opacity:0;transform:translateY(6px);transition:opacity .18s ease,transform .18s ease}
 .page.active{display:block}
+.page.page-visible{opacity:1;transform:translateY(0)}
 
 /* HOME */
 .home-hero{padding:44px 24px 20px;text-align:center;border-bottom:1px solid rgba(201,168,76,.1);background:repeating-linear-gradient(45deg,rgba(201,168,76,.012) 0,rgba(201,168,76,.012) 1px,transparent 1px,transparent 44px)}
@@ -261,13 +272,23 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .bk-inp:focus{border-color:rgba(201,168,76,.5)}
 .bk-inp::placeholder{color:rgba(138,125,107,.35)}
 .bk-inp.invalid{border-color:#a04040}
-.bk-sub{width:100%;background:var(--gold);color:var(--black);border:none;padding:15px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:4px;transition:background .2s}
+.bk-sub{width:100%;background:rgba(201,168,76,.18);color:rgba(10,8,5,.35);border:none;padding:15px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:4px;transition:background .35s,color .35s,transform .1s}
+.bk-sub.step1{background:rgba(201,168,76,.35);color:rgba(10,8,5,.55)}
+.bk-sub.step2{background:rgba(201,168,76,.6);color:rgba(10,8,5,.75)}
+.bk-sub.step3{background:rgba(201,168,76,.8);color:rgba(10,8,5,.9)}
+.bk-sub:not(:disabled){background:var(--gold);color:var(--black)}
+.bk-sub:not(:disabled):active{transform:scale(.98)}
 .bk-sub:disabled{background:rgba(201,168,76,.18);cursor:not-allowed;color:rgba(10,8,5,.4)}
 
 /* SUCCESS */
+@keyframes succPulse{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes succRing{0%{transform:scale(.6);opacity:.8}100%{transform:scale(1.8);opacity:0}}
 .succ{display:none;text-align:center;padding:48px 24px}
 .succ.show{display:block}
-.succ-ico{font-size:52px;margin-bottom:14px}
+.succ-ico{font-size:52px;margin-bottom:14px;position:relative;display:inline-block}
+.succ-ico.animate{animation:succPulse .5s cubic-bezier(.34,1.56,.64,1) forwards}
+.succ-ico::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(201,168,76,.4);opacity:0}
+.succ-ico.animate::after{animation:succRing .6s ease-out .2s forwards}
 .succ-ttl{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;color:var(--cream);margin-bottom:16px}
 .succ-ttl em{color:var(--gold);font-style:italic}
 .succ-tbl{border:1px solid rgba(201,168,76,.15);background:rgba(201,168,76,.03);padding:12px 16px;margin-bottom:18px;text-align:left}
@@ -449,7 +470,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .my-btn-repeat{flex:1;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.35);color:var(--gold);padding:11px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s}
 .my-btn-repeat:active{background:rgba(201,168,76,.22)}
 .my-empty{text-align:center;color:var(--gray);font-style:italic;padding:40px 24px;font-size:15px}
-.my-card{margin:0 16px 12px;border:1px solid rgba(201,168,76,.15);background:rgba(201,168,76,.02);padding:14px 16px}
+.my-card{margin:0 16px 12px;border:1px solid rgba(201,168,76,.15);background:rgba(201,168,76,.02);padding:14px 16px;border-left:3px solid var(--gold)}
+.my-card-past{border-left-color:rgba(138,125,107,.3)!important}
 .my-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .my-card-master{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cream)}
 .my-card-date{font-size:13px;color:var(--gold);font-weight:600}
@@ -470,6 +492,19 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .role-badge{display:inline-block;padding:3px 8px;font-size:9px;letter-spacing:1px;text-transform:uppercase;border-radius:3px;margin-left:8px}
 .role-badge.admin{background:rgba(224,80,80,.2);color:#e05050}
 .role-badge.master{background:rgba(201,168,76,.2);color:var(--gold)}
+
+
+/* SKELETON LOADING */
+@keyframes shimmerSkel{0%{background-position:-200px 0}100%{background-position:200px 0}}
+.skeleton{background:linear-gradient(90deg,rgba(201,168,76,.06) 25%,rgba(201,168,76,.12) 50%,rgba(201,168,76,.06) 75%);background-size:400px 100%;animation:shimmerSkel 1.4s ease infinite;border-radius:3px;display:block}
+.skel-line{height:14px;margin-bottom:8px;width:100%}
+.skel-line.w60{width:60%}
+.skel-line.w40{width:40%}
+.skel-line.w80{width:80%}
+.skel-card{border:1px solid rgba(201,168,76,.08);padding:14px 16px;margin-bottom:10px}
+.skel-row{display:flex;gap:10px;margin-bottom:8px}
+.skel-circle{width:44px;height:44px;border-radius:50%;flex-shrink:0}
+.skel-block{height:60px;margin-bottom:8px;border-radius:3px}
 
 /* РАССЫЛКА */
 .bc-filter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
@@ -529,7 +564,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 <body>
 
 <!-- PAGE: HOME -->
-<div class="page active" id="page-home">
+<div class="page active page-visible" id="page-home">
   <div class="home-hero">
     <div class="home-crown">♛</div>
     <div class="home-logo">BARBER<br>STYLE</div>
@@ -1261,10 +1296,16 @@ function addClickHandler(id, cb) {
 }
 
 function goPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.classList.remove('page-visible'); });
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  const pg = ge('page-' + id); if (pg) pg.classList.add('active');
-  const tb = ge('tab-' + id);  if (tb) tb.classList.add('active');
+  const pg = ge('page-' + id);
+  const tb = ge('tab-' + id);
+  if (tb) tb.classList.add('active');
+  if (pg) {
+    pg.classList.add('active');
+    // Запускаем анимацию через rAF чтобы браузер успел применить display:block
+    requestAnimationFrame(() => requestAnimationFrame(() => pg.classList.add('page-visible')));
+  }
   if (id === 'booking')    bkInit();
   if (id === 'mybookings') myBkInit();
   if (id === 'admin')      admInit();
@@ -1379,6 +1420,11 @@ function loadServerSlots(masterId) {
 function bkSelMaster(mid) {
   S.mid = mid; S.date = ''; S.slot = ''; S.cart = []; svcExpanded = false;
   loadServerSlots(mid); renderMsGrid(); calRender(); renderTimeGrid(); renderSvcList(); renderCart(); updateBar(); bkValidate();
+  // П.8: скроллим к календарю после выбора мастера
+  requestAnimationFrame(() => {
+    const cal = document.querySelector('.cal-wrap');
+    if (cal) cal.scrollIntoView({behavior:'smooth', block:'start'});
+  });
 }
 
 function renderMsGrid() {
@@ -1609,7 +1655,21 @@ function updateBar() {
 
 function bkValidate() {
   const n=(ge('bkName').value||'').trim(), p=(ge('bkPhone').value||'').trim();
-  ge('bkSub').disabled = !(S.mid!==null && S.date && S.slot && S.cart.length>0 && n && isPhoneValid(p));
+  const btn = ge('bkSub');
+  const ready = S.mid!==null && S.date && S.slot && S.cart.length>0 && n && isPhoneValid(p);
+  btn.disabled = !ready;
+  // П.10: кнопка оживает пошагово
+  btn.classList.remove('step1','step2','step3');
+  if (!ready) {
+    let step = 0;
+    if (S.mid !== null) step++;
+    if (S.date) step++;
+    if (S.slot) step++;
+    if (S.cart.length > 0) step++;
+    if (step >= 1) btn.classList.add('step1');
+    if (step >= 2) btn.classList.add('step2');
+    if (step >= 3) btn.classList.add('step3');
+  }
 }
 
 /* FIX-04: total передаётся числом */
@@ -1659,6 +1719,9 @@ function bkSubmit() {
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
       ge('bkFormWrap').style.display = 'none';
       ge('bkSucc').classList.add('show');
+      // Анимация иконки
+      const ico = ge('bkSucc').querySelector('.succ-ico');
+      if (ico) { ico.classList.remove('animate'); requestAnimationFrame(() => requestAnimationFrame(() => ico.classList.add('animate'))); }
       ge('bkSuccTbl').innerHTML =
         '<div class="succ-row"><span class="succ-l">Мастер</span><span class="succ-v">'+master.name+'</span></div>' +
         '<div class="succ-row"><span class="succ-l">Дата</span><span class="succ-v">'+formatDate_full(S.date)+'</span></div>' +
@@ -1713,7 +1776,7 @@ function myBkRender() {
     return;
   }
 
-  container.innerHTML = '<div class="adm-loading">Загрузка...</div>';
+  container.innerHTML = _myBkTabsHtml() + [1,2,3].map(()=>'<div class="skel-card"><div class="skel-row"><div class="skel-circle skeleton"></div><div style="flex:1"><div class="skel-line skeleton w80"></div><div class="skel-line skeleton w60"></div></div></div><div class="skel-block skeleton"></div></div>').join('');
   const action = myBkTab==='history' ? 'getMyBookingsHistory' : 'getMyBookings';
 
   fetchWithTimeout(CONFIG.GS + '?action=' + action + '&chatId=' + encodeURIComponent(chatId))
@@ -1741,7 +1804,12 @@ function _renderMyBkData(d) {
   const tabsHtml = _myBkTabsHtml();
 
   if (bks.length===0) {
-    container.innerHTML = tabsHtml + '<div class="my-empty">' + (myBkTab==='history'?'Истории посещений пока нет':'У вас нет предстоящих записей') + '</div>';
+    const emptyText = myBkTab==='history' ? 'Истории посещений пока нет' : 'У вас нет предстоящих записей';
+    const emptyAction = myBkTab==='upcoming'
+      ? '<button onclick="goPage(\'booking\')" style="margin-top:16px;background:var(--gold);color:var(--black);border:none;padding:12px 28px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:\'Cormorant Garamond\',serif">✦ Записаться</button>'
+      : '';
+    const emptySvg = '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="margin-bottom:12px;opacity:.35"><path d="M20 8h24v4H20z" fill="#c9a84c"/><rect x="16" y="10" width="32" height="40" rx="4" stroke="#c9a84c" stroke-width="1.5" fill="none"/><line x1="24" y1="24" x2="40" y2="24" stroke="#c9a84c" stroke-width="1.5"/><line x1="24" y1="32" x2="36" y2="32" stroke="#c9a84c" stroke-width="1.5"/><circle cx="44" cy="44" r="10" fill="#0d0b07" stroke="#c9a84c" stroke-width="1.5"/><path d="M40 44l3 3 5-5" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    container.innerHTML = tabsHtml + '<div class="my-empty" style="display:flex;flex-direction:column;align-items:center;padding:48px 24px">' + emptySvg + '<div style="color:var(--gray);font-style:italic;font-size:15px;margin-bottom:4px">' + emptyText + '</div>' + emptyAction + '</div>';
     return;
   }
 

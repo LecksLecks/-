@@ -3790,48 +3790,6 @@ function initWowEffects() {
   });
 })();
 
-/* П.4: Typewriter эффект для главного слогана */
-function initTypewriter() {
-  const el = ge('h1TypeWriter');
-  if (!el) return;
-  const text1 = 'Место, где рождается';
-  const text2 = 'настоящий мужской образ.';
-  let i = 0, line = 1;
-  el.innerHTML = '<span class="h-t1-typed" id="typedLine1"></span><span class="h-t1-cursor">|</span>';
-  const typed1 = ge('typedLine1');
-
-  function typeChar() {
-    if (line === 1) {
-      if (i < text1.length) {
-        typed1.textContent += text1[i++];
-        setTimeout(typeChar, 55 + Math.random() * 30);
-      } else {
-        // Переходим на вторую строку
-        line = 2; i = 0;
-        el.innerHTML = '<span class="h-t1-typed">' + text1 + '</span><br><span class="h-t1-typed" id="typedLine2"></span><span class="h-t1-cursor">|</span>';
-        setTimeout(typeChar, 180);
-      }
-    } else {
-      const typed2 = ge('typedLine2');
-      if (!typed2) return;
-      if (i < text2.length) {
-        typed2.textContent += text2[i++];
-        setTimeout(typeChar, 50 + Math.random() * 25);
-      } else {
-        // Убираем курсор через 2 сек
-        setTimeout(() => {
-          const cursor = el.querySelector('.h-t1-cursor');
-          if (cursor) cursor.style.opacity = '0';
-        }, 2000);
-      }
-    }
-  }
-
-  // Запускаем после splash screen
-  setTimeout(typeChar, 2000);
-}
-
-/* П.5: Золотое конфетти */
 function launchConfetti() {
   const container = ge('confettiContainer');
   if (!container) return;
@@ -3982,47 +3940,6 @@ function initMagneticMasters() {
   setTimeout(updateMagnetic, 500);
 }
 
-/* П.4: Typewriter эффект для гимна */
-function initTypewriter() {
-  const el = document.querySelector('.h-t1');
-  if (!el || el.dataset.typed) return;
-  el.dataset.typed = '1';
-  const text = 'Место, где рождается настоящий мужской образ.';
-  el.textContent = '';
-  el.classList.add('typewriter-text');
-  let i = 0;
-  function type() {
-    if (i < text.length) {
-      el.textContent += text[i];
-      i++;
-      setTimeout(type, 35 + Math.random() * 25);
-    } else {
-      el.classList.add('done');
-      el.classList.remove('typewriter-text');
-    }
-  }
-  setTimeout(type, 1600); // после сплэша
-}
-
-/* П.5: Конфетти при успешной записи */
-function launchConfetti() {
-  const colors = ['#c9a84c','#e8c97a','#f5e49a','#fff8e0','#b8902a'];
-  for (let i = 0; i < 55; i++) {
-    const p = document.createElement('div');
-    p.className = 'confetti-piece';
-    const size = 4 + Math.random() * 8;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const left = 5 + Math.random() * 90;
-    const dur = 1.5 + Math.random() * 2;
-    const rot = -360 + Math.random() * 720;
-    const delay = Math.random() * 0.8;
-    p.style.cssText = 'left:' + left + '%;width:' + size + 'px;height:' + (size * 0.5) + 'px;background:' + color + ';--dur:' + dur + 's;--rot:' + rot + 'deg;animation-delay:' + delay + 's';
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), (dur + delay + 0.5) * 1000);
-  }
-}
-
-/* П.6: След за пальцем */
 function initFingerTrail() {
   let lastTrail = 0;
   document.addEventListener('touchmove', function(e) {
@@ -4083,23 +4000,6 @@ function initLiveCounter() {
   }, 30);
 }
 
-/* ИНИЦИАЛИЗАЦИЯ ВСЕГО */
-function initMegaWow() {
-  initSplashFire();
-  initLiquidBtn();
-  initFingerTrail();
-  initTabBounce();
-  initLiveCounter();
-  setTimeout(initTypewriter, 200);
-  // Магнит — после рендера мастеров
-  setTimeout(initMagneticMasters, 2000);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   WOW2 JS — МАКСИМАЛЬНЫЙ УРОВЕНЬ
-   ═══════════════════════════════════════════════════════════ */
-
-/* П.1: Огонь на splash */
 function initSplashFire() {
   const logo = document.querySelector('.splash-logo');
   if (!logo) return;
@@ -4123,51 +4023,31 @@ function initSplashFire() {
 
 /* П.4: Typewriter эффект */
 function initTypewriter() {
-  const el = ge('h-typewriter');
+  var el = ge('h-typewriter');
   if (!el) return;
-  const lines = [
-    'Место, где рождается',
-    'настоящий мужской образ.'
-  ];
-  const full = lines.join('
-');
-  let i = 0;
-  el.innerHTML = '<span class="typewriter-cursor"></span>';
-  const cursor = el.querySelector('.typewriter-cursor');
-
-  function type() {
-    if (i <= full.length) {
-      const displayed = full.substring(0, i).replace('
-', '<br>');
-      el.innerHTML = displayed + '<span class="typewriter-cursor"></span>';
-      i++;
-      setTimeout(type, i === 1 ? 600 : 45 + Math.random() * 30);
+  var text1 = 'Место, где рождается';
+  var text2 = 'настоящий мужской образ.';
+  var i = 0, phase = 1;
+  el.innerHTML = '<span id="tw1"></span><br><span id="tw2"></span><span class="h-t1-cursor">|</span>';
+  function typeNext() {
+    var t1 = document.getElementById('tw1');
+    var t2 = document.getElementById('tw2');
+    if (phase === 1) {
+      if (i <= text1.length) {
+        if (t1) t1.textContent = text1.substring(0, i);
+        i++;
+        setTimeout(typeNext, 55 + Math.random() * 25);
+      } else { phase = 2; i = 0; setTimeout(typeNext, 250); }
+    } else {
+      if (i <= text2.length) {
+        if (t2) t2.textContent = text2.substring(0, i);
+        i++;
+        setTimeout(typeNext, 55 + Math.random() * 25);
+      }
     }
   }
-  setTimeout(type, 1200);
+  setTimeout(typeNext, 1400);
 }
-
-/* П.5: Конфетти при успехе */
-function launchConfetti() {
-  const colors = ['#c9a84c','#e8c97a','#f5d070','#fff8e0','#a07830','#ffaa00'];
-  const shapes = ['circle','rect','triangle'];
-  for (let i = 0; i < 55; i++) {
-    const p = document.createElement('div');
-    p.className = 'confetti-piece';
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const size  = 4 + Math.random() * 8;
-    const left  = 10 + Math.random() * 80;
-    const dur   = 1.5 + Math.random() * 1.5;
-    const delay = Math.random() * 0.8;
-    let shapeStyle = 'border-radius:50%';
-    if (Math.random() > 0.6) shapeStyle = 'border-radius:2px;transform:rotate(' + (Math.random()*360) + 'deg)';
-    p.style.cssText = 'left:' + left + 'vw;top:-10px;width:' + size + 'px;height:' + size + 'px;background:' + color + ';' + shapeStyle + ';animation-duration:' + dur + 's;animation-delay:' + delay + 's';
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), (dur + delay + 0.5) * 1000);
-  }
-}
-
-/* П.6: След за пальцем */
 function initFingerTrail() {
   let trailActive = false;
   document.addEventListener('touchmove', function(e) {
@@ -4313,9 +4193,8 @@ function refShare() {
 По моей ссылке получишь скидку 20% на первый визит 🎁';
 
   if (tg && tg.shareMessage) {
-    try { tg.shareMessage(text + '
+    try { tg.shareMessage(text + ' ' + url); return; } catch(e) {}
 
-' + url); return; } catch(e) {}
   }
   if (navigator.share) {
     navigator.share({ title: 'BARBER STYLE', text: text, url: url }).catch(() => {});

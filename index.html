@@ -381,11 +381,37 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-top-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,168,76,.06);font-size:13px}
 .adm-top-nm{color:var(--cream)}
 .adm-top-cnt{color:var(--gold);font-weight:700}
-.adm-tabs{display:flex;gap:6px;margin-bottom:14px}
-.adm-tab{flex:1;padding:10px 4px;text-align:center;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Cormorant Garamond',serif}
-.adm-tab.active{background:rgba(201,168,76,.08);border-color:var(--gold);color:var(--gold)}
 .adm-panel{display:none}
 .adm-panel.active{display:block}
+
+/* СЭНДВИЧ-КНОПКА */
+.adm-burger-btn{display:flex;align-items:center;gap:10px;width:100%;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);padding:11px 14px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.adm-burger-btn:active{background:rgba(201,168,76,.12)}
+.adm-burger-ico{display:flex;flex-direction:column;gap:4px;flex-shrink:0;width:18px}
+.adm-burger-ico span{display:block;height:1.5px;background:var(--gold);transition:all .25s;transform-origin:center}
+.adm-burger-ico.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+.adm-burger-ico.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.adm-burger-ico.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
+.adm-burger-lbl{flex:1;text-align:left;font-size:14px;font-weight:700;color:var(--cream);letter-spacing:.5px}
+.adm-burger-arrow{color:rgba(201,168,76,.5);font-size:18px;transition:transform .25s}
+.adm-burger-arrow.open{transform:rotate(90deg)}
+
+/* ВЫДВИЖНОЕ МЕНЮ */
+.adm-drawer{position:fixed;inset:0;z-index:500;pointer-events:none}
+.adm-drawer.open{pointer-events:auto}
+.adm-drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .25s}
+.adm-drawer.open .adm-drawer-overlay{opacity:1}
+.adm-drawer-menu{position:absolute;top:0;left:0;bottom:0;width:76%;max-width:300px;background:#0d0b07;border-right:1px solid rgba(201,168,76,.2);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.adm-drawer.open .adm-drawer-menu{transform:translateX(0)}
+.adm-drawer-ttl{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(201,168,76,.5);padding:20px 20px 12px;border-bottom:1px solid rgba(201,168,76,.1)}
+.adm-menu-item{display:flex;align-items:center;gap:12px;padding:14px 20px;background:transparent;border:none;border-bottom:1px solid rgba(201,168,76,.06);cursor:pointer;text-align:left;transition:background .15s;-webkit-tap-highlight-color:transparent;width:100%}
+.adm-menu-item:active{background:rgba(201,168,76,.08)}
+.adm-menu-item.active{background:rgba(201,168,76,.06);border-left:3px solid var(--gold)}
+.adm-menu-item.active .adm-menu-nm{color:var(--gold)}
+.adm-menu-ico{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.adm-menu-nm{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--cream);display:block;line-height:1.2}
+.adm-menu-desc{font-size:11px;color:var(--gray);display:block;margin-top:1px;letter-spacing:.3px}
+.adm-menu-item > div{display:flex;flex-direction:column}
 .adm-loading{text-align:center;color:var(--gray);font-style:italic;padding:20px 0;font-size:14px}
 .adm-master-group{margin-bottom:16px;border:1px solid rgba(201,168,76,.15);border-radius:4px;overflow:hidden}
 .adm-master-header{background:rgba(201,168,76,.1);padding:10px 14px;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold);border-bottom:1px solid rgba(201,168,76,.1)}
@@ -672,15 +698,50 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       </div>
     </div>
   </div>
-  <div style="padding:12px 16px 0">
-    <div class="adm-tabs">
-      <button class="adm-tab active" data-admtab="summary">Сводка</button>
-      <button class="adm-tab" data-admtab="bookings">Записи</button>
-      <button class="adm-tab" data-admtab="slots">Слоты</button>
-      <button class="adm-tab" data-admtab="dayoffs">Выходные</button>
-      <button class="adm-tab" data-admtab="analytics">Аналитика</button>
-      <button class="adm-tab" data-admtab="broadcast">📢 Рассылка</button>
-      <button class="adm-tab" data-admtab="clients">👥 Клиенты</button>
+  <!-- СЭНДВИЧ-КНОПКА -->
+  <div style="padding:8px 16px 0;display:flex;align-items:center;justify-content:space-between">
+    <button class="adm-burger-btn" id="admBurgerBtn" onclick="admToggleMenu()">
+      <span class="adm-burger-ico" id="admBurgerIco">
+        <span></span><span></span><span></span>
+      </span>
+      <span class="adm-burger-lbl" id="admBurgerLbl">Сводка</span>
+      <span class="adm-burger-arrow" id="admBurgerArrow">›</span>
+    </button>
+  </div>
+
+  <!-- ВЫДВИЖНОЕ МЕНЮ -->
+  <div class="adm-drawer" id="admDrawer">
+    <div class="adm-drawer-overlay" onclick="admToggleMenu()"></div>
+    <div class="adm-drawer-menu">
+      <div class="adm-drawer-ttl">Управление</div>
+      <button class="adm-menu-item active" data-admtab="summary">
+        <span class="adm-menu-ico">◈</span>
+        <div><span class="adm-menu-nm">Сводка</span><span class="adm-menu-desc">Записи дня, выручка</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="bookings">
+        <span class="adm-menu-ico">📅</span>
+        <div><span class="adm-menu-nm">Записи</span><span class="adm-menu-desc">Расписание по датам</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="slots">
+        <span class="adm-menu-ico">🔒</span>
+        <div><span class="adm-menu-nm">Слоты</span><span class="adm-menu-desc">Блокировка времени</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="dayoffs">
+        <span class="adm-menu-ico">🏖</span>
+        <div><span class="adm-menu-nm">Выходные</span><span class="adm-menu-desc">Дни отдыха мастеров</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="analytics">
+        <span class="adm-menu-ico">📊</span>
+        <div><span class="adm-menu-nm">Аналитика</span><span class="adm-menu-desc">Выручка, топ услуг</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="broadcast">
+        <span class="adm-menu-ico">📢</span>
+        <div><span class="adm-menu-nm">Рассылка</span><span class="adm-menu-desc">Сообщения клиентам</span></div>
+      </button>
+      <button class="adm-menu-item" data-admtab="clients">
+        <span class="adm-menu-ico">👥</span>
+        <div><span class="adm-menu-nm">Клиенты</span><span class="adm-menu-desc">LTV, средний чек</span></div>
+      </button>
     </div>
   </div>
   <div class="adm-panel active" id="adm-summary">
@@ -1175,8 +1236,11 @@ function initTabs() {
   document.querySelectorAll('.ptab[data-category]').forEach(ptab =>
     ptab.addEventListener('click', e => { e.preventDefault(); ptSwitch(ptab.getAttribute('data-category'), ptab); })
   );
-  document.querySelectorAll('.adm-tab[data-admtab]').forEach(tab =>
-    tab.addEventListener('click', e => { e.preventDefault(); admTab(tab.getAttribute('data-admtab'), tab); })
+  document.querySelectorAll('.adm-menu-item[data-admtab]').forEach(item =>
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      admTab(this.getAttribute('data-admtab'), this);
+    })
   );
 
   const admSlotMaster = ge('admSlotMaster'), admSlotDate = ge('admSlotDate');
@@ -1775,12 +1839,46 @@ function myBkReschedule(masterId, date, time, masterName) {
 /* ────────────────────────────────────────────────────────────
    АДМИН-ПАНЕЛЬ
    ──────────────────────────────────────────────────────────── */
+function admToggleMenu() {
+  const drawer = ge('admDrawer');
+  const ico    = ge('admBurgerIco');
+  const arrow  = ge('admBurgerArrow');
+  const isOpen = drawer.classList.contains('open');
+  drawer.classList.toggle('open', !isOpen);
+  ico.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+}
+window.admToggleMenu = admToggleMenu;
+
 function admTab(tab, tabEl) {
   admCurrentTab = tab;
-  document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+
+  // Снимаем active со всех пунктов меню
+  document.querySelectorAll('.adm-menu-item').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
+
+  // Активируем нужный пункт и панель
   if (tabEl) tabEl.classList.add('active');
-  ge('adm-' + tab).classList.add('active');
+  const panel = ge('adm-' + tab);
+  if (panel) panel.classList.add('active');
+
+  // Обновляем надпись на кнопке-бургере
+  const labels = {
+    summary:'Сводка', bookings:'Записи', slots:'Слоты',
+    dayoffs:'Выходные', analytics:'Аналитика',
+    broadcast:'📢 Рассылка', clients:'👥 Клиенты'
+  };
+  const lbl = ge('admBurgerLbl');
+  if (lbl) lbl.textContent = labels[tab] || tab;
+
+  // Закрываем меню
+  const drawer = ge('admDrawer');
+  const ico    = ge('admBurgerIco');
+  const arrow  = ge('admBurgerArrow');
+  if (drawer) drawer.classList.remove('open');
+  if (ico)    ico.classList.remove('open');
+  if (arrow)  arrow.classList.remove('open');
+
   if (tab==='summary')   admLoadSummary();
   if (tab==='bookings')  { admBkInitDateStrip(); admLoadBookings(); }
   if (tab==='slots')     admLoadSlots();

@@ -2547,6 +2547,14 @@ function clRenderSummary() {
     '<div class="cl-sum-card"><div class="cl-sum-val">' + formatPrice(avgLtv) + '</div><div class="cl-sum-lbl">Средний LTV</div></div>';
 }
 
+// Очищает телефон от мусора: апостроф, #ERROR!, формулы
+function cleanPhone(val) {
+  if (!val) return '';
+  const s = String(val).trim();
+  if (s.startsWith('#') || s.startsWith('=')) return '';
+  return s.replace(/^'+/, '');
+}
+
 function clRender() {
   let clients = _clAllClients;
 
@@ -2585,7 +2593,7 @@ function clRender() {
         '<div class="cl-name">' + escapeHtml(c.name||'—') + '</div>' +
         '<span class="cl-badge ' + escapeHtml(c.category||'новый') + '">' + escapeHtml(c.category||'новый') + '</span>' +
       '</div>' +
-      '<div class="cl-phone">' + escapeHtml(c.phone||'') + (c.telegram?' · '+escapeHtml(c.telegram):'') + '</div>' +
+      '<div class="cl-phone">' + escapeHtml(cleanPhone(c.phone)) + (c.telegram && !c.telegram.startsWith('#') ? ' · '+escapeHtml(c.telegram) : '') + '</div>' +
       '<div class="cl-stats">' +
         '<div class="cl-stat"><div class="cl-stat-val">' + (c.totalBookings||0) + '</div><div class="cl-stat-lbl">Визитов</div></div>' +
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +

@@ -646,30 +646,20 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes splashFadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
 @keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
-#splash{
-  position:fixed;inset:0;z-index:9999;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;
-  gap:0;
-  width:100vw;height:100vh;
-  margin:0;padding:0;
+#splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
   background:#0a0805;
   background-image:
     repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(201,168,76,.012) 2px,rgba(201,168,76,.012) 3px),
     repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(201,168,76,.008) 2px,rgba(201,168,76,.008) 3px),
     linear-gradient(180deg,#120e09 0%,#0a0805 60%,#070503 100%);
-  pointer-events:all;
-  transition:opacity .5s ease,transform .5s ease;
-  box-sizing:border-box;
-}
-#splash.hiding{opacity:0!important;pointer-events:none!important}
+  pointer-events:all;transition:opacity .5s ease,transform .5s ease}
+#splash.hiding{animation:splashFadeOut .5s ease forwards;pointer-events:none}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
-.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;text-align:center;
+.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;
   background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards}
-.splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px auto;display:block}
-.splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards;text-align:center;width:100%}
+.splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px 0}
+.splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards}
 
 /* СТРАНИЦА ПРОФИЛЯ МАСТЕРА */
 @keyframes profileIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -872,183 +862,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   -webkit-backdrop-filter:blur(20px)!important;
   background:rgba(10,8,5,.88)!important;
 }
-
-/* ═══════════════════════════════════════════════
-   MEGA WOW EFFECTS
-   ═══════════════════════════════════════════════ */
-
-/* П.1 ОГОНЬ НА СПЛЭШЕ */
-@keyframes fireFlicker{0%,100%{transform:scaleY(1) scaleX(1) translateY(0);opacity:.9}25%{transform:scaleY(1.3) scaleX(.85) translateY(-4px);opacity:1}50%{transform:scaleY(.9) scaleX(1.1) translateY(2px);opacity:.7}75%{transform:scaleY(1.2) scaleX(.9) translateY(-2px);opacity:.95}}
-@keyframes fireRise{0%{opacity:0;transform:translateY(0) scaleX(1)}50%{opacity:.8}100%{opacity:0;transform:translateY(-40px) scaleX(.3)}}
-.splash-fire{position:absolute;bottom:-4px;left:0;right:0;display:flex;justify-content:center;gap:1px;height:24px;align-items:flex-end}
-.splash-flame{width:4px;border-radius:50% 50% 20% 20%;background:linear-gradient(to top,#c9a84c,#e8c97a,rgba(255,220,100,.3));animation:fireFlicker ease-in-out infinite;transform-origin:bottom center}
-#splash .splash-logo{position:relative}
-.splash-sparks{position:absolute;inset:0;pointer-events:none;overflow:visible}
-.splash-spark{position:absolute;width:2px;height:2px;border-radius:50%;background:#e8c97a;animation:fireRise ease-out infinite}
-
-/* П.2 LIQUID METAL КНОПКА */
-@keyframes liquidFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes liquidSplash{0%{transform:scale(1)}30%{transform:scale(1.04)}60%{transform:scale(.97)}100%{transform:scale(1)}}
-.btn-g{background-size:300% 300%!important;background-image:linear-gradient(135deg,#b8902a 0%,#e8c97a 25%,#c9a84c 50%,#f5e49a 75%,#c9a84c 100%)!important;animation:liquidFlow 4s ease infinite;-webkit-text-fill-color:var(--black)!important;color:var(--black)!important}
-.btn-g:active{animation:liquidSplash .3s ease,liquidFlow 4s ease infinite!important}
-
-/* П.3 МАГНИТНЫЙ СКРОЛЛ МАСТЕРОВ */
-.m-list{scroll-snap-type:none}
-.m-item{transition:transform .2s ease,box-shadow .2s ease,opacity .2s ease}
-.m-item.mag-center{transform:scale(1.03);box-shadow:0 0 20px rgba(201,168,76,.25);opacity:1!important;z-index:2}
-.m-item.mag-side{transform:scale(.97);opacity:.85}
-
-/* П.4 TYPEWRITER ЭФФЕКТ */
-@keyframes typeCursor{0%,100%{opacity:1}50%{opacity:0}}
-.typewriter-text{overflow:hidden;white-space:nowrap;border-right:2px solid rgba(201,168,76,.7);animation:typeCursor 1s step-end infinite}
-.typewriter-text.done{border-right:none;white-space:normal}
-
-/* П.5 КОНФЕТТИ */
-@keyframes confettiFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg) scale(1)}100%{opacity:0;transform:translateY(110vh) rotate(var(--rot)) scale(.3)}}
-.confetti-piece{position:fixed;top:-10px;pointer-events:none;z-index:9997;animation:confettiFall var(--dur) ease-in forwards;border-radius:2px}
-
-/* П.6 СЛЕД ЗА ПАЛЬЦЕМ */
-@keyframes trailFade{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(.2)}}
-.finger-trail{position:fixed;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#e8c97a,rgba(201,168,76,.3));pointer-events:none;z-index:9996;transform:translate(-50%,-50%);animation:trailFade .5s ease forwards}
-
-/* П.7 КАРУСЕЛЬ С ИНЕРЦИЕЙ */
-.masters-carousel{display:flex;overflow-x:auto;gap:12px;padding:12px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab}
-.masters-carousel::-webkit-scrollbar{display:none}
-.masters-carousel:active{cursor:grabbing}
-.masters-carousel .m-item{flex:0 0 calc(50% - 6px);scroll-snap-align:start;min-width:140px}
-
-/* П.8 GLASSMORPHISM */
-.my-card{background:rgba(255,255,255,.03)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(201,168,76,.18)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
-.cart-bar{background:rgba(255,255,255,.03)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(201,168,76,.15)!important}
-.rev-card{background:rgba(255,255,255,.02)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.adm-stat{background:rgba(255,255,255,.02)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-
-/* П.9 МОРФИНГ ИКОНОК МЕНЮ */
-@keyframes tabBounce{0%{transform:scale(1)}30%{transform:scale(.75) rotate(-8deg)}60%{transform:scale(1.2) rotate(4deg)}80%{transform:scale(.95)}100%{transform:scale(1)}}
-.tab svg.bouncing{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
-
-/* П.10 ЖИВОЙ СЧЁТЧИК */
-@keyframes countUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
-.live-counter{display:flex;align-items:center;gap:6px;padding:6px 24px;font-size:12px}
-.live-counter-num{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);animation:countUp .3s ease}
-.live-counter-lbl{color:var(--gray);letter-spacing:.5px}
-.live-counter-ico{font-size:10px;color:var(--green)}
-
-/* ═══════════════════════════════════════════════
-   WOW2 — МАКСИМАЛЬНЫЙ УРОВЕНЬ
-   ═══════════════════════════════════════════════ */
-
-/* П.1 ОГОНЬ НА SPLASH */
-@keyframes flameRise{0%{opacity:0;transform:translateY(0) scaleX(1)}25%{opacity:.9;transform:translateY(-8px) scaleX(.8)}50%{opacity:.6;transform:translateY(-16px) scaleX(1.1)}75%{opacity:.3;transform:translateY(-24px) scaleX(.7)}100%{opacity:0;transform:translateY(-32px) scaleX(.5)}}
-.splash-flame{position:absolute;bottom:-4px;pointer-events:none}
-.splash-flame span{position:absolute;bottom:0;border-radius:50% 50% 20% 20%;animation:flameRise ease-in-out infinite;transform-origin:bottom center}
-#splash{overflow:hidden}
-.splash-logo{position:relative;display:inline-block}
-
-/* П.2 LIQUID METAL КНОПКА */
-@keyframes liquidFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes liquidSplash{0%{transform:scale(1)}30%{transform:scale(.97)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
-.btn-g{background-size:300% 300%;animation:liquidFlow 3s ease infinite}
-.btn-g{background-image:linear-gradient(135deg,#c9a84c 0%,#e8c97a 25%,#f5d98a 40%,#c9a84c 55%,#a07830 70%,#c9a84c 85%,#e8c97a 100%)}
-.btn-g:active{animation:liquidSplash .4s ease, liquidFlow 3s ease infinite}
-
-/* П.4 TYPEWRITER */
-@keyframes typewriterBlink{0%,100%{opacity:1}50%{opacity:0}}
-.typewriter-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);margin-left:2px;animation:typewriterBlink 1s infinite;vertical-align:middle}
-#h-typewriter{min-height:2.8em;display:block}
-
-/* П.5 КОНФЕТТИ */
-@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg) scale(1);opacity:1}100%{transform:translateY(100vh) rotate(720deg) scale(.3);opacity:0}}
-.confetti-piece{position:fixed;pointer-events:none;z-index:9990;animation:confettiFall linear forwards}
-
-/* П.6 СЛЕД ЗА ПАЛЬЦЕМ */
-.finger-trail{position:fixed;border-radius:50%;pointer-events:none;z-index:9997;background:radial-gradient(circle,rgba(201,168,76,.8) 0%,rgba(201,168,76,0) 100%);transform:translate(-50%,-50%);animation:trailFade .4s ease forwards}
-@keyframes trailFade{0%{opacity:.7;width:12px;height:12px}100%{opacity:0;width:4px;height:4px}}
-
-/* П.7 КАРУСЕЛЬ МАСТЕРОВ */
-.m-carousel{display:flex;overflow-x:auto;gap:12px;padding:16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.m-carousel::-webkit-scrollbar{display:none}
-.m-carousel-item{flex-shrink:0;width:44vw;max-width:180px;scroll-snap-align:center;transition:transform .3s ease,opacity .3s ease;border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer}
-.m-carousel-item.active-card{transform:scale(1.05);border-color:rgba(201,168,76,.5);box-shadow:0 0 20px rgba(201,168,76,.2)}
-.m-carousel-item img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;display:block}
-.m-carousel-item .m-thumb-overlay{position:absolute;bottom:0;left:0;right:0;padding:24px 10px 10px;background:linear-gradient(0deg,rgba(10,8,5,.95) 0%,transparent 100%)}
-
-/* П.8 GLASSMORPHISM */
-.my-card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(13,11,7,.55)!important;border:1px solid rgba(201,168,76,.2)!important}
-.info-block{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.rev-card{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(13,11,7,.5)!important}
-.adm-stat{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);background:rgba(201,168,76,.03)!important}
-
-/* П.9 МОРФ ИКОНОК МЕНЮ */
-@keyframes tabBounce{0%{transform:scale(1)}30%{transform:scale(.75) translateY(3px)}60%{transform:scale(1.2) translateY(-4px)}80%{transform:scale(.95)}100%{transform:scale(1)}}
-.tab.active svg{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
-.tab.bounce-once svg{animation:tabBounce .45s cubic-bezier(.34,1.56,.64,1)}
-
-
-/* РЕФЕРАЛЬНАЯ ПРОГРАММА */
-.ref-block{margin:0 16px 16px;border:1px solid rgba(201,168,76,.25);background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));padding:18px}
-.ref-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:4px}
-.ref-title em{color:var(--gold);font-style:italic}
-.ref-desc{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:14px}
-.ref-code-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-.ref-code{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.3);padding:10px 12px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:3px;color:var(--gold);text-align:center}
-.ref-copy-btn{background:transparent;border:1px solid rgba(201,168,76,.4);color:var(--gold);padding:10px 14px;font-size:11px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;white-space:nowrap;transition:all .15s}
-.ref-copy-btn:active{background:rgba(201,168,76,.1)}
-.ref-share-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:13px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .2s}
-.ref-share-btn:active{background:var(--gold-l)}
-.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.ref-stat{border:1px solid rgba(201,168,76,.1);padding:10px;text-align:center;background:rgba(0,0,0,.2)}
-.ref-stat-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
-.ref-stat-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:2px}
-
-/* ВИТРИНА АКЦИЙ */
-.promo-block{padding:0 16px 4px}
-.promo-ttl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;margin-top:16px}
-.promo-list{display:flex;flex-direction:column;gap:8px}
-.promo-item{border:1px solid rgba(201,168,76,.2);background:rgba(201,168,76,.04);padding:12px 14px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden}
-.promo-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
-.promo-badge{font-size:22px;flex-shrink:0}
-.promo-body{flex:1}
-.promo-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream)}
-.promo-desc{font-size:12px;color:var(--gray);margin-top:2px}
-.promo-price{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);white-space:nowrap}
-.promo-until{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:2px;text-align:right}
-.promo-empty{font-size:13px;color:var(--gray);font-style:italic;text-align:center;padding:16px 0}
-
-/* ГРАФИК ВЫРУЧКИ ПО ДНЯМ */
-.chart-wrap{padding:0 16px 16px}
-.chart-bars{display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:6px}
-.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.chart-bar{width:100%;background:rgba(201,168,76,.15);border-radius:2px 2px 0 0;transition:height .6s cubic-bezier(.34,1.56,.64,1);position:relative;min-height:3px}
-.chart-bar.today{background:var(--gold)}
-.chart-bar:not(.today){background:rgba(201,168,76,.3)}
-.chart-bar-val{font-size:8px;color:var(--gray);letter-spacing:.3px;text-align:center;white-space:nowrap}
-.chart-day{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--gray)}
-.chart-day.today{color:var(--gold)}
-
-/* УЧЁТ РАСХОДОВ */
-.expense-form{padding:0 16px 8px}
-.expense-row{display:flex;gap:8px;margin-bottom:8px}
-.expense-inp{flex:1;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px;outline:none}
-.expense-inp::placeholder{color:rgba(138,125,107,.35)}
-.expense-inp:focus{border-color:rgba(201,168,76,.5)}
-.expense-add-btn{background:var(--gold);color:var(--black);border:none;padding:10px 16px;font-size:18px;cursor:pointer;flex-shrink:0}
-.expense-list{margin:0 16px}
-.expense-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(201,168,76,.07)}
-.expense-item:last-child{border-bottom:none}
-.expense-nm{font-size:14px;color:var(--cream)}
-.expense-dt{font-size:10px;color:var(--gray);margin-top:2px;letter-spacing:.5px}
-.expense-sum{font-family:'Playfair Display',serif;font-size:15px;color:#e05050;font-weight:700}
-.expense-rm{color:rgba(138,125,107,.4);cursor:pointer;font-size:18px;margin-left:8px;padding:4px}
-.expense-rm:active{color:#e05050}
-.expense-total{display:flex;justify-content:space-between;padding:12px 16px;border-top:1px solid rgba(201,168,76,.15);margin-top:4px}
-.expense-total-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
-.expense-total-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#e05050}
-.profit-row{display:flex;justify-content:space-between;padding:10px 16px 16px}
-.profit-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
-.profit-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
-.profit-val.positive{color:#4caf7d}
-.profit-val.negative{color:#e05050}
 </style>
 </head>
 <body>
@@ -1078,22 +891,12 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 <!-- SPLASH SCREEN -->
 <div id="splash">
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:100%">
-    <div class="splash-crown">♛</div>
-    <div style="position:relative;display:inline-block">
-      <div class="splash-logo">BARBER<br>STYLE</div>
-      <div class="splash-fire" id="splashFire"></div>
-    </div>
-    <div class="splash-line" style="margin:14px auto"></div>
-    <div class="splash-city">✦ Батайск ✦</div>
-  </div>
+  <div class="splash-crown">♛</div>
+  <div class="splash-logo">BARBER<br>STYLE</div>
+  <div class="splash-line"></div>
+  <div class="splash-city">✦ Батайск ✦</div>
 </div>
 
-<script>
-// Аварийное скрытие splash — выполняется до основного JS
-setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.display='none';},1200);
-setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.display='none';},2500);
-</script>
 <div id="bgParticles"></div>
 <div class="page active page-visible" id="page-home">
   <div class="home-hero">
@@ -1110,11 +913,6 @@ setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.displ
     </div>
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
-  <div class="live-counter"><span class="live-counter-ico">👁</span><span class="live-counter-num" id="liveViewCount">0</span><span class="live-counter-lbl">открыли приложение сегодня</span></div>
-  <div class="promo-block" id="promoBlock" style="display:none">
-    <div class="promo-ttl">✦ Акции и предложения</div>
-    <div class="promo-list" id="promoList"></div>
-  </div>
   <div class="home-btns" style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
@@ -1138,20 +936,6 @@ setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.displ
     <a href="https://www.instagram.com/barber_stayle161?igsh=MWMwbno5d215dnhzag==" target="_blank"><span class="soc-ico">◎</span>INST</a>
     <a href="https://vk.com/club211199483" target="_blank"><span class="soc-ico">◈</span>VK</a>
     <a href="https://yandex.ru/maps/?text=Батайск+Октябрьская+108" target="_blank"><span class="soc-ico">⊕</span>MAP</a>
-  </div>
-  <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
-  <div class="ref-block" id="refBlock">
-    <div class="ref-title">Приведи <em>друга</em></div>
-    <div class="ref-desc">Поделись своей ссылкой — друг получит <strong style="color:var(--gold)">скидку 20%</strong> на первый визит, а ты на следующий тоже.</div>
-    <div class="ref-code-row">
-      <div class="ref-code" id="refCode">Загрузка...</div>
-      <button class="ref-copy-btn" onclick="refCopyCode()">Копировать</button>
-    </div>
-    <button class="ref-share-btn" onclick="refShare()">✦ Поделиться ссылкой</button>
-    <div class="ref-stats">
-      <div class="ref-stat"><div class="ref-stat-val" id="refFriendsCount">0</div><div class="ref-stat-lbl">Друзей привёл</div></div>
-      <div class="ref-stat"><div class="ref-stat-val" id="refDiscountsEarned">0</div><div class="ref-stat-lbl">Скидок получено</div></div>
-    </div>
   </div>
   <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="reviews-section">
@@ -1187,7 +971,7 @@ setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.displ
     <div class="sec-lbl">✦ Наша команда</div>
     <h2 class="sec-ttl">Наши <em>мастера</em></h2>
   </div>
-  <div class="m-list masters-carousel" id="mastersList"></div>
+  <div class="m-list" id="mastersList"></div>
 
 </div>
 
@@ -1335,14 +1119,9 @@ setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.displ
         <span class="adm-menu-ico">📢</span>
         <div><span class="adm-menu-nm">Рассылка</span><span class="adm-menu-desc">Сообщения клиентам</span></div>
       </button>
-
-      <button class="adm-menu-item" data-admtab="revenue">
-        <span class="adm-menu-ico">📈</span>
-        <div><span class="adm-menu-nm">График выручки</span><span class="adm-menu-desc">По дням недели</span></div>
-      </button>
-      <button class="adm-menu-item" data-admtab="expenses">
-        <span class="adm-menu-ico">💸</span>
-        <div><span class="adm-menu-nm">Расходы</span><span class="adm-menu-desc">Учёт затрат, прибыль</span></div>
+      <button class="adm-menu-item" data-admtab="clients">
+        <span class="adm-menu-ico">👥</span>
+        <div><span class="adm-menu-nm">Клиенты</span><span class="adm-menu-desc">LTV, средний чек</span></div>
       </button>
     </div>
   </div>
@@ -1449,7 +1228,7 @@ setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.displ
   </div>
 
   <!-- ПАНЕЛЬ КЛИЕНТОВ -->
-  <div class="adm-panel" id="adm-clients" style="display:none!important">
+  <div class="adm-panel" id="adm-clients">
     <div class="adm-section">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
         <input type="text" class="adm-select" id="clSearchInput" placeholder="Поиск по имени или телефону..." style="margin-bottom:0;flex:1">
@@ -1468,59 +1247,6 @@ setTimeout(function(){var e=document.getElementById('splash');if(e)e.style.displ
       <div id="clList"><div class="adm-loading">Загрузка клиентов...</div></div>
     </div>
   </div>
-
-  <!-- ПАНЕЛЬ ГРАФИКА ВЫРУЧКИ -->
-  <div class="adm-panel" id="adm-revenue">
-    <div class="adm-section">
-      <div class="adm-section-ttl">Выручка по дням недели</div>
-      <div class="chart-wrap" id="revenueChartWrap">
-        <div class="adm-loading">Загрузка...</div>
-      </div>
-    </div>
-    <div class="adm-section">
-      <div class="adm-section-ttl">По месяцам (последние 6)</div>
-      <div class="chart-wrap" id="revenueMonthChartWrap">
-        <div class="adm-loading">Загрузка...</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ПАНЕЛЬ РАСХОДОВ -->
-  <div class="adm-panel" id="adm-expenses">
-    <div class="adm-section">
-      <div class="adm-section-ttl">Добавить расход</div>
-      <div class="expense-form">
-        <div class="expense-row">
-          <input type="text" class="expense-inp" id="expName" placeholder="Название (аренда, материалы...)">
-        </div>
-        <div class="expense-row">
-          <input type="number" class="expense-inp" id="expSum" placeholder="Сумма ₽" style="max-width:130px">
-          <select class="expense-inp" id="expCat" style="flex:1">
-            <option value="rent">🏠 Аренда</option>
-            <option value="materials">✂️ Материалы</option>
-            <option value="salary">👤 Зарплата</option>
-            <option value="equipment">🔧 Оборудование</option>
-            <option value="marketing">📢 Маркетинг</option>
-            <option value="other">📦 Прочее</option>
-          </select>
-          <button class="expense-add-btn" onclick="expenseAdd()">+</button>
-        </div>
-      </div>
-    </div>
-    <div class="adm-section">
-      <div class="adm-section-ttl">Расходы за месяц</div>
-      <div class="expense-list" id="expenseList"><div class="adm-loading">Нет расходов</div></div>
-      <div class="expense-total">
-        <span class="expense-total-lbl">Расходы итого</span>
-        <span class="expense-total-val" id="expenseTotal">0 ₽</span>
-      </div>
-      <div class="profit-row">
-        <span class="profit-lbl">Прибыль за месяц</span>
-        <span class="profit-val" id="profitVal">— ₽</span>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 
@@ -1651,25 +1377,13 @@ const CONFIG = {
 /* ────────────────────────────────────────────────────────────
    SPLASH SCREEN
    ──────────────────────────────────────────────────────────── */
-// SPLASH — скрываем сразу как только страница готова
-(function() {
-  function hideSplash() {
-    var el = document.getElementById('splash');
-    if (!el) return;
-    el.style.display = 'none';
-  }
-  // Сразу через 1.2 сек
-  setTimeout(hideSplash, 1200);
-  // Страховка через 2 сек
-  setTimeout(hideSplash, 2000);
-  // Страховка через 3 сек — принудительно
-  setTimeout(hideSplash, 3000);
-})();
-
 function splashHide() {
-  var el = document.getElementById('splash');
-  if (el) el.style.display = 'none';
+  const el = ge('splash');
+  if (!el) return;
+  el.classList.add('hiding');
+  setTimeout(() => { el.style.display = 'none'; }, 500);
 }
+setTimeout(splashHide, 1800);
 /* ────────────────────────────────────────────────────────────
    HAPTIC FEEDBACK
    ──────────────────────────────────────────────────────────── */
@@ -1901,9 +1615,7 @@ function initApp() {
   initReviews();
   loadAppData();
   initWowEffects();
-  refInit();
-  loadPromos();
-  initWow2Effects();
+  initMegaWow();
 
   // FIX-09: deep link ?startapp=master_N
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
@@ -2006,8 +1718,6 @@ function goPage(id) {
   const tb = ge('tab-' + id);
   if (tb) tb.classList.add('active');
   haptic('select');
-  const activeTab = ge('tab-' + id);
-  if (activeTab) { activeTab.classList.remove('bounce-once'); void activeTab.offsetWidth; activeTab.classList.add('bounce-once'); }
   if (pg) {
     pg.classList.add('active');
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -2148,7 +1858,6 @@ function renderMasters() {
     };
     g.appendChild(d);
   });
-  setTimeout(initMagneticMasters, 100);
 }
 
 function renderPrices() {
@@ -2548,8 +2257,6 @@ function bkSubmit() {
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
       haptic('success');
       morphBookBtn();
-      launchConfetti();
-      launchConfetti();
       setTimeout(launchConfetti, 200);
       ge('bkSpinner').classList.remove('show');
       btn.style.display='';
@@ -2796,8 +2503,6 @@ function admTab(tab, tabEl) {
   if (tab==='analytics') admLoadAnalytics();
   if (tab==='broadcast') bcInit();
   if (tab==='clients')   clInit();
-  if (tab==='revenue')   revenueInit();
-  if (tab==='expenses')  expensesInit();
 }
 
 function admInit() {
@@ -3785,6 +3490,48 @@ function initWowEffects() {
   });
 })();
 
+/* П.4: Typewriter эффект для главного слогана */
+function initTypewriter() {
+  const el = ge('h1TypeWriter');
+  if (!el) return;
+  const text1 = 'Место, где рождается';
+  const text2 = 'настоящий мужской образ.';
+  let i = 0, line = 1;
+  el.innerHTML = '<span class="h-t1-typed" id="typedLine1"></span><span class="h-t1-cursor">|</span>';
+  const typed1 = ge('typedLine1');
+
+  function typeChar() {
+    if (line === 1) {
+      if (i < text1.length) {
+        typed1.textContent += text1[i++];
+        setTimeout(typeChar, 55 + Math.random() * 30);
+      } else {
+        // Переходим на вторую строку
+        line = 2; i = 0;
+        el.innerHTML = '<span class="h-t1-typed">' + text1 + '</span><br><span class="h-t1-typed" id="typedLine2"></span><span class="h-t1-cursor">|</span>';
+        setTimeout(typeChar, 180);
+      }
+    } else {
+      const typed2 = ge('typedLine2');
+      if (!typed2) return;
+      if (i < text2.length) {
+        typed2.textContent += text2[i++];
+        setTimeout(typeChar, 50 + Math.random() * 25);
+      } else {
+        // Убираем курсор через 2 сек
+        setTimeout(() => {
+          const cursor = el.querySelector('.h-t1-cursor');
+          if (cursor) cursor.style.opacity = '0';
+        }, 2000);
+      }
+    }
+  }
+
+  // Запускаем после splash screen
+  setTimeout(typeChar, 2000);
+}
+
+/* П.5: Золотое конфетти */
 function launchConfetti() {
   const container = ge('confettiContainer');
   if (!container) return;
@@ -3862,477 +3609,6 @@ function initMegaWow() {
   initFingerTrail();
   enhanceGlass();
 }
-
-/* ═══════════════════════════════════════════════════════════
-   MEGA WOW JS
-   ═══════════════════════════════════════════════════════════ */
-
-/* П.1: Огонь на сплэше */
-function initSplashFire() {
-  const container = document.getElementById('splashFire');
-  if (!container) return;
-  const count = 18;
-  for (let i = 0; i < count; i++) {
-    const flame = document.createElement('div');
-    flame.className = 'splash-flame';
-    const h = 8 + Math.random() * 16;
-    const w = 3 + Math.random() * 5;
-    const dur = 0.4 + Math.random() * 0.6;
-    const delay = Math.random() * 0.5;
-    flame.style.cssText = 'height:' + h + 'px;width:' + w + 'px;animation-duration:' + dur + 's;animation-delay:' + delay + 's;opacity:' + (0.5 + Math.random() * 0.5);
-    container.appendChild(flame);
-  }
-  // Искры
-  const logoWrap = container.parentElement;
-  for (let i = 0; i < 8; i++) {
-    const spark = document.createElement('div');
-    spark.className = 'splash-spark';
-    spark.style.cssText = 'left:' + (20 + Math.random() * 60) + '%;bottom:0;animation-duration:' + (0.8 + Math.random() * 1.2) + 's;animation-delay:' + (Math.random() * 1.5) + 's';
-    logoWrap.appendChild(spark);
-  }
-}
-
-/* П.2: Liquid metal — уже в CSS, добавляем ripple при нажатии */
-function initLiquidBtn() {
-  const btn = document.getElementById('btnToBooking');
-  if (!btn) return;
-  btn.addEventListener('touchstart', function(e) {
-    haptic('medium');
-    const rect = btn.getBoundingClientRect();
-    const t = e.touches[0];
-    const x = ((t.clientX - rect.left) / rect.width * 100).toFixed(0);
-    btn.style.setProperty('--ripple-x', x + '%');
-    btn.classList.add('liquid-tap');
-    setTimeout(() => btn.classList.remove('liquid-tap'), 400);
-  }, {passive: true});
-}
-
-/* П.3: Магнитный эффект при скролле мастеров */
-function initMagneticMasters() {
-  const list = document.getElementById('mastersList');
-  if (!list) return;
-  function updateMagnetic() {
-    const listRect = list.getBoundingClientRect();
-    const centerX = listRect.left + listRect.width / 2;
-    const cards = list.querySelectorAll('.m-item');
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      const cardCenterX = rect.left + rect.width / 2;
-      const dist = Math.abs(cardCenterX - centerX);
-      const maxDist = listRect.width / 2;
-      if (dist < maxDist * 0.4) {
-        card.classList.add('mag-center');
-        card.classList.remove('mag-side');
-      } else if (dist > maxDist * 0.7) {
-        card.classList.add('mag-side');
-        card.classList.remove('mag-center');
-      } else {
-        card.classList.remove('mag-center', 'mag-side');
-      }
-    });
-  }
-  list.addEventListener('scroll', updateMagnetic, {passive: true});
-  setTimeout(updateMagnetic, 500);
-}
-
-function initTabBounce() {
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('touchstart', function() {
-      const svg = this.querySelector('svg');
-      if (!svg) return;
-      svg.classList.remove('bouncing');
-      void svg.offsetWidth;
-      svg.classList.add('bouncing');
-      svg.addEventListener('animationend', () => svg.classList.remove('bouncing'), {once: true});
-    }, {passive: true});
-  });
-}
-
-/* П.10: Живой счётчик просмотров */
-function initLiveCounter() {
-  const el = document.getElementById('liveViewCount');
-  if (!el) return;
-  // Генерируем случайное но реалистичное число на основе времени дня
-  const now = new Date();
-  const hour = now.getHours();
-  const base = Math.floor(80 + hour * 12 + Math.random() * 30);
-  let current = 0;
-  const target = base;
-  const step = Math.ceil(target / 40);
-  const timer = setInterval(() => {
-    current = Math.min(current + step, target);
-    el.textContent = current;
-    if (current >= target) {
-      clearInterval(timer);
-      // Периодически увеличиваем на 1
-      setInterval(() => {
-        if (Math.random() > 0.6) {
-          current++;
-          el.style.animation = 'none';
-          void el.offsetWidth;
-          el.style.animation = 'countUp .3s ease';
-          el.textContent = current;
-        }
-      }, 8000);
-    }
-  }, 30);
-}
-
-function initTypewriter() {
-  var el = ge('h-typewriter');
-  if (!el) return;
-  var text1 = 'Место, где рождается';
-  var text2 = 'настоящий мужской образ.';
-  var i = 0, phase = 1;
-  el.innerHTML = '<span id="tw1"></span><br><span id="tw2"></span><span class="h-t1-cursor">|</span>';
-  function typeNext() {
-    var t1 = document.getElementById('tw1');
-    var t2 = document.getElementById('tw2');
-    if (phase === 1) {
-      if (i <= text1.length) {
-        if (t1) t1.textContent = text1.substring(0, i);
-        i++;
-        setTimeout(typeNext, 55 + Math.random() * 25);
-      } else { phase = 2; i = 0; setTimeout(typeNext, 250); }
-    } else {
-      if (i <= text2.length) {
-        if (t2) t2.textContent = text2.substring(0, i);
-        i++;
-        setTimeout(typeNext, 55 + Math.random() * 25);
-      }
-    }
-  }
-  setTimeout(typeNext, 1400);
-}
-function convertMastersToCarousel() {
-  const list = ge('mastersList');
-  if (!list || list.classList.contains('m-carousel')) return;
-
-  // Преобразуем grid в карусель
-  list.classList.remove('m-list');
-  list.className = 'm-carousel';
-
-  // Делаем элементы правильного класса
-  list.querySelectorAll('.m-item').forEach(item => {
-    item.classList.remove('m-item');
-    item.classList.add('m-carousel-item');
-    // Оборачиваем контент
-    const thumb = item.querySelector('.m-thumb');
-    if (thumb) thumb.style.cssText = 'position:relative;aspect-ratio:3/4;overflow:hidden';
-  });
-
-  // Эффект активной карточки при скролле
-  function updateActiveCard() {
-    const centerX = list.scrollLeft + list.offsetWidth / 2;
-    list.querySelectorAll('.m-carousel-item').forEach(card => {
-      const cardCenterX = card.offsetLeft + card.offsetWidth / 2;
-      const dist = Math.abs(centerX - cardCenterX);
-      const maxDist = list.offsetWidth / 2;
-      card.classList.toggle('active-card', dist < maxDist * 0.35);
-      const scale = Math.max(0.88, 1 - dist / maxDist * 0.15);
-      const opacity = Math.max(0.6, 1 - dist / maxDist * 0.4);
-      if (!card.classList.contains('active-card')) {
-        card.style.transform = 'scale(' + scale + ')';
-        card.style.opacity = opacity;
-      } else {
-        card.style.transform = '';
-        card.style.opacity = '';
-      }
-    });
-  }
-
-  list.addEventListener('scroll', updateActiveCard, {passive: true});
-  setTimeout(updateActiveCard, 100);
-}
-
-/* П.9: Морфинг иконок меню */
-function initTabMorph() {
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      this.classList.remove('bounce-once');
-      void this.offsetWidth;
-      this.classList.add('bounce-once');
-      setTimeout(() => this.classList.remove('bounce-once'), 500);
-    });
-  });
-}
-
-function initWow2Effects() {
-  initSplashFire();
-  initTypewriter();
-  initFingerTrail();
-  initTabMorph();
-  // Карусель после загрузки мастеров
-  setTimeout(convertMastersToCarousel, 800);
-}
-
-/* ════════════════════════════════════════════════════════════
-   П.8: РЕФЕРАЛЬНАЯ ПРОГРАММА
-   ════════════════════════════════════════════════════════════ */
-function refInit() {
-  const chatId = getChatId();
-  if (!chatId) return;
-
-  // Генерируем реферальный код из chatId
-  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
-  const el = ge('refCode');
-  if (el) el.textContent = refCode;
-
-  // Статистика из localStorage
-  try {
-    const stats = JSON.parse(localStorage.getItem('ref_stats_' + chatId) || '{"friends":0,"discounts":0}');
-    const fc = ge('refFriendsCount'), dc = ge('refDiscountsEarned');
-    if (fc) fc.textContent = stats.friends;
-    if (dc) dc.textContent = stats.discounts;
-  } catch(e) {}
-}
-
-function refCopyCode() {
-  const code = ge('refCode') ? ge('refCode').textContent : '';
-  if (!code || code === 'Загрузка...') return;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(code).then(() => showToast('✅ Код скопирован: ' + code, 'success'));
-  } else {
-    showToast('Ваш код: ' + code, 'info', 4000);
-  }
-  haptic('light');
-}
-
-function refShare() {
-  haptic('light');
-  const chatId = getChatId();
-  const refCode = 'BS' + String(chatId).slice(-6).toUpperCase();
-  const botUser = 'barber_style_bot';
-  const url = 'https://t.me/' + botUser + '?start=ref_' + refCode;
-  const text = 'Записался в BARBER STYLE - барбершоп в Батайске! По ссылке скидка 20% на первый визит';
-
-  if (tg && tg.shareMessage) {
-    try { tg.shareMessage(text + ' ' + url); return; } catch(e) {}
-
-  }
-  if (navigator.share) {
-    navigator.share({ title: 'BARBER STYLE', text: text, url: url }).catch(() => {});
-  } else {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => showToast('✅ Ссылка скопирована!', 'success'));
-    }
-  }
-}
-window.refCopyCode = refCopyCode;
-window.refShare    = refShare;
-
-/* ════════════════════════════════════════════════════════════
-   П.9: ВИТРИНА АКЦИЙ
-   ════════════════════════════════════════════════════════════ */
-function loadPromos() {
-  const chatId = getChatId();
-  // Загружаем акции из Settings таблицы
-  fetchWithTimeout(CONFIG.GS + '?action=getPromos')
-    .then(r => r.json())
-    .then(d => {
-      const promos = d.promos || [];
-      const block  = ge('promoBlock');
-      const list   = ge('promoList');
-      if (!block || !list) return;
-
-      if (promos.length === 0) {
-        block.style.display = 'none';
-        return;
-      }
-
-      block.style.display = 'block';
-      const icons = { sale:'🔥', new:'✨', season:'🍂', gift:'🎁', vip:'👑' };
-      list.innerHTML = promos.map(p => {
-        const ico = icons[p.type] || '✦';
-        return '<div class="promo-item">' +
-          '<div class="promo-badge">' + ico + '</div>' +
-          '<div class="promo-body">' +
-            '<div class="promo-name">' + escapeHtml(p.name) + '</div>' +
-            '<div class="promo-desc">' + escapeHtml(p.desc || '') + '</div>' +
-          '</div>' +
-          (p.price ? '<div style="text-align:right"><div class="promo-price">' + escapeHtml(p.price) + '</div>' + (p.until ? '<div class="promo-until">до ' + escapeHtml(p.until) + '</div>' : '') + '</div>' : '') +
-        '</div>';
-      }).join('');
-    })
-    .catch(() => {
-      // Если акций нет — скрываем блок тихо
-      const block = ge('promoBlock');
-      if (block) block.style.display = 'none';
-    });
-}
-
-/* ════════════════════════════════════════════════════════════
-   П.11: ГРАФИК ВЫРУЧКИ ПО ДНЯМ
-   ════════════════════════════════════════════════════════════ */
-let _revenueLoaded = false;
-
-function revenueInit() {
-  if (!_revenueLoaded) revenueLoad();
-}
-
-function revenueLoad() {
-  const chatId = getChatId();
-  ge('revenueChartWrap').innerHTML      = '<div class="adm-loading">Загрузка...</div>';
-  ge('revenueMonthChartWrap').innerHTML = '<div class="adm-loading">Загрузка...</div>';
-
-  fetchWithTimeout(CONFIG.GS + '?action=getRevenueChart&chatId=' + encodeURIComponent(chatId))
-    .then(r => r.json())
-    .then(d => {
-      if (d.error === 'Unauthorized') {
-        ge('revenueChartWrap').innerHTML = '<div class="adm-loading">❌ Нет прав</div>';
-        return;
-      }
-      _revenueLoaded = true;
-      renderRevenueChart(d.byDay   || [], 'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
-      renderRevenueChart(d.byMonth || [], 'revenueMonthChartWrap', d.monthLabels || []);
-    })
-    .catch(() => {
-      // Если нет эндпоинта — показываем заглушку с примером
-      renderRevenueMock();
-    });
-}
-
-function renderRevenueMock() {
-  // Показываем пример пока не реализован эндпоинт
-  const mockDay = [3200, 5400, 4800, 6200, 7100, 9800, 4200];
-  const mockMonth = [42000, 58000, 61000, 55000, 78000, 83000];
-  renderRevenueChart(mockDay,   'revenueChartWrap',      ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']);
-  renderRevenueChart(mockMonth, 'revenueMonthChartWrap', ['Окт','Ноя','Дек','Янв','Фев','Мар']);
-}
-
-function renderRevenueChart(data, containerId, labels) {
-  const wrap = ge(containerId);
-  if (!wrap || !data.length) { wrap.innerHTML = '<div class="adm-loading">Нет данных</div>'; return; }
-
-  const max = Math.max(...data, 1);
-  const todayDow = new Date().getDay();
-  const todayIdx = todayDow === 0 ? 6 : todayDow - 1;
-  const isWeek   = data.length === 7;
-
-  let html = '<div class="chart-bars">';
-  data.forEach((val, i) => {
-    const pct    = Math.round((val / max) * 100);
-    const isToday = isWeek && i === todayIdx;
-    const label  = labels[i] || '';
-    const valStr = val >= 1000 ? Math.round(val/1000) + 'к' : val;
-    html += '<div class="chart-bar-col">' +
-      '<div class="chart-bar-val">' + (val > 0 ? valStr : '') + '</div>' +
-      '<div class="chart-bar' + (isToday ? ' today' : '') + '" style="height:' + Math.max(pct, 3) + '%;min-height:3px;max-height:72px;width:100%;align-self:flex-end"></div>' +
-      '<div class="chart-day' + (isToday ? ' today' : '') + '">' + label + '</div>' +
-    '</div>';
-  });
-  html += '</div>';
-
-  // Итого
-  const total = data.reduce((s, v) => s + v, 0);
-  html += '<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(201,168,76,.1)">' +
-    '<span style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)">Итого</span>' +
-    '<span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold)">' + formatPrice(total) + '</span>' +
-  '</div>';
-
-  wrap.innerHTML = html;
-
-  // Анимируем столбцы
-  setTimeout(() => {
-    wrap.querySelectorAll('.chart-bar').forEach((bar, i) => {
-      bar.style.transition = 'height .6s cubic-bezier(.34,1.56,.64,1) ' + (i * 0.06) + 's';
-    });
-  }, 50);
-}
-
-/* ════════════════════════════════════════════════════════════
-   П.12: УЧЁТ РАСХОДОВ
-   ════════════════════════════════════════════════════════════ */
-function expensesInit() {
-  expensesRender();
-}
-
-function expenseAdd() {
-  haptic('light');
-  const name = (ge('expName').value || '').trim();
-  const sum  = parseFloat(ge('expSum').value || '0');
-  const cat  = ge('expCat').value;
-
-  if (!name) { showToast('Введите название расхода', 'error'); return; }
-  if (!sum || sum <= 0) { showToast('Введите сумму', 'error'); return; }
-
-  try {
-    const key      = 'expenses_' + new Date().toISOString().slice(0, 7); // YYYY-MM
-    const expenses = JSON.parse(localStorage.getItem(key) || '[]');
-    expenses.push({ id: Date.now(), name, sum, cat, date: new Date().toISOString() });
-    localStorage.setItem(key, JSON.stringify(expenses));
-
-    ge('expName').value = '';
-    ge('expSum').value  = '';
-    expensesRender();
-    showToast('✅ Расход добавлен', 'success');
-  } catch(e) {
-    showToast('Ошибка сохранения', 'error');
-  }
-}
-window.expenseAdd = expenseAdd;
-
-function expenseDelete(id) {
-  haptic('light');
-  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
-  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
-  const filtered = expenses.filter(e => e.id !== id);
-  localStorage.setItem(key, JSON.stringify(filtered));
-  expensesRender();
-}
-window.expenseDelete = expenseDelete;
-
-function expensesRender() {
-  const key      = 'expenses_' + new Date().toISOString().slice(0, 7);
-  const expenses = JSON.parse(localStorage.getItem(key) || '[]');
-  const list     = ge('expenseList');
-  const totalEl  = ge('expenseTotal');
-  const profitEl = ge('profitVal');
-
-  if (!list) return;
-
-  const catNames = { rent:'Аренда', materials:'Материалы', salary:'Зарплата', equipment:'Оборудование', marketing:'Маркетинг', other:'Прочее' };
-  const catIcons = { rent:'🏠', materials:'✂️', salary:'👤', equipment:'🔧', marketing:'📢', other:'📦' };
-
-  if (expenses.length === 0) {
-    list.innerHTML = '<div class="adm-loading">Расходов за этот месяц нет</div>';
-  } else {
-    list.innerHTML = expenses.map(e => {
-      const d = new Date(e.date);
-      const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0');
-      return '<div class="expense-item">' +
-        '<div><div class="expense-nm">' + (catIcons[e.cat]||'') + ' ' + escapeHtml(e.name) + '</div><div class="expense-dt">' + dateStr + ' · ' + (catNames[e.cat]||'') + '</div></div>' +
-        '<div style="display:flex;align-items:center">' +
-          '<span class="expense-sum">−' + formatPrice(e.sum) + '</span>' +
-          '<span class="expense-rm" onclick="expenseDelete(' + e.id + ')">✕</span>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
-
-  const totalExp = expenses.reduce((s, e) => s + e.sum, 0);
-  if (totalEl) totalEl.textContent = formatPrice(totalExp);
-
-  // Прибыль = выручка за месяц - расходы (берём из аналитики если есть)
-  if (profitEl) {
-    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(getChatId()))
-      .then(r => r.json())
-      .then(d => {
-        const revenue = d.revenueMonth || 0;
-        const profit  = revenue - totalExp;
-        profitEl.textContent = formatPrice(Math.abs(profit));
-        profitEl.className   = 'profit-val ' + (profit >= 0 ? 'positive' : 'negative');
-        profitEl.textContent = (profit >= 0 ? '' : '−') + formatPrice(Math.abs(profit));
-      })
-      .catch(() => { profitEl.textContent = '—'; });
-  }
-}
-
-/* ════════════════════════════════════════════════════════════
-   П.13: УВЕДОМЛЕНИЕ МАСТЕРУ ЗА ЧАС ДО ЗАПИСИ
-   (реализуется в бэкенде — здесь заглушка)
-   ════════════════════════════════════════════════════════════ */
-// Функция добавлена в бэкенд как sendMasterReminders()
 </script>
 </body>
 </html>

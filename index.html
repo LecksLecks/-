@@ -2023,8 +2023,12 @@ function fetchWithTimeout(url, options, timeout) {
 }
 
 function makeCall() {
-  try { window.open('tel:+79525608898','_self'); } catch(e) {}
-  setTimeout(() => { window.location.href = 'tel:+79525608898'; }, 300);
+  haptic('light');
+  var tel = 'tel:+79525608898';
+  if (tg && tg.openLink) {
+    try { tg.openLink(tel, { try_instant_view: false }); return; } catch(e) {}
+  }
+  try { window.location.href = tel; } catch(e) {}
 }
 
 /* FIX-02: getMaster — только по id, не по индексу */
@@ -2259,6 +2263,7 @@ function initTabs() {
   }
 
   addClickHandler('btnToBooking', () => goPage('booking'));
+  addClickHandler('phoneLink', makeCall);
   addClickHandler('succPhoneLink', makeCall);
   addClickHandler('callFab', makeCall);
   addClickHandler('btnBkReset', bkReset);

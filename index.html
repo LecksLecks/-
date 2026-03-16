@@ -2088,28 +2088,51 @@ function loadInitData() {
   fetchWithTimeout(url)
     .then(r => r.json())
     .then(d => {
+      // Если getInitData не поддерживается старым бэкендом — делаем fallback
+      if (d.error || (!d.masters && !d.role)) {
+        loadInitDataFallback();
+        return;
+      }
       applyInitData(d);
       saveInitCache(d);
-      // Запускаем бейдж после получения роли
       setTimeout(function(){ if (IS_ADMIN) admBadgeStart(); }, 1000);
-      // Предзагружаем слоты в фоне — переход на Запись будет мгновенным
       setTimeout(function() {
         if (Object.keys(allMastersData).length === 0) {
           fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
             .then(r => r.json())
             .then(d => {
-              if (d.masters) {
-                allMastersData = d.masters;
-                _allMastersDataTs = Date.now();
-              }
+              if (d.masters) { allMastersData = d.masters; _allMastersDataTs = Date.now(); }
             })
             .catch(function(){});
         }
       }, 2000);
     })
     .catch(e => {
-      console.warn('loadInitData failed, using cache:', e);
+      console.warn('loadInitData failed, fallback:', e);
+      loadInitDataFallback();
     });
+}
+
+function loadInitDataFallback() {
+  const chatId = getChatId();
+  // Fallback: старые два раздельных запроса
+  fetchWithTimeout(CONFIG.GS + '?action=getAppData')
+    .then(r => r.json())
+    .then(d => { applyInitData(d); })
+    .catch(function(){});
+
+  if (chatId) {
+    fetchWithTimeout(CONFIG.GS + '?action=getUserInfo&chatId=' + encodeURIComponent(chatId))
+      .then(r => r.json())
+      .then(d => {
+        if (d.role && (d.role === 'admin' || d.role === 'master')) {
+          applyInitData(d);
+          saveInitCache(d);
+          setTimeout(function(){ if (IS_ADMIN) admBadgeStart(); }, 1000);
+        }
+      })
+      .catch(function(){});
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function(){

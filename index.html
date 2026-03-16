@@ -182,8 +182,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .soc-ico{font-size:18px;display:block}
 
 /* CALL BUTTON */
-.call-fab{position:fixed;bottom:88px;right:16px;z-index:101;width:52px;height:52px;border-radius:50%;background:var(--gold);color:var(--black);border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(201,168,76,.35);transition:transform .15s;-webkit-tap-highlight-color:rgba(201,168,76,.15);touch-action:manipulation}
-.call-fab:active{transform:scale(.92)}
 
 /* SECTION HEADER */
 .sec-hdr{padding:24px 24px 16px;border-bottom:1px solid rgba(201,168,76,.08)}
@@ -421,8 +419,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* АДМИН-ПАНЕЛЬ — УПРАВЛЕНИЕ ВЫХОДНЫМИ */
 .adm-section{padding:16px;border-bottom:1px solid rgba(201,168,76,.1)}
 .adm-section-ttl{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:12px}
-.adm-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(201,168,76,.06);font-size:14px}
-.adm-row:last-child{border-bottom:none}
 .adm-lbl{color:var(--gray);font-size:10px;letter-spacing:2px;text-transform:uppercase}
 .adm-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
 .adm-select{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px;outline:none;margin-bottom:10px;-webkit-appearance:none}
@@ -526,7 +522,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .my-card-past{border-left-color:rgba(138,125,107,.3)!important}
 .my-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .my-card-master{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cream)}
-.my-card-date{font-size:13px;color:var(--gold);font-weight:600}
 .my-card-time{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px}
 .my-card-info{font-size:13px;color:var(--gray);line-height:1.7}
 .my-card-info span{color:var(--cream)}
@@ -587,10 +582,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .bc-history-stats{font-size:11px;color:var(--gold)}
 
 /* КЛИЕНТЫ */
-.cl-sort-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px}
-.cl-sort-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray)}
-.cl-sort{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);padding:4px 8px;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.5px;cursor:pointer;transition:all .15s}
-.cl-sort.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
 .cl-search-row{display:flex;gap:8px;margin-bottom:10px}
 .cl-search-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);color:var(--cream);padding:10px 14px;font-size:14px;font-family:'Cormorant Garamond',serif;outline:none;border-radius:4px}
 .cl-search-inp:focus{border-color:rgba(201,168,76,.5)}
@@ -750,15 +741,12 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* П.1 ПАРАЛЛАКС */
 .home-hero{will-change:transform}
-.home-hero-inner{transition:transform .1s linear}
 
 /* П.2 ЧАСТИЦЫ ФОНА */
 #bgParticles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.bg-particle{position:absolute;border-radius:50%;background:var(--gold);pointer-events:none;animation:bgFloat linear infinite}
 @keyframes bgFloat{0%{opacity:0;transform:translateY(0) scale(0)}10%{opacity:1}90%{opacity:.3}100%{opacity:0;transform:translateY(-100vh) scale(.5)}}
 
 /* П.3 СЧЁТЧИК АНАЛИТИКИ */
-.adm-val-counting{display:inline-block}
 
 /* П.4 МОРФИНГ КНОПКИ */
 @keyframes btnMorph{0%{transform:scale(1)}40%{transform:scale(.95)}70%{transform:scale(1.03)}100%{transform:scale(1)}}
@@ -826,8 +814,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .btn-g-ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:liquidRipple .6s ease forwards}
 
 /* П.4 TYPEWRITER */
-.h-t1-typed{display:inline}
-.h-t1-cursor{display:none}
 
 /* П.5 ЗОЛОТОЕ КОНФЕТТИ */
 @keyframes confettiFall{
@@ -1041,21 +1027,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-new-badge{display:inline-block;background:#4caf7d;color:#fff;font-size:9px;letter-spacing:1px;padding:2px 7px;margin-left:8px;animation:livePing .8s ease infinite}
 
 /* АНАЛИТИКА — ПЕРИОД */
-.anl-period-tabs{display:flex;gap:6px;margin-bottom:4px}
-.anl-period-btn{flex:1;padding:10px 6px;background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s}
-.anl-period-btn.active{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
-.anl-period-btn:active{transform:scale(.96)}
-.anl-custom-range{padding:4px 0}
 
 /* АНАЛИТИКА — РЕЙТИНГ МАСТЕРА В ТАБЛИЦЕ */
 .mst-rating{font-size:10px;color:var(--gold);margin-top:2px;letter-spacing:.3px}
 
 /* КНОПКА ЖИВОГО ОБНОВЛЕНИЯ */
-.adm-live-timer{font-size:9px;color:rgba(201,168,76,.45);letter-spacing:.5px;margin-left:4px}
 
 
-.adm-booking-msg{background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
-.adm-booking-msg:active{background:rgba(201,168,76,.1)}
 .adm-booking-resc{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
 .adm-booking-resc:active{background:rgba(201,168,76,.2)}
 .adm-booking-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
@@ -1918,10 +1896,17 @@ function formatPrice(n) {
    ──────────────────────────────────────────────────────────── */
 function ge(id) { return document.getElementById(id); }
 
+var _escapeHtmlCache = Object.create(null);
 function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  var s = String(str);
+  if (_escapeHtmlCache[s] !== undefined) return _escapeHtmlCache[s];
   const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
+  d.textContent = s;
+  var result = d.innerHTML;
+  // Кэшируем только короткие строки — длинные редко повторяются
+  if (s.length < 100) _escapeHtmlCache[s] = result;
+  return result;
 }
 
 function getChatId() {
@@ -2235,6 +2220,9 @@ function goPage(id) {
   if (id === 'mybookings') myBkInit();
   if (id === 'admin')      admInit();
   if (id !== 'admin')      admStopPolling();
+  // Бейдж: останавливаем таймер когда в админке (незачем проверять), возобновляем при выходе
+  if (id === 'admin') { admBadgeStop(); }
+  else if (IS_ADMIN)  { admBadgeStart(); }
   window.scrollTo(0,0);
 }
 
@@ -2487,10 +2475,17 @@ function ptSwitch(id, btn) {
 /* ────────────────────────────────────────────────────────────
    БРОНИРОВАНИЕ
    ──────────────────────────────────────────────────────────── */
+
+// Единая функция обновления UI бронирования — заменяет повторяющийся набор вызовов
+function bkRefresh(full) {
+  if (full) { renderMsGrid(); renderSvcList(); renderCart(); }
+  calRender(); renderTimeGrid(); updateBar(); bkValidate();
+}
+
 function bkInit() {
   const t = new Date();
   S.cy = t.getFullYear(); S.cm = t.getMonth();
-  renderMsGrid(); calRender(); renderTimeGrid(); renderSvcList(); renderCart(); updateBar(); bkValidate();
+  bkRefresh(true);
   loadAllMastersData();
 }
 
@@ -2546,7 +2541,7 @@ function loadServerSlots(masterId) {
 function bkSelMaster(mid) {
   haptic('select');
   S.mid = mid; S.date = ''; S.slot = ''; S.cart = []; svcExpanded = false;
-  loadServerSlots(mid); renderMsGrid(); calRender(); renderTimeGrid(); renderSvcList(); renderCart(); updateBar(); bkValidate();
+  loadServerSlots(mid); bkRefresh(true);
   // П.8: скроллим к календарю после выбора мастера
   requestAnimationFrame(() => {
     const cal = document.querySelector('.cal-wrap');
@@ -3287,73 +3282,7 @@ function admLoadSummary() {
 
     // ── Все записи дня с редактированием цены ──
     bookings.sort(function(a,b){return a.time<b.time?-1:1;}).forEach(function(b) {
-      var tp = (b.time||'').split(':');
-      var minsLeft = tp.length>=2 ? parseInt(tp[0])*60+parseInt(tp[1]||0)-nowMin : -1;
-      var badge = '';
-      if (minsLeft>=0 && minsLeft<=15) badge = '<span class="adm-booking-badge soon">СКОРО</span>';
-      else if (minsLeft>0 && minsLeft<=60) badge = '<span class="adm-booking-badge mins">'+minsLeft+' мин</span>';
-      else if (minsLeft<0) badge = '<span style="font-size:9px;color:var(--gray);letter-spacing:.5px">Прошло</span>';
-
-      var safeId     = b.id ? String(b.id) : '';
-      var safeName   = escapeHtml(String(b.name||'')).replace(/'/g,'&#39;');
-      var safeMaster = escapeHtml(String(b.master||'')).replace(/'/g,'&#39;');
-      var safeDate   = escapeHtml(String(b.date||todayStr));
-      var safePhone  = String(b.phone||'').replace(/\D/g,'');
-      var total      = parseFloat(b.total) || 0;
-
-      var cancelBtn = (safeId && minsLeft >= 0) ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
-      var rescBtn   = (safeId && minsLeft >= 0) ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
-      var msgBtn    = '';
-      var noteBtn   = safeId ? '<button class="adm-note-btn" onclick="admToggleNote(\''+safeId+'\')" title="Заметка">📝</button>' : '';
-      var doneBtn   = (safeId && minsLeft < 0 && b.status !== 'completed')
-        ? '<button class="adm-booking-done" onclick="admMarkDone(\''+safeId+'\',this)">✓ Выполнено</button>' : '';
-      var doneMark  = (b.status === 'completed')
-        ? '<div class="adm-done-mark">✓ Визит подтверждён</div>' : '';
-      // Заметка — показываем если есть
-      var safeNote  = escapeHtml(String(b.notes || ''));
-      var noteHtml  = safeNote
-        ? '<div class="adm-note-display" id="note-display-'+safeId+'">' +
-            '<span class="adm-note-text">📝 ' + safeNote + '</span>' +
-            '<button class="adm-note-edit" onclick="admToggleNote(\''+safeId+'\')">Изм.</button>' +
-          '</div>'
-        : '';
-      // Скрытое поле ввода заметки
-      var noteArea  = safeId ? '<div class="adm-note-area" id="note-area-'+safeId+'" style="display:none">' +
-        '<textarea class="adm-note-inp" id="note-inp-'+safeId+'" rows="2" placeholder="Пожелания, особенности стрижки...">' + safeNote + '</textarea>' +
-        '<button class="adm-note-save" onclick="admSaveNote(\''+safeId+'\',this)">Сохранить заметку</button>' +
-        '</div>' : '';
-
-      // Строка с ценой + кнопка редактирования (только если есть id записи)
-      var priceRow = '';
-      if (safeId) {
-        var priceRowId = 'pr-' + safeId;
-        priceRow = '<div class="adm-price-row" id="' + priceRowId + '">' +
-          '<div>' +
-            (b.services ? '<span style="font-size:11px;color:var(--gray)">' + escapeHtml(String(b.services)) + '</span>' : '') +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:8px">' +
-            '<span class="adm-price-val" id="pv-' + safeId + '">' + formatPrice(total) + '</span>' +
-            '<button class="adm-price-edit-btn" onclick="admPriceEdit(\'' + safeId + '\',' + total + ')">✎</button>' +
-          '</div>' +
-        '</div>';
-      } else if (b.services || total > 0) {
-        priceRow = '<div class="adm-price-row">' +
-          '<span style="font-size:11px;color:var(--gray)">' + escapeHtml(String(b.services||'')) + '</span>' +
-          '<span class="adm-price-val">' + formatPrice(total) + '</span>' +
-        '</div>';
-      }
-
-      html += '<div class="adm-booking' + (b.status === 'completed' ? ' adm-booking-completed' : '') + '" id="bk-' + safeId + '" data-master="' + escapeHtml(b.master||'') + '">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
-          '<div class="adm-booking-time' + (b.status === 'completed' ? ' done' : '') + '">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
-        '</div>' +
-        '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) + '</div>' +
-        priceRow +
-        noteHtml +
-        noteArea +
-        doneMark +
-        '<div class="adm-booking-actions">' + rescBtn + noteBtn + cancelBtn + doneBtn + '</div>' +
-      '</div>';
+      html += renderBookingCard(b, nowMin, todayStr);
     });
 
     container.innerHTML = html;
@@ -3374,6 +3303,65 @@ function admFilterMaster(btn) {
   haptic('light');
 }
 window.admFilterMaster = admFilterMaster;
+
+// Рендер одной карточки записи — используется в admLoadSummary
+function renderBookingCard(b, nowMin, todayStr) {
+  var tp = (b.time||'').split(':');
+  var minsLeft = tp.length>=2 ? parseInt(tp[0])*60+parseInt(tp[1]||0)-nowMin : -1;
+  var badge = '';
+  if (minsLeft>=0 && minsLeft<=15) badge = '<span class="adm-booking-badge soon">СКОРО</span>';
+  else if (minsLeft>0 && minsLeft<=60) badge = '<span class="adm-booking-badge mins">'+minsLeft+' мин</span>';
+  else if (minsLeft<0) badge = '<span style="font-size:9px;color:var(--gray);letter-spacing:.5px">Прошло</span>';
+
+  var safeId     = b.id ? String(b.id) : '';
+  var safeName   = escapeHtml(String(b.name||'')).replace(/'/g,'&#39;');
+  var safeMaster = escapeHtml(String(b.master||'')).replace(/'/g,'&#39;');
+  var safeDate   = escapeHtml(String(b.date||todayStr||''));
+  var total      = parseFloat(b.total) || 0;
+
+  var cancelBtn = (safeId && minsLeft >= 0) ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
+  var rescBtn   = (safeId && minsLeft >= 0) ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
+  var noteBtn   = safeId ? '<button class="adm-note-btn" onclick="admToggleNote(\''+safeId+'\')" title="Заметка">📝</button>' : '';
+  var doneBtn   = (safeId && minsLeft < 0 && b.status !== 'completed')
+    ? '<button class="adm-booking-done" onclick="admMarkDone(\''+safeId+'\',this)">✓ Выполнено</button>' : '';
+  var doneMark  = (b.status === 'completed') ? '<div class="adm-done-mark">✓ Визит подтверждён</div>' : '';
+
+  var safeNote = escapeHtml(String(b.notes || ''));
+  var noteHtml = safeNote
+    ? '<div class="adm-note-display" id="note-display-'+safeId+'">' +
+        '<span class="adm-note-text">📝 ' + safeNote + '</span>' +
+        '<button class="adm-note-edit" onclick="admToggleNote(\''+safeId+'\')">Изм.</button>' +
+      '</div>' : '';
+  var noteArea = safeId ? '<div class="adm-note-area" id="note-area-'+safeId+'" style="display:none">' +
+    '<textarea class="adm-note-inp" id="note-inp-'+safeId+'" rows="2" placeholder="Пожелания, особенности стрижки...">' + safeNote + '</textarea>' +
+    '<button class="adm-note-save" onclick="admSaveNote(\''+safeId+'\',this)">Сохранить заметку</button>' +
+    '</div>' : '';
+
+  var priceRow = '';
+  if (safeId) {
+    priceRow = '<div class="adm-price-row" id="pr-' + safeId + '">' +
+      '<div>' + (b.services ? '<span style="font-size:11px;color:var(--gray)">' + escapeHtml(String(b.services)) + '</span>' : '') + '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<span class="adm-price-val" id="pv-' + safeId + '">' + formatPrice(total) + '</span>' +
+        '<button class="adm-price-edit-btn" onclick="admPriceEdit(\'' + safeId + '\',' + total + ')">✎</button>' +
+      '</div>' +
+    '</div>';
+  } else if (b.services || total > 0) {
+    priceRow = '<div class="adm-price-row">' +
+      '<span style="font-size:11px;color:var(--gray)">' + escapeHtml(String(b.services||'')) + '</span>' +
+      '<span class="adm-price-val">' + formatPrice(total) + '</span>' +
+    '</div>';
+  }
+
+  return '<div class="adm-booking' + (b.status === 'completed' ? ' adm-booking-completed' : '') + '" id="bk-' + safeId + '" data-master="' + escapeHtml(b.master||'') + '">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+      '<div class="adm-booking-time' + (b.status === 'completed' ? ' done' : '') + '">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
+    '</div>' +
+    '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) + '</div>' +
+    priceRow + noteHtml + noteArea + doneMark +
+    '<div class="adm-booking-actions">' + rescBtn + noteBtn + cancelBtn + doneBtn + '</div>' +
+  '</div>';
+}
 
 function admBkInitDateStrip() {
   const strip=ge('admDateStrip'); if (!strip) return;
@@ -4255,13 +4243,7 @@ function clRender() {
         '<div class="cl-stat"><div class="cl-stat-val gold">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
       '</div>' +
-      '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>' +
-      (phoneClean ? '<div style="margin-top:10px;border-top:1px solid rgba(201,168,76,.08);padding-top:10px">' +
-        '<button onclick="clCallClient(\'' + escapeHtml(phoneClean) + '\')" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid rgba(76,175,125,.3);color:#4caf7d;background:transparent;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>' +
-          'Позвонить' +
-        '</button>' +
-      '</div>' : '');
+      '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>';
 
     // Раскрывающаяся история записей
     html += '<div class="cl-history" id="' + cardKey + '-hist" style="display:' + (isOpen ? 'block' : 'none') + '">';
@@ -4358,10 +4340,6 @@ function clRenderMore(btn) {
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
       '</div>' +
       '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>' +
-      (phoneClean ? '<div style="margin-top:10px;border-top:1px solid rgba(201,168,76,.08);padding-top:10px">' +
-        '<button onclick="clCallClient(\'' + escapeHtml(phoneClean) + '\')" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid rgba(76,175,125,.3);color:#4caf7d;background:transparent;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>' +
-          'Позвонить</button></div>' : '') +
       '<div class="cl-history" id="' + cardKey + '-hist" style="display:none">' +
         '<div class="cl-hist-ttl">История записей</div>' +
         '<div id="' + cardKey + '-bk" class="cl-hist-list"><div class="adm-loading" style="padding:8px 0;font-size:12px">Загрузка истории...</div></div>' +
@@ -4686,16 +4664,6 @@ function morphBookBtn() {
     btn.textContent = '✓';
     setTimeout(() => btn.classList.remove('success-state'), 2000);
   }, 400);
-}
-
-/* ИНИЦИАЛИЗАЦИЯ ВСЕХ WOW */
-function initWowEffects() {
-  initBgParticles();
-  initParallax();
-  initRipple();
-  initMasterTilt();
-  // Обновляем слоты после загрузки данных
-  setTimeout(updateHomeSlotCount, 3000);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -5453,24 +5421,28 @@ function admBadgeUpdate() {
     .catch(function(){});
 }
 
-// Отдельный таймер для бейджа — работает всегда, не только в админке
+// Отдельный таймер для бейджа — работает только когда не в админке
 var _admBadgeTimer = null;
 var _admLastSeenCount = 0;
 var _admLastSeenTs = 0;
 
 function admBadgeStart() {
-  if (!IS_ADMIN) return;
+  if (!IS_ADMIN || _admBadgeTimer) return;
   admBadgeCheck();
   _admBadgeTimer = setInterval(admBadgeCheck, 60000); // каждую минуту
 }
 
+function admBadgeStop() {
+  if (_admBadgeTimer) { clearInterval(_admBadgeTimer); _admBadgeTimer = null; }
+}
+
 function admBadgeCheck() {
-  var chatId = getChatId();
-  var todayStr = formatDate_iso(new Date());
   var currentPage = document.querySelector('.page.active');
   var inAdmin = currentPage && currentPage.id === 'admin';
-  if (inAdmin) return; // в админке — не показываем
+  if (inAdmin) return; // в админке — пропускаем запрос
 
+  var chatId = getChatId();
+  var todayStr = formatDate_iso(new Date());
   fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
     .then(function(r){ return r.json(); })
     .then(function(d){

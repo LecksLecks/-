@@ -3185,8 +3185,8 @@ function admLoadSummary() {
       var safePhone  = String(b.phone||'').replace(/\D/g,'');
       var total      = parseFloat(b.total) || 0;
 
-      var cancelBtn = safeId ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
-      var rescBtn   = safeId ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
+      var cancelBtn = (safeId && minsLeft >= 0) ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
+      var rescBtn   = (safeId && minsLeft >= 0) ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
       var msgBtn    = safePhone ? '<button class="adm-booking-msg" onclick="admMsgClient(\''+safePhone+'\',\''+safeName+'\')">✉ Написать</button>' : '';
 
       // Строка с ценой + кнопка редактирования (только если есть id записи)

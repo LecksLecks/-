@@ -125,6 +125,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   stroke-width:1.5;
   pointer-events:none;
 }
+.adm-tab-badge{position:absolute;top:6px;right:calc(50% - 20px);background:#e05050;color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #0a0805;line-height:1;font-family:'Cormorant Garamond',serif;pointer-events:none}
 
 @media screen and (max-width: 380px){
   .tab{font-size:10px;padding:12px 2px 10px;gap:5px}
@@ -981,6 +982,11 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* КНОПКА ОТМЕНЫ В СВОДКЕ */
 .adm-booking-cancel{width:100%;background:rgba(224,80,80,.08);border:1px solid rgba(224,80,80,.2);color:#e05050;padding:7px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;margin-top:8px;transition:all .15s}
 .adm-booking-cancel:active{background:rgba(224,80,80,.2)}
+.adm-master-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.adm-master-chips::-webkit-scrollbar{display:none}
+.adm-master-chip{flex-shrink:0;padding:7px 14px;border:1px solid rgba(201,168,76,.2);background:transparent;color:rgba(138,125,107,.7);font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .15s;white-space:nowrap}
+.adm-master-chip.active{background:rgba(201,168,76,.12);border-color:#c9a84c;color:#c9a84c}
+.adm-master-chip:active{transform:scale(.96)}
 
 /* Редактирование цены в сводке */
 .adm-price-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding-top:6px;border-top:1px solid rgba(201,168,76,.08)}
@@ -1054,6 +1060,22 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-booking-resc{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
 .adm-booking-resc:active{background:rgba(201,168,76,.2)}
 .adm-booking-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.adm-booking-done{flex:1;background:rgba(76,175,125,.08);border:1px solid rgba(76,175,125,.3);color:#4caf7d;padding:7px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s}
+.adm-booking-done:active{background:rgba(76,175,125,.2)}
+.adm-done-mark{display:flex;align-items:center;gap:5px;font-size:11px;color:#4caf7d;letter-spacing:.5px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(76,175,125,.15)}
+.adm-booking-completed{border-color:rgba(76,175,125,.2);background:rgba(76,175,125,.03)}
+.adm-booking-time.done{color:rgba(76,175,125,.85)}
+.adm-note-btn{background:transparent;border:1px solid rgba(138,125,107,.2);color:rgba(138,125,107,.55);padding:6px 10px;font-size:15px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s}
+.adm-note-btn:active{background:rgba(201,168,76,.08)}
+.adm-note-area{margin-top:8px;border-top:1px solid rgba(201,168,76,.07);padding-top:8px}
+.adm-note-inp{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:14px;padding:9px 12px;resize:none;outline:none;line-height:1.5}
+.adm-note-inp:focus{border-color:rgba(201,168,76,.4)}
+.adm-note-inp::placeholder{color:rgba(138,125,107,.35);font-style:italic}
+.adm-note-save{width:100%;margin-top:6px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:background .15s}
+.adm-note-save:active{background:rgba(201,168,76,.2)}
+.adm-note-display{margin-top:8px;border-top:1px solid rgba(201,168,76,.07);padding-top:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.adm-note-text{font-size:13px;color:rgba(245,239,230,.7);font-style:italic;flex:1;line-height:1.5}
+.adm-note-edit{font-size:10px;color:rgba(138,125,107,.5);letter-spacing:1px;text-transform:uppercase;cursor:pointer;background:none;border:none;font-family:'Cormorant Garamond',serif;white-space:nowrap;padding:0;flex-shrink:0}
 
 /* Аналитика — строка мастера */
 .anl-master-row{padding:10px 0;border-bottom:1px solid rgba(201,168,76,.07)}
@@ -1366,7 +1388,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
         <span class="adm-menu-ico">📊</span>
         <div><span class="adm-menu-nm">Сравнение</span><span class="adm-menu-desc">Неделя / месяц</span></div>
       </button>
-      <button class="adm-menu-item" data-admtab="topclients">
+      <button class="adm-menu-item" data-admtab="clients">
         <span class="adm-menu-ico">🏆</span>
         <div><span class="adm-menu-nm">Топ клиентов</span><span class="adm-menu-desc">По выручке и визитам</span></div>
       </button>
@@ -1561,16 +1583,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
 
   <!-- ПАНЕЛЬ ТОП КЛИЕНТОВ -->
-  <div class="adm-panel" id="adm-topclients">
-    <div class="adm-section">
-      <div class="adm-section-ttl">Топ клиентов</div>
-      <div class="top-tabs">
-        <button class="top-tab active" onclick="topSwitch('bySum',this)">По выручке</button>
-        <button class="top-tab" onclick="topSwitch('byVisits',this)">По визитам</button>
-        <button class="top-tab" onclick="topSwitch('byLast',this)">Давно не был</button>
-      </div>
-      <div id="topList"><div class="adm-loading">Загрузка...</div></div>
-    </div>
   </div>
 
 </div>
@@ -1701,6 +1713,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     Мои
   </button>
   <button class="tab" id="tab-admin" data-page="admin" style="display:none">
+    <span class="adm-tab-badge" id="admTabBadge" style="display:none"></span>
     <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
     Админ
   </button>
@@ -3026,7 +3039,7 @@ function admTab(tab, tabEl) {
     summary:'Сводка', bookings:'Записи', slots:'Слоты',
     dayoffs:'Выходные', analytics:'Аналитика',
     broadcast:'📢 Рассылка', clients:'👥 Клиенты',
-    manual:'✏️ Ручная запись', compare:'📊 Сравнение', topclients:'🏆 Топ клиентов'
+    manual:'✏️ Ручная запись', compare:'📊 Сравнение'
   };
   const lbl = ge('admBurgerLbl');
   if (lbl) lbl.textContent = labels[tab] || tab;
@@ -3048,7 +3061,6 @@ function admTab(tab, tabEl) {
   if (tab==='clients')   clInit();
   if (tab==='manual')    manualBkInit();
   if (tab==='compare')   compareInit();
-  if (tab==='topclients') topClientsInit();
   // Фокус на поиск при открытии клиентов
   if (tab==='clients') { var srch=ge('srchInp'); if(srch) setTimeout(function(){srch.focus();},300); }
 }
@@ -3171,8 +3183,27 @@ function admLoadSummary() {
       return;
     }
 
+    // ── Фильтр по мастерам ──
+    var masters = [];
+    bookings.forEach(function(b) {
+      if (b.master && masters.indexOf(b.master) === -1) masters.push(b.master);
+    });
+    masters.sort();
+
+    if (masters.length > 1) {
+      html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:8px">Все записи дня</div>';
+      html += '<div class="adm-master-chips" id="admMasterChips">';
+      html += '<button class="adm-master-chip active" data-master="all" onclick="admFilterMaster(this)">Все · ' + bookings.length + '</button>';
+      masters.forEach(function(m) {
+        var cnt = bookings.filter(function(b){ return b.master === m; }).length;
+        html += '<button class="adm-master-chip" data-master="' + escapeHtml(m) + '" onclick="admFilterMaster(this)">' + escapeHtml(m) + ' · ' + cnt + '</button>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Все записи дня</div>';
+    }
+
     // ── Все записи дня с редактированием цены ──
-    html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Все записи дня</div>';
     bookings.sort(function(a,b){return a.time<b.time?-1:1;}).forEach(function(b) {
       var tp = (b.time||'').split(':');
       var minsLeft = tp.length>=2 ? parseInt(tp[0])*60+parseInt(tp[1]||0)-nowMin : -1;
@@ -3190,7 +3221,25 @@ function admLoadSummary() {
 
       var cancelBtn = (safeId && minsLeft >= 0) ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
       var rescBtn   = (safeId && minsLeft >= 0) ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
-      var msgBtn    = safePhone ? '<button class="adm-booking-msg" onclick="admMsgClient(\''+safePhone+'\',\''+safeName+'\')">✉ Написать</button>' : '';
+      var msgBtn    = '';
+      var noteBtn   = safeId ? '<button class="adm-note-btn" onclick="admToggleNote(\''+safeId+'\')" title="Заметка">📝</button>' : '';
+      var doneBtn   = (safeId && minsLeft < 0 && b.status !== 'completed')
+        ? '<button class="adm-booking-done" onclick="admMarkDone(\''+safeId+'\',this)">✓ Выполнено</button>' : '';
+      var doneMark  = (b.status === 'completed')
+        ? '<div class="adm-done-mark">✓ Визит подтверждён</div>' : '';
+      // Заметка — показываем если есть
+      var safeNote  = escapeHtml(String(b.notes || ''));
+      var noteHtml  = safeNote
+        ? '<div class="adm-note-display" id="note-display-'+safeId+'">' +
+            '<span class="adm-note-text">📝 ' + safeNote + '</span>' +
+            '<button class="adm-note-edit" onclick="admToggleNote(\''+safeId+'\')">Изм.</button>' +
+          '</div>'
+        : '';
+      // Скрытое поле ввода заметки
+      var noteArea  = safeId ? '<div class="adm-note-area" id="note-area-'+safeId+'" style="display:none">' +
+        '<textarea class="adm-note-inp" id="note-inp-'+safeId+'" rows="2" placeholder="Пожелания, особенности стрижки...">' + safeNote + '</textarea>' +
+        '<button class="adm-note-save" onclick="admSaveNote(\''+safeId+'\',this)">Сохранить заметку</button>' +
+        '</div>' : '';
 
       // Строка с ценой + кнопка редактирования (только если есть id записи)
       var priceRow = '';
@@ -3212,13 +3261,16 @@ function admLoadSummary() {
         '</div>';
       }
 
-      html += '<div class="adm-booking" id="bk-' + safeId + '">' +
+      html += '<div class="adm-booking' + (b.status === 'completed' ? ' adm-booking-completed' : '') + '" id="bk-' + safeId + '" data-master="' + escapeHtml(b.master||'') + '">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
-          '<div class="adm-booking-time">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
+          '<div class="adm-booking-time' + (b.status === 'completed' ? ' done' : '') + '">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
         '</div>' +
         '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) + '</div>' +
         priceRow +
-        '<div class="adm-booking-actions">' + rescBtn + msgBtn + cancelBtn + '</div>' +
+        noteHtml +
+        noteArea +
+        doneMark +
+        '<div class="adm-booking-actions">' + rescBtn + noteBtn + cancelBtn + doneBtn + '</div>' +
       '</div>';
     });
 
@@ -3229,6 +3281,17 @@ function admLoadSummary() {
     console.error('admLoadSummary error:', e);
   });
 }
+
+function admFilterMaster(btn) {
+  document.querySelectorAll('.adm-master-chip').forEach(function(c){ c.classList.remove('active'); });
+  btn.classList.add('active');
+  var master = btn.dataset.master;
+  document.querySelectorAll('.adm-booking[data-master]').forEach(function(el) {
+    el.style.display = (master === 'all' || el.dataset.master === master) ? '' : 'none';
+  });
+  haptic('light');
+}
+window.admFilterMaster = admFilterMaster;
 
 function admBkInitDateStrip() {
   const strip=ge('admDateStrip'); if (!strip) return;
@@ -3483,21 +3546,19 @@ function admLoadAnalytics() {
           : anlFormatDateLabel(dateFrom) + ' — ' + anlFormatDateLabel(dateTo);
 
         var cards =
-          '<div class="adm-stat"><div class="adm-lbl">Выручка сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
-          '<div class="adm-stat"><div class="adm-lbl">За неделю</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
-          '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
-          '<div class="adm-stat"><div class="adm-lbl">За период</div><div class="adm-val" id="revCustom">0 ₽</div></div>';
+          '<div class="adm-stat"><div class="adm-lbl">Выручка сегодня</div><div class="adm-val" id="revToday"></div></div>' +
+          '<div class="adm-stat"><div class="adm-lbl">За неделю</div><div class="adm-val" id="revWeek"></div></div>' +
+          '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth"></div></div>' +
+          '<div class="adm-stat"><div class="adm-lbl">За период</div><div class="adm-val" id="revCustom"></div></div>';
 
         rev.innerHTML =
           '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">' + escapeHtml(periodLabel) + '</div>' +
           '<div class="adm-stat-grid">' + cards + '</div>';
 
-        setTimeout(function() {
-          if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
-          if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
-          if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
-          if (ge('revCustom')) animateRevenue(ge('revCustom'), d.revenueCustom||0, ' ₽');
-        }, 100);
+        if (ge('revToday'))  ge('revToday').textContent  = formatPrice(d.revenueToday||0) + ' ₽';
+        if (ge('revWeek'))   ge('revWeek').textContent   = formatPrice(d.revenueWeek||0)  + ' ₽';
+        if (ge('revMonth'))  ge('revMonth').textContent  = formatPrice(d.revenueMonth||0) + ' ₽';
+        if (ge('revCustom')) ge('revCustom').textContent = formatPrice(d.revenueCustom||0) + ' ₽';
       }
 
       // ── Топ услуг ──
@@ -3664,35 +3725,43 @@ function bcInit() {
 }
 
 function bcLoadAudience() {
-  const chatId = getChatId();
   ge('bcAudienceCount').innerHTML = 'Загрузка аудитории...';
 
+  function processClients(clients) {
+    // Считаем по категориям — только клиенты с chatId получат рассылку
+    _bcAudienceCounts = { all: 0, vip: 0, regular: 0, active: 0, new: 0 };
+    clients.forEach(c => {
+      if (!c.chatId) return;
+      _bcAudienceCounts.all++;
+      if (c.category === 'vip')             _bcAudienceCounts.vip++;
+      else if (c.category === 'постоянный') _bcAudienceCounts.regular++;
+      else if (c.category === 'активный')   _bcAudienceCounts.active++;
+      else                                  _bcAudienceCounts.new++;
+    });
+
+    document.querySelectorAll('.bc-filter').forEach(btn => {
+      const f = btn.dataset.filter;
+      const count = _bcAudienceCounts[f] || 0;
+      const hint = btn.querySelector('.bc-filter-hint');
+      if (hint) hint.textContent = count + ' чел.';
+    });
+
+    bcUpdateCount();
+  }
+
+  // Если клиенты уже загружены в разделе Клиенты — используем их
+  if (_clAllClients && _clAllClients.length > 0) {
+    processClients(_clAllClients);
+    return;
+  }
+
+  // Иначе загружаем с сервера
+  const chatId = getChatId();
   fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId))
     .then(r => r.json())
     .then(d => {
       if (d.error) { ge('bcAudienceCount').innerHTML = 'Ошибка загрузки'; return; }
-      const clients = d.clients || [];
-
-      // Считаем по категориям
-      _bcAudienceCounts = { all: 0, vip: 0, regular: 0, active: 0, new: 0 };
-      clients.forEach(c => {
-        if (!c.chatId) return;
-        _bcAudienceCounts.all++;
-        if (c.category === 'vip')          _bcAudienceCounts.vip++;
-        else if (c.category === 'постоянный') _bcAudienceCounts.regular++;
-        else if (c.category === 'активный')   _bcAudienceCounts.active++;
-        else                               _bcAudienceCounts.new++;
-      });
-
-      // Обновляем подписи на кнопках фильтров
-      document.querySelectorAll('.bc-filter').forEach(btn => {
-        const f = btn.dataset.filter;
-        const count = _bcAudienceCounts[f] || 0;
-        const hint = btn.querySelector('.bc-filter-hint');
-        if (hint) hint.textContent = count + ' чел.';
-      });
-
-      bcUpdateCount();
+      processClients(d.clients || []);
     })
     .catch(() => { ge('bcAudienceCount').innerHTML = 'Ошибка загрузки'; });
 }
@@ -3929,8 +3998,57 @@ function clRenderSummary() {
   sumEl.innerHTML =
     '<div class="cl-sum-card"><div class="cl-sum-val">' + total + '</div><div class="cl-sum-lbl">Всего клиентов</div></div>' +
     '<div class="cl-sum-card"><div class="cl-sum-val">' + formatPrice(totalSpent) + '</div><div class="cl-sum-lbl">Выручка всего</div></div>' +
-    '<div class="cl-sum-card"><div class="cl-sum-val">' + totalVisits + '</div><div class="cl-sum-lbl">Визитов всего</div></div>';
+    '<div class="cl-sum-card"><div class="cl-sum-val">' + totalVisits + '</div><div class="cl-sum-lbl">Визитов всего</div></div>' +
+    '<div style="grid-column:span 3;display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(201,168,76,.08);margin-top:4px">' +
+      '<span style="font-size:12px;color:rgba(138,125,107,.6)">Экспорт <b style="color:rgba(201,168,76,.7)">' + total + ' клиентов</b> в файл</span>' +
+      '<button onclick="clExportCSV()" style="display:flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(201,168,76,.35);color:#c9a84c;padding:8px 14px;font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+        'Скачать CSV' +
+      '</button>' +
+    '</div>';
 }
+
+function clExportCSV() {
+  if (!_clAllClients.length) { showToast('Нет данных для экспорта', 'error'); return; }
+  haptic('medium');
+
+  var headers = ['Имя','Телефон','Telegram','Визитов','Ср. чек','Потрачено','Категория','Последний визит'];
+  var rows = _clAllClients.map(function(c) {
+    var phone = cleanPhone(c.phone || '');
+    var lastVisit = c.lastVisit ? formatDate(c.lastVisit, 'short') : '';
+    return [
+      c.name || '',
+      phone,
+      c.telegram && !c.telegram.startsWith('#') ? c.telegram : '',
+      c.totalBookings || 0,
+      c.avgCheck || 0,
+      c.totalSpent || 0,
+      c.category || 'новый',
+      lastVisit
+    ].map(function(v) {
+      var s = String(v);
+      // Экранируем значения с запятой или кавычками
+      if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+        s = '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    }).join(',');
+  });
+
+  var csv = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n'); // \uFEFF — BOM для Excel
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  var date = formatDate_iso(new Date());
+  a.href     = url;
+  a.download = 'barber-clients-' + date + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ Файл скачан — ' + _clAllClients.length + ' клиентов', 'success');
+}
+window.clExportCSV = clExportCSV;
 
 // Очищает телефон от мусора: апостроф, #ERROR!, формулы
 function cleanPhone(val) {
@@ -4023,7 +4141,13 @@ function clRender() {
         '<div class="cl-stat"><div class="cl-stat-val gold">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
       '</div>' +
-      '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>';
+      '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>' +
+      (phoneClean ? '<div style="margin-top:10px;border-top:1px solid rgba(201,168,76,.08);padding-top:10px">' +
+        '<a href="tel:' + escapeHtml(phoneClean) + '" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid rgba(76,175,125,.3);color:#4caf7d;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:background .15s" onclick="haptic(\'light\')">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>' +
+          'Позвонить' +
+        '</a>' +
+      '</div>' : '');
 
     // Раскрывающаяся история записей
     html += '<div class="cl-history" id="' + cardKey + '-hist" style="display:' + (isOpen ? 'block' : 'none') + '">';
@@ -4507,7 +4631,101 @@ function admQuickCancel(bookingId, clientName, btn) {
       .catch(function(){ showToast('Ошибка соединения', 'error'); btn.disabled=false; btn.textContent='Отменить запись'; });
   });
 }
-window.admQuickCancel = admQuickCancel;
+function admMarkDone(bookingId, btn) {
+  haptic('medium');
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
+  fetchWithTimeout(CONFIG.GS + '?action=markBookingDone&bookingId=' + encodeURIComponent(bookingId) + '&chatId=' + encodeURIComponent(getChatId()))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) {
+        showToast('Ошибка: ' + d.error, 'error');
+        if (btn) { btn.disabled = false; btn.textContent = '✓ Выполнено'; }
+        return;
+      }
+      // Обновляем карточку визуально
+      var card = btn ? btn.closest('.adm-booking') : null;
+      if (card) {
+        card.classList.add('adm-booking-completed');
+        var timeEl = card.querySelector('.adm-booking-time');
+        if (timeEl) timeEl.classList.add('done');
+        var actionsEl = card.querySelector('.adm-booking-actions');
+        if (actionsEl) actionsEl.innerHTML = '<div class="adm-done-mark">✓ Визит подтверждён</div>';
+      }
+      haptic('success');
+      showToast('✅ Визит отмечен как выполненный', 'success');
+    })
+    .catch(function(){
+      showToast('Ошибка соединения', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = '✓ Выполнено'; }
+    });
+}
+window.admMarkDone = admMarkDone;
+
+function admToggleNote(bookingId) {
+  var area    = ge('note-area-' + bookingId);
+  var display = ge('note-display-' + bookingId);
+  if (!area) return;
+  var isOpen = area.style.display !== 'none';
+  area.style.display    = isOpen ? 'none' : 'block';
+  if (display) display.style.display = isOpen ? '' : 'none';
+  if (!isOpen) {
+    var inp = ge('note-inp-' + bookingId);
+    if (inp) { inp.focus(); inp.select(); }
+  }
+  haptic('light');
+}
+window.admToggleNote = admToggleNote;
+
+function admSaveNote(bookingId, btn) {
+  var inp = ge('note-inp-' + bookingId);
+  if (!inp) return;
+  var note = inp.value.trim();
+  haptic('medium');
+  if (btn) { btn.disabled = true; btn.textContent = 'Сохраняем...'; }
+
+  fetchWithTimeout(CONFIG.GS + '?action=saveBookingNote&bookingId=' + encodeURIComponent(bookingId) +
+    '&note=' + encodeURIComponent(note) + '&chatId=' + encodeURIComponent(getChatId()))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) {
+        showToast('Ошибка: ' + d.error, 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Сохранить заметку'; }
+        return;
+      }
+      // Обновляем отображение
+      var area    = ge('note-area-' + bookingId);
+      var display = ge('note-display-' + bookingId);
+      if (area) area.style.display = 'none';
+      if (note) {
+        if (display) {
+          display.querySelector('.adm-note-text').textContent = '📝 ' + note;
+          display.style.display = '';
+        } else {
+          // Создаём блок отображения заметки
+          var card = area ? area.closest('.adm-booking') : null;
+          if (card) {
+            var newDisplay = document.createElement('div');
+            newDisplay.id = 'note-display-' + bookingId;
+            newDisplay.className = 'adm-note-display';
+            newDisplay.innerHTML = '<span class="adm-note-text">📝 ' + escapeHtml(note) + '</span>' +
+              '<button class="adm-note-edit" onclick="admToggleNote(\'' + bookingId + '\')">Изм.</button>';
+            area.insertAdjacentElement('beforebegin', newDisplay);
+          }
+        }
+      } else if (display) {
+        display.style.display = 'none';
+      }
+      if (btn) { btn.disabled = false; btn.textContent = 'Сохранить заметку'; }
+      haptic('success');
+      showToast('📝 Заметка сохранена', 'success');
+    })
+    .catch(function(){
+      showToast('Ошибка соединения', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Сохранить заметку'; }
+    });
+}
+window.admSaveNote = admSaveNote;
 
 /* ────────────────────────────────────────────────────────
    РЕДАКТИРОВАНИЕ ЦЕНЫ ПРЯМО В СВОДКЕ (Вариант 3)
@@ -5047,6 +5265,8 @@ var _origAdmInit = typeof admInit === 'function' ? admInit : null;
 admInit = function() {
   if (_origAdmInit) _origAdmInit();
   summaryAutoStart();
+  // Сбрасываем бейдж когда зашли в админку
+  admBadgeClear();
 };
 
 /* Патчим goPage — останавливаем когда уходим из админки */
@@ -5054,8 +5274,91 @@ var _origGoPage2 = goPage;
 goPage = function(id) {
   _origGoPage2(id);
   if (id !== 'admin') summaryAutoStop();
-  else summaryAutoStart();
+  else { summaryAutoStart(); admBadgeClear(); }
 };
+
+/* ════════════════════════════════════════════════════════
+   П.9: БЕЙДЖ НОВЫХ ЗАПИСЕЙ НА ИКОНКЕ АДМИНКИ
+   ════════════════════════════════════════════════════════ */
+var _admBadgeCount = 0;
+var _admBadgeKey = 'adm_last_seen_ts'; // localStorage ключ
+
+function admBadgeUpdate() {
+  if (!IS_ADMIN) return;
+  var chatId = getChatId();
+  var todayStr = formatDate_iso(new Date());
+  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var bookings = d.bookings || [];
+      // Берём timestamp последнего просмотра из памяти
+      var lastSeen = _admLastSeenTs || 0;
+      // Считаем записи созданные после последнего просмотра
+      var newCount = bookings.filter(function(b){
+        return b.status === 'confirmed';
+      }).length;
+      // Показываем бейдж только если не в админке прямо сейчас
+      var currentPage = document.querySelector('.page.active');
+      var inAdmin = currentPage && currentPage.id === 'admin';
+      if (!inAdmin && newCount > _admBadgeCount) {
+        _admBadgeCount = newCount;
+        admBadgeShow(newCount > _admBadgeCount ? newCount - _admBadgeCount : 0);
+      }
+    })
+    .catch(function(){});
+}
+
+// Отдельный таймер для бейджа — работает всегда, не только в админке
+var _admBadgeTimer = null;
+var _admLastSeenCount = 0;
+var _admLastSeenTs = 0;
+
+function admBadgeStart() {
+  if (!IS_ADMIN) return;
+  admBadgeCheck();
+  _admBadgeTimer = setInterval(admBadgeCheck, 60000); // каждую минуту
+}
+
+function admBadgeCheck() {
+  var chatId = getChatId();
+  var todayStr = formatDate_iso(new Date());
+  var currentPage = document.querySelector('.page.active');
+  var inAdmin = currentPage && currentPage.id === 'admin';
+  if (inAdmin) return; // в админке — не показываем
+
+  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var count = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; }).length;
+      var diff = count - _admLastSeenCount;
+      if (diff > 0) admBadgeShow(diff);
+    })
+    .catch(function(){});
+}
+
+function admBadgeShow(count) {
+  var badge = ge('admTabBadge');
+  if (!badge) return;
+  badge.textContent = count > 9 ? '9+' : String(count);
+  badge.style.display = 'flex';
+}
+
+function admBadgeClear() {
+  var badge = ge('admTabBadge');
+  if (badge) badge.style.display = 'none';
+  // Запоминаем текущее количество как "просмотренное"
+  var chatId = getChatId();
+  var todayStr = formatDate_iso(new Date());
+  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _admLastSeenCount = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; }).length;
+    })
+    .catch(function(){});
+}
+
+// Запускаем бейдж после инициализации приложения
+setTimeout(function(){ if (IS_ADMIN) admBadgeStart(); }, 3000);
 
 /* ════════════════════════════════════════════════════════
    П.8: БЫСТРОЕ СООБЩЕНИЕ КЛИЕНТУ

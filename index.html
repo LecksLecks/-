@@ -4296,29 +4296,23 @@ function clCallClient(phone) {
   var digits = String(phone || '').replace(/\D/g, '');
   if (!digits) { showToast('Нет номера телефона', 'error'); return; }
   if (digits.charAt(0) === '8') digits = '7' + digits.slice(1);
+  if (digits.charAt(0) === '9') digits = '7' + digits;
   var formatted = '+' + digits;
   haptic('light');
 
-  // Telegram WebApp не поддерживает tel: ссылки напрямую
-  // Используем showPopup — пользователь нажимает кнопку и Telegram открывает звонок
-  if (tg && tg.showPopup) {
-    tg.showPopup({
-      title: 'Позвонить клиенту',
-      message: formatted,
-      buttons: [
-        { id: 'call', type: 'default', text: '📞 Позвонить' },
-        { id: 'cancel', type: 'cancel', text: 'Отмена' }
-      ]
-    }, function(btnId) {
-      if (btnId === 'call') {
-        // После подтверждения открываем через openLink
-        if (tg.openLink) tg.openLink('tel:' + formatted);
-        else window.location.href = 'tel:' + formatted;
-      }
-    });
-  } else {
-    // Fallback для браузера
+  // Метод 1: tg.openLink с try_instant_view:false — единственный рабочий способ в Telegram WebApp
+  if (tg && tg.openLink) {
+    try {
+      tg.openLink('tel:' + formatted, { try_instant_view: false });
+      return;
+    } catch(e) {}
+  }
+
+  // Метод 2: location.href — работает в браузере
+  try {
     window.location.href = 'tel:' + formatted;
+  } catch(e) {
+    showToast('Номер: ' + formatted, 'success', 5000);
   }
 }
 window.clCallClient = clCallClient;

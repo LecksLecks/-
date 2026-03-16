@@ -697,6 +697,33 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .m-share-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(10,8,5,.6);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;backdrop-filter:blur(4px)}
 .m-share-btn:active{background:rgba(201,168,76,.2)}
 
+/* SHARE SHEET */
+.share-sheet-overlay{position:fixed;inset:0;background:rgba(7,5,3,.75);z-index:3000;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(4px)}
+.share-sheet-overlay.open{opacity:1;pointer-events:all}
+.share-sheet{position:fixed;bottom:0;left:0;right:0;z-index:3001;background:linear-gradient(180deg,#131007,#0d0b07);border-top:1px solid rgba(201,168,76,.25);border-radius:18px 18px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);transform:translateY(100%);transition:transform .32s cubic-bezier(.32,1,.56,1)}
+.share-sheet.open{transform:translateY(0)}
+.share-sheet-handle{width:36px;height:3px;background:rgba(201,168,76,.3);border-radius:2px;margin:12px auto 0}
+.share-sheet-title{text-align:center;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.55);padding:10px 20px 14px}
+.share-sheet-card{margin:0 16px 16px;border:1px solid rgba(201,168,76,.15);background:rgba(201,168,76,.04);padding:12px 14px;display:flex;align-items:center;gap:12px}
+.share-sheet-card-photo{width:44px;height:56px;object-fit:cover;object-position:top;flex-shrink:0}
+.share-sheet-card-photo-placeholder{width:44px;height:56px;background:rgba(201,168,76,.08);display:flex;align-items:center;justify-content:center;font-size:18px;opacity:.4;flex-shrink:0}
+.share-sheet-card-info{flex:1;min-width:0}
+.share-sheet-card-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream);margin-bottom:2px}
+.share-sheet-card-spec{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);opacity:.7}
+.share-sheet-card-salon{font-size:11px;color:var(--gray);margin-top:4px}
+.share-sheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 16px 8px}
+.share-btn-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.1);border-radius:8px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.share-btn-item:active{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.35);transform:scale(.95)}
+.share-btn-ico{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.share-btn-lbl{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--gray);text-align:center}
+.share-sheet-divider{height:1px;background:rgba(201,168,76,.08);margin:4px 16px 12px}
+.share-sheet-copy-row{display:flex;gap:8px;padding:0 16px 4px}
+.share-copy-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);color:var(--cream);padding:10px 12px;font-size:12px;font-family:'Cormorant Garamond',serif;outline:none;border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.share-copy-btn{background:var(--gold);color:var(--black);border:none;padding:10px 16px;font-size:10px;letter-spacing:2px;font-weight:700;font-family:'Cormorant Garamond',serif;cursor:pointer;border-radius:4px;white-space:nowrap;transition:all .15s}
+.share-copy-btn:active{background:var(--gold-l)}
+.share-sheet-close{display:block;width:calc(100% - 32px);margin:10px 16px 0;padding:13px;background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--gray);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Cormorant Garamond',serif;cursor:pointer;transition:all .15s;border-radius:4px}
+.share-sheet-close:active{background:rgba(255,255,255,.04)}
+
 /* ═══════════════════════════════════════════════
    WOW EFFECTS
    ═══════════════════════════════════════════════ */
@@ -1548,6 +1575,79 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
 </div>
 
+<!-- SHARE SHEET — поделиться мастером -->
+<div class="share-sheet-overlay" id="shareSheetOverlay" onclick="shareSheetClose()"></div>
+<div class="share-sheet" id="shareSheet">
+  <div class="share-sheet-handle"></div>
+  <div class="share-sheet-title">Поделиться мастером</div>
+  <!-- Карточка мастера -->
+  <div class="share-sheet-card" id="shareSheetCard">
+    <div class="share-sheet-card-photo-placeholder" id="shareSheetPhoto">✂</div>
+    <div class="share-sheet-card-info">
+      <div class="share-sheet-card-name" id="shareSheetName">—</div>
+      <div class="share-sheet-card-spec" id="shareSheetSpec">—</div>
+      <div class="share-sheet-card-salon">✦ BARBER STYLE · Батайск</div>
+    </div>
+  </div>
+  <!-- Кнопки соцсетей -->
+  <div class="share-sheet-grid" id="shareSheetGrid">
+    <button class="share-btn-item" onclick="shareVia('telegram')">
+      <div class="share-btn-ico" style="background:rgba(41,182,246,.15)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#29B6F6"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.008 9.464c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.871.757z"/></svg>
+      </div>
+      <span class="share-btn-lbl">Telegram</span>
+    </button>
+    <button class="share-btn-item" onclick="shareVia('whatsapp')">
+      <div class="share-btn-ico" style="background:rgba(37,211,102,.15)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.88 13.49c-.2.56-1.16 1.07-1.6 1.14-.43.07-.98.1-1.58-.1-.36-.12-.83-.28-1.42-.55-2.49-1.08-4.12-3.6-4.25-3.77-.13-.17-1.05-1.4-1.05-2.67s.66-1.9.9-2.16c.24-.26.52-.32.69-.32l.5.01c.16 0 .38-.06.6.46l.82 2.02c.07.16.12.35.01.56l-.3.44-.42.49c-.14.14-.28.29-.12.57.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.2 1.37.27.14.43.12.59-.07l.76-.9c.19-.25.38-.21.64-.12l2.01.95c.19.09.31.13.36.21.05.38-.13 1.09-.33 1.54z"/></svg>
+      </div>
+      <span class="share-btn-lbl">WhatsApp</span>
+    </button>
+    <button class="share-btn-item" onclick="shareVia('vk')">
+      <div class="share-btn-ico" style="background:rgba(74,118,168,.15)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#4A76A8"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.928 13.935c.288.287.593.56.874.858.118.128.228.26.311.408.118.21.02.44-.172.453l-1.146.002c-.296.024-.533-.094-.73-.288-.158-.155-.305-.32-.46-.478-.199-.205-.41-.394-.66-.536a.687.687 0 00-.36-.098c-.267.013-.337.186-.384.42-.053.287-.065.578-.032.866.02.168-.055.215-.228.223h-.517c-.762-.04-1.467-.25-2.102-.674-.567-.378-1.01-.885-1.408-1.433-.775-1.06-1.37-2.22-1.904-3.408-.121-.267-.043-.41.252-.415l1.149-.003c.272.004.45.148.556.4.363.855.8 1.665 1.366 2.41.146.193.295.387.507.516.233.143.41.088.524-.17.073-.165.103-.344.12-.522.055-.624.062-1.248-.048-1.868-.067-.378-.267-.623-.643-.695-.088-.016-.076-.054-.033-.108.076-.093.148-.15.29-.158h1.296c.415.076.51.27.563.687l.002 2.928c.005.16.08.647.376.758.23.083.384-.12.526-.27.558-.61.956-1.326 1.312-2.07.155-.33.292-.668.422-1.01.096-.258.272-.384.555-.38l1.21.002c.363 0 .44.183.336.537-.182.625-.563 1.146-.928 1.67-.385.56-.795 1.1-1.177 1.663-.14.207-.122.314.072.496z"/></svg>
+      </div>
+      <span class="share-btn-lbl">ВКонтакте</span>
+    </button>
+    <button class="share-btn-item" onclick="shareVia('viber')">
+      <div class="share-btn-ico" style="background:rgba(115,71,156,.15)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#7B519C"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm4.7 15.9c-.3.8-1.5 1.5-2.4 1.7-.6.1-1.3.1-1.9-.1-.5-.2-1.2-.5-2.1-1C8.3 15 6.9 12.8 6.7 12.5c-.2-.3-.9-1.2-.9-2.3 0-1.1.6-1.6.8-1.9.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .4.3l.7 1.7c.1.1.1.3 0 .5l-.3.4-.4.4c-.1.1-.2.2-.1.4.1.2.6 1 1.3 1.6.9.8 1.7 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.3.1.3.2 0 .4-.1.9-.3 1.3zM16.2 11c0 .2-.2.3-.4.3s-.4-.1-.4-.3c-.1-1.8-1.5-3.2-3.4-3.3-.2 0-.3-.2-.3-.4s.2-.4.4-.4c2.3.2 4 1.9 4.1 4.1zm1.8.1c0 .2-.2.4-.4.4s-.4-.2-.4-.4c-.1-2.7-2.3-4.9-5.2-5-.2 0-.4-.2-.4-.4s.2-.4.4-.4c3.3.1 5.9 2.6 6 5.8z"/></svg>
+      </div>
+      <span class="share-btn-lbl">Viber</span>
+    </button>
+    <button class="share-btn-item" onclick="shareVia('instagram')">
+      <div class="share-btn-ico" style="background:rgba(225,48,108,.15)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="url(#igGrad)"><defs><linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="25%" style="stop-color:#e6683c"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="75%" style="stop-color:#cc2366"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </div>
+      <span class="share-btn-lbl">Instagram</span>
+    </button>
+    <button class="share-btn-item" onclick="shareVia('odnoklassniki')">
+      <div class="share-btn-ico" style="background:rgba(237,139,0,.15)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#ED8B00"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.022 5.14a2.93 2.93 0 110 5.86 2.93 2.93 0 010-5.86zm3.742 8.048c.633.612 1.478.996 2.432 1.023.375.01.667.32.657.695s-.32.667-.695.657c-1.32-.037-2.51-.524-3.43-1.312l-.716 2.952a.676.676 0 01-1.312-.318l.787-3.242a4.37 4.37 0 01-1.487-.003l.787 3.245a.676.676 0 01-1.312.318l-.716-2.952c-.92.788-2.11 1.275-3.43 1.312a.676.676 0 01-.038-1.352c.954-.027 1.8-.411 2.432-1.023a4.382 4.382 0 01-2.085-3.74.676.676 0 011.352 0 3.03 3.03 0 006.06 0 .676.676 0 011.352 0 4.382 4.382 0 01-2.085 3.74z"/></svg>
+      </div>
+      <span class="share-btn-lbl">ОК</span>
+    </button>
+    <button class="share-btn-item" onclick="shareVia('twitter')">
+      <div class="share-btn-ico" style="background:rgba(0,0,0,.2)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </div>
+      <span class="share-btn-lbl">X (Twitter)</span>
+    </button>
+    <button class="share-btn-item" onclick="shareVia('native')">
+      <div class="share-btn-ico" style="background:rgba(201,168,76,.12)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </div>
+      <span class="share-btn-lbl">Ещё</span>
+    </button>
+  </div>
+  <div class="share-sheet-divider"></div>
+  <div class="share-sheet-copy-row">
+    <input class="share-copy-input" id="shareUrlInput" readonly>
+    <button class="share-copy-btn" onclick="shareCopyLink()" id="shareCopyBtn">Копировать</button>
+  </div>
+  <button class="share-sheet-close" onclick="shareSheetClose()">Закрыть</button>
+</div>
+
 <!-- BOTTOM NAV -->
 <nav class="tabs" id="mainTabs">
   <button class="tab active" id="tab-home" data-page="home">
@@ -2083,37 +2183,138 @@ function masterProfileClose() {
 }
 window.masterProfileClose = masterProfileClose;
 
+/* ────────────────────────────────────────────────────────────
+   SHARE SHEET — поделиться мастером в любую соцсеть
+   ──────────────────────────────────────────────────────────── */
+var _shareCurrentMid = null;
+var _shareCurrentUrl = '';
+
 function masterShare(mid) {
   haptic('light');
   const m = getMaster(mid);
   if (!m) return;
-  const botUsername = 'barber_style_bot'; // замени на своего бота
-  const shareUrl = 'https://t.me/' + botUsername + '?startapp=master_' + mid;
-  const shareText = '✂️ ' + m.name + ' — мастер барбершопа BARBER STYLE\n\nЗапишись онлайн:';
+  _shareCurrentMid = mid;
 
-  // Метод 1: Telegram WebApp — openTelegramLink с t.me/share/url
-  if (tg) {
-    try {
-      const tgShareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(shareText);
-      tg.openTelegramLink(tgShareUrl);
-      return;
-    } catch(e) {}
-  }
+  const botUsername = 'barber_style_bot';
+  _shareCurrentUrl = 'https://t.me/' + botUsername + '?startapp=master_' + mid;
 
-  // Метод 2: Web Share API (мобильные браузеры)
-  if (navigator.share) {
-    navigator.share({ title: 'BARBER STYLE — ' + m.name, text: shareText, url: shareUrl }).catch(()=>{});
-    return;
-  }
-
-  // Метод 3: Копирование ссылки в буфер
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(shareUrl).then(() => showToast('✅ Ссылка скопирована!', 'success'));
+  // Заполняем карточку
+  const photoEl = ge('shareSheetPhoto');
+  if (m.photo) {
+    photoEl.innerHTML = '<img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" class="share-sheet-card-photo">';
   } else {
-    showToast('Ссылка: ' + shareUrl, 'info', 5000);
+    photoEl.innerHTML = '✂';
+    photoEl.className = 'share-sheet-card-photo-placeholder';
   }
+  ge('shareSheetName').textContent = m.name;
+  ge('shareSheetSpec').textContent = m.spec;
+  ge('shareUrlInput').value = _shareCurrentUrl;
+
+  // Сбрасываем кнопку копирования
+  const copyBtn = ge('shareCopyBtn');
+  if (copyBtn) { copyBtn.textContent = 'Копировать'; copyBtn.style.background = ''; }
+
+  // Открываем sheet
+  ge('shareSheetOverlay').classList.add('open');
+  ge('shareSheet').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 window.masterShare = masterShare;
+
+function shareSheetClose() {
+  ge('shareSheetOverlay').classList.remove('open');
+  ge('shareSheet').classList.remove('open');
+  document.body.style.overflow = '';
+}
+window.shareSheetClose = shareSheetClose;
+
+function shareVia(platform) {
+  haptic('medium');
+  const m = getMaster(_shareCurrentMid);
+  const masterName = m ? m.name : 'мастер';
+  const text = '✂️ ' + masterName + ' — мастер барбершопа BARBER STYLE\n\nЗапишись онлайн:';
+  const url = _shareCurrentUrl;
+  const encoded = encodeURIComponent(url);
+  const encodedText = encodeURIComponent(text + '\n' + url);
+
+  var shareUrl = '';
+  switch (platform) {
+    case 'telegram':
+      shareUrl = 'https://t.me/share/url?url=' + encoded + '&text=' + encodeURIComponent(text);
+      break;
+    case 'whatsapp':
+      shareUrl = 'https://wa.me/?text=' + encodedText;
+      break;
+    case 'vk':
+      shareUrl = 'https://vk.com/share.php?url=' + encoded + '&title=' + encodeURIComponent(text);
+      break;
+    case 'viber':
+      shareUrl = 'viber://forward?text=' + encodedText;
+      break;
+    case 'instagram':
+      // Instagram не поддерживает прямой share URL — копируем ссылку и открываем app
+      shareCopyLink();
+      showToast('Ссылка скопирована — вставьте в Instagram', 'success', 3500);
+      return;
+    case 'odnoklassniki':
+      shareUrl = 'https://connect.ok.ru/offer?url=' + encoded + '&title=' + encodeURIComponent(text);
+      break;
+    case 'twitter':
+      shareUrl = 'https://twitter.com/intent/tweet?text=' + encodedText;
+      break;
+    case 'native':
+      if (navigator.share) {
+        navigator.share({ title: 'BARBER STYLE — ' + masterName, text: text, url: url })
+          .then(() => shareSheetClose())
+          .catch(() => {});
+        return;
+      } else {
+        shareCopyLink();
+        return;
+      }
+  }
+
+  if (shareUrl) {
+    // Пробуем через Telegram WebApp, иначе window.open
+    if (tg && platform === 'telegram') {
+      try { tg.openTelegramLink(shareUrl); shareSheetClose(); return; } catch(e) {}
+    }
+    try {
+      if (tg) {
+        tg.openLink(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
+      }
+    } catch(e) {
+      window.open(shareUrl, '_blank');
+    }
+    shareSheetClose();
+  }
+}
+window.shareVia = shareVia;
+
+function shareCopyLink() {
+  const url = _shareCurrentUrl;
+  const btn = ge('shareCopyBtn');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() {
+      if (btn) { btn.textContent = '✓ Скопировано'; btn.style.background = 'var(--green)'; }
+      setTimeout(function() {
+        if (btn) { btn.textContent = 'Копировать'; btn.style.background = ''; }
+      }, 2000);
+    });
+  } else {
+    // Fallback для старых браузеров
+    const inp = ge('shareUrlInput');
+    inp.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    if (btn) { btn.textContent = '✓ Скопировано'; btn.style.background = 'var(--green)'; }
+    setTimeout(function() {
+      if (btn) { btn.textContent = 'Копировать'; btn.style.background = ''; }
+    }, 2000);
+  }
+}
+window.shareCopyLink = shareCopyLink;
 
 function renderMasters() {
   const g = ge('mastersList');

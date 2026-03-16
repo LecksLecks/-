@@ -1521,6 +1521,11 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
         <input type="text" class="cl-search-inp" id="clSearchInput" placeholder="Имя, фамилия или телефон...">
         <button class="cl-search-btn" id="clSearchBtn">🔍</button>
       </div>
+      <!-- Фильтр по дате -->
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+        <input type="date" class="adm-select" id="clDateFilter" style="flex:1;margin:0;font-family:'Cormorant Garamond',serif;font-size:14px">
+        <button id="clDateReset" onclick="clResetDate()" style="background:transparent;border:1px solid rgba(138,125,107,.2);color:rgba(138,125,107,.5);padding:8px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif;white-space:nowrap">✕ Сброс</button>
+      </div>
       <!-- Сводка -->
       <div class="cl-summary" id="clSummary"></div>
       <!-- Список клиентов -->
@@ -3961,6 +3966,7 @@ function bcLoadHistory() {
 let _clAllClients = [];
 let _clSort = 'newest';
 let _clSearch = '';
+let _clDateFilter = ''; // фильтр по дате записи
 let _clLoaded = false;
 let _clDebounce = null;
 let _clExpanded = {}; // развёрнутые карточки
@@ -3971,10 +3977,18 @@ function clInit() {
   // Поиск с debounce 300ms — живой, без нажатия кнопки
   const searchInput = ge('clSearchInput');
   const searchBtn   = ge('clSearchBtn');
+  const dateInput   = ge('clDateFilter');
 
   function doSearch() {
     _clSearch = (searchInput ? searchInput.value || '' : '').trim();
     clRender();
+  }
+
+  if (dateInput) {
+    dateInput.addEventListener('change', function() {
+      _clDateFilter = this.value || '';
+      clRender();
+    });
   }
 
   if (searchInput) {
@@ -4044,6 +4058,17 @@ function clRenderSummary() {
     '</div>';
 }
 
+function clResetDate() {
+  _clDateFilter = '';
+  var inp = ge('clDateFilter');
+  if (inp) inp.value = '';
+  var info = ge('clDateInfo');
+  if (info) info.textContent = '';
+  clRender();
+  haptic('light');
+}
+window.clResetDate = clResetDate;
+
 function clExportCSV() {
   if (!_clAllClients.length) { showToast('Нет данных для экспорта', 'error'); return; }
   haptic('medium');
@@ -4108,20 +4133,35 @@ function clRender() {
       const name  = (c.name  || '').toLowerCase();
       const phone = cleanPhone(c.phone || '').replace(/\D/g, '');
       const tg    = (c.telegram || '').toLowerCase();
-      // Поиск по имени/фамилии (любое слово начинается с запроса)
-      const nameMatch = name.includes(q) ||
-        name.split(' ').some(word => word.startsWith(q));
-      // Поиск по телефону (любая часть номера)
+      const nameMatch = name.includes(q) || name.split(' ').some(word => word.startsWith(q));
       const phoneMatch = qDigits.length >= 3 && phone.includes(qDigits);
-      // Поиск по Telegram
       const tgMatch = tg.includes(q);
       return nameMatch || phoneMatch || tgMatch;
     });
   }
 
-  // Сортировка — новые клиенты сверху
+  // Фильтр по дате записи
+  if (_clDateFilter) {
+    clients = clients.filter(c => (c.firstVisit || '') === _clDateFilter);
+    // Показываем подпись с результатом
+    const dateLabel = formatDate(_clDateFilter, 'short');
+    var dateInfo = ge('clDateInfo');
+    if (!dateInfo) {
+      dateInfo = document.createElement('div');
+      dateInfo.id = 'clDateInfo';
+      dateInfo.style.cssText = 'font-size:11px;color:rgba(138,125,107,.5);margin-top:6px;letter-spacing:.5px';
+      const summary = ge('clSummary');
+      if (summary) summary.insertAdjacentElement('afterend', dateInfo);
+    }
+    dateInfo.textContent = 'Записались: ' + dateLabel + ' — ' + clients.length + ' чел.';
+  } else {
+    var dateInfo = ge('clDateInfo');
+    if (dateInfo) dateInfo.textContent = '';
+  }
+
+  // Сортировка — новые клиенты сверху по умолчанию
   clients = clients.slice().sort((a,b) => {
-    if (_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?1:(b.firstVisit||'')<(a.firstVisit||'')?-1:0;
+    if (_clSort==='newest') return (b.firstVisit||'') > (a.firstVisit||'') ? -1 : (b.firstVisit||'') < (a.firstVisit||'') ? 1 : 0;
     if (_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
     if (_clSort==='spent')  return (b.totalSpent||0)-(a.totalSpent||0);
     if (_clSort==='last')   return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
@@ -4280,6 +4320,7 @@ function clRenderMore(btn) {
           '<div class="cl-name">' + nameHl + '</div>' +
           '<div class="cl-phone">' + phoneHl + '</div>' +
           (c.telegram && !c.telegram.startsWith('#') ? '<div class="cl-tg">' + escapeHtml(c.telegram) + '</div>' : '') +
+          (c.firstVisit ? '<div style="font-size:11px;color:rgba(138,125,107,.5);margin-top:2px">Записался ' + escapeHtml(formatDate(c.firstVisit, 'short')) + '</div>' : '') +
         '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">' +
           '<span class="cl-badge ' + escapeHtml(c.category||'новый') + '">' + escapeHtml(c.category||'новый') + '</span>' +
@@ -4357,7 +4398,7 @@ function clToggleCard(cardKey) {
                (qDigits.length>=3 && phone.includes(qDigits)) || tg.includes(q);
       });
       clients = clients.slice().sort((a,b)=>{
-        if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?1:(b.firstVisit||'')<(a.firstVisit||'')?-1:0;
+        if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?-1:(b.firstVisit||'')<(a.firstVisit||'')?1:0;
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);
         if(_clSort==='last') return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
@@ -4366,7 +4407,7 @@ function clToggleCard(cardKey) {
       });
     } else {
       clients = clients.slice().sort((a,b)=>{
-        if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?1:(b.firstVisit||'')<(a.firstVisit||'')?-1:0;
+        if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?-1:(b.firstVisit||'')<(a.firstVisit||'')?1:0;
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);
         if(_clSort==='last') return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;

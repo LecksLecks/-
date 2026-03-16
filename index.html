@@ -947,7 +947,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 }
 
 
-
+@keyframes splashFadeIn{0%{opacity:0;transform:scale(.92)}60%{opacity:1;transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+@keyframes splashFadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.06)}}
+@keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
 .splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards}
 .splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px auto;display:block}
@@ -971,7 +974,20 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes livePing{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
 .adm-new-badge{display:inline-block;background:#4caf7d;color:#fff;font-size:9px;letter-spacing:1px;padding:2px 7px;margin-left:8px;animation:livePing .8s ease infinite}
 
-/* КНОПКА НАПИСАТЬ */
+/* АНАЛИТИКА — ПЕРИОД */
+.anl-period-tabs{display:flex;gap:6px;margin-bottom:4px}
+.anl-period-btn{flex:1;padding:10px 6px;background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.anl-period-btn.active{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
+.anl-period-btn:active{transform:scale(.96)}
+.anl-custom-range{padding:4px 0}
+
+/* АНАЛИТИКА — РЕЙТИНГ МАСТЕРА В ТАБЛИЦЕ */
+.mst-rating{font-size:10px;color:var(--gold);margin-top:2px;letter-spacing:.3px}
+
+/* КНОПКА ЖИВОГО ОБНОВЛЕНИЯ */
+.adm-live-timer{font-size:9px;color:rgba(201,168,76,.45);letter-spacing:.5px;margin-left:4px}
+
+
 .adm-booking-msg{background:transparent;border:1px solid rgba(201,168,76,.2);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
 .adm-booking-msg:active{background:rgba(201,168,76,.1)}
 .adm-booking-resc{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
@@ -1049,7 +1065,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="home-city">✦ Батайск · Премиум барбершоп ✦</div>
   </div>
   <div class="hymn">
-    <div class="h-orn"><span class="h-line"></span><span class="h-phi"><svg width="22" height="22" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle"><polygon points="22,2 26,18 22,22 18,18" fill="#c9a84c"/><polygon points="22,42 26,26 22,22 18,26" fill="#c9a84c" opacity="0.55"/><polygon points="2,22 18,26 22,22 18,18" fill="#c9a84c" opacity="0.55"/><polygon points="42,22 26,26 22,22 26,18" fill="#c9a84c" opacity="0.55"/><polygon points="8,8 20,19 22,22 19,20" fill="#c9a84c" opacity="0.35"/><polygon points="36,8 24,19 22,22 25,20" fill="#c9a84c" opacity="0.35"/><polygon points="8,36 20,25 22,22 19,24" fill="#c9a84c" opacity="0.35"/><polygon points="36,36 24,25 22,22 25,24" fill="#c9a84c" opacity="0.35"/><circle cx="22" cy="22" r="3" fill="#c9a84c"/><circle cx="22" cy="22" r="5.5" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/></svg></span><span class="h-line"></span></div>
+    <div class="h-orn"><span class="h-line"></span><span class="h-phi"><svg width="22" height="22" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle"><polygon points="20,2 23,18 20,14 17,18" fill="rgba(201,168,76,.85)"/><polygon points="20,38 17,22 20,26 23,22" fill="rgba(201,168,76,.45)"/><polygon points="2,20 18,17 14,20 18,23" fill="rgba(201,168,76,.45)"/><polygon points="38,20 22,23 26,20 22,17" fill="rgba(201,168,76,.85)"/><polygon points="6.1,6.1 17.5,16.2 14.2,14.2 16.2,17.5" fill="rgba(201,168,76,.55)"/><polygon points="33.9,33.9 22.5,23.8 25.8,25.8 23.8,22.5" fill="rgba(201,168,76,.35)"/><polygon points="33.9,6.1 23.8,17.5 25.8,14.2 22.5,16.2" fill="rgba(201,168,76,.55)"/><polygon points="6.1,33.9 16.2,22.5 14.2,25.8 17.5,23.8" fill="rgba(201,168,76,.35)"/><circle cx="20" cy="20" r="2.5" fill="rgba(201,168,76,.9)"/><circle cx="20" cy="20" r="1.2" fill="#0a0805"/></svg></span><span class="h-line"></span></div>
     <div class="h-t1" id="h1TypeWriter"></div>
     <div class="h-orn2">
       <span class="h-line"></span>
@@ -1326,6 +1342,27 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
   <div class="adm-panel" id="adm-analytics">
     <div class="adm-section">
+      <div class="adm-section-ttl">Период аналитики</div>
+      <div class="anl-period-tabs" id="anlPeriodTabs">
+        <button class="anl-period-btn active" data-period="day">День</button>
+        <button class="anl-period-btn" data-period="month">Месяц</button>
+        <button class="anl-period-btn" data-period="custom">Свой</button>
+      </div>
+      <div class="anl-custom-range" id="anlCustomRange" style="display:none">
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <div style="flex:1">
+            <div class="resc-lbl">От</div>
+            <input type="date" class="adm-select" id="anlDateFrom" style="width:100%;margin:0">
+          </div>
+          <div style="flex:1">
+            <div class="resc-lbl">До</div>
+            <input type="date" class="adm-select" id="anlDateTo" style="width:100%;margin:0">
+          </div>
+        </div>
+        <button class="adm-btn" style="width:100%;margin-top:8px;padding:10px" onclick="admLoadAnalytics()">Применить</button>
+      </div>
+    </div>
+    <div class="adm-section">
       <div class="adm-section-ttl">Выручка</div>
       <div id="admRevenue"><div class="adm-loading">Загрузка...</div></div>
     </div>
@@ -1460,36 +1497,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 </div>
 
 
-<!-- PAGE: WORKS -->
-<div class="page" id="page-works">
-  <div class="sec-hdr">
-    <div class="sec-lbl">✦ Портфолио</div>
-    <h2 class="sec-ttl">Наши <em>работы</em></h2>
-  </div>
-  <div class="works-section">
-    <div class="works-grid" id="worksGrid">
-      <div class="works-item" onclick="worksOpen(0)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work1.jpg" alt="Работа 1" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-      <div class="works-item" onclick="worksOpen(1)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work2.jpg" alt="Работа 2" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-      <div class="works-item" onclick="worksOpen(2)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work3.jpg" alt="Работа 3" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-      <div class="works-item" onclick="worksOpen(3)">
-        <img src="https://raw.githubusercontent.com/LecksLecks/-/main/work4.jpg" alt="Работа 4" loading="lazy">
-        <div class="works-item-overlay"></div>
-      </div>
-    </div>
-    <div style="padding:16px;text-align:center;color:var(--gray);font-size:12px;letter-spacing:1px">
-      Нажми на фото чтобы увеличить
-    </div>
-  </div>
-</div>
+
 
 <!-- ЛАЙТБОКС -->
 <div class="works-lightbox" id="worksLightbox" onclick="worksLightboxBgClick(event)">
@@ -1531,10 +1539,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <button class="tab" id="tab-masters" data-page="masters">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
     Мастера
-  </button>
-  <button class="tab" id="tab-works" data-page="works">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
-    Работы
   </button>
   <button class="tab" id="tab-booking" data-page="booking">
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1711,7 +1715,7 @@ let _myBkCache = {data: null, ts: 0, tab: ''};
 
 // FIX-10: флаг polling
 let _admPolling = false;
-var ADM_POLL_INTERVAL = 15000;
+var ADM_POLL_INTERVAL = 10 * 60 * 1000; // 10 минут
 var _admPollTimer = null;
 var _admLastUpdate = null;
 
@@ -1772,15 +1776,10 @@ function getInitData() {
 
 function fetchWithTimeout(url, options, timeout) {
   timeout = timeout || CONFIG.FETCH_TIMEOUT_MS;
-  function attempt() {
-    return Promise.race([
-      fetch(url, options),
-      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, timeout); })
-    ]);
-  }
-  return attempt().catch(function() {
-    return new Promise(function(res){ setTimeout(res, 1500); }).then(attempt);
-  });
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), timeout))
+  ]);
 }
 
 function makeCall() {
@@ -2751,7 +2750,7 @@ function admTab(tab, tabEl) {
   if (tab==='bookings')  { admBkInitDateStrip(); admLoadBookings(); }
   if (tab==='slots')     admLoadSlots();
   if (tab==='dayoffs')   admLoadDayOffsList();
-  if (tab==='analytics') admLoadAnalytics();
+  if (tab==='analytics') { anlInitPeriodTabs(); admLoadAnalytics(); }
   if (tab==='broadcast') bcInit();
   if (tab==='clients')   clInit();
 }
@@ -3064,29 +3063,108 @@ function showConfirmModal(title, text, bookings, onConfirm) {
   cancelBtn.onclick  = () => { modal.classList.remove('show'); };
 }
 
+// ── Период аналитики ──
+var _anlPeriod = 'day';
+
+function anlInitPeriodTabs() {
+  document.querySelectorAll('.anl-period-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      document.querySelectorAll('.anl-period-btn').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      _anlPeriod = this.dataset.period;
+      var customRange = ge('anlCustomRange');
+      if (customRange) customRange.style.display = _anlPeriod === 'custom' ? 'block' : 'none';
+      if (_anlPeriod !== 'custom') admLoadAnalytics();
+    };
+  });
+  // Инициализируем даты для custom
+  var today = formatDate_iso(new Date());
+  var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
+  if (fromEl && !fromEl.value) fromEl.value = today;
+  if (toEl && !toEl.value) toEl.value = today;
+}
+
 function admLoadAnalytics() {
   const rev=ge('admRevenue'), svc=ge('admTopServices'), mst=ge('admMasterStats');
   [rev,svc,mst].forEach(el => { if(el) el.innerHTML='<div class="adm-loading">Загрузка...</div>'; });
   const chatId=getChatId();
-  fetchWithTimeout(CONFIG.GS+'?action=getAnalytics&chatId='+encodeURIComponent(chatId))
+
+  // Строим параметры периода
+  var today = formatDate_iso(new Date());
+  var dateFrom = today, dateTo = today;
+  if (_anlPeriod === 'month') {
+    var now = new Date();
+    dateFrom = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
+    dateTo = today;
+  } else if (_anlPeriod === 'custom') {
+    var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
+    if (fromEl && fromEl.value) dateFrom = fromEl.value;
+    if (toEl && toEl.value) dateTo = toEl.value;
+  }
+
+  var url = CONFIG.GS+'?action=getAnalytics&chatId='+encodeURIComponent(chatId)
+    + '&period='+encodeURIComponent(_anlPeriod)
+    + '&dateFrom='+encodeURIComponent(dateFrom)
+    + '&dateTo='+encodeURIComponent(dateTo);
+
+  fetchWithTimeout(url)
     .then(r=>r.json())
     .then(d => {
       if (d.error==='Unauthorized') { [rev,svc,mst].forEach(el=>{if(el) el.innerHTML='<div class="adm-loading">❌ Нет прав</div>';}); return; }
+
+      // Метки периода
+      var periodLabel = '';
+      if (_anlPeriod === 'day') periodLabel = 'За сегодня';
+      else if (_anlPeriod === 'month') periodLabel = 'За текущий месяц';
+      else periodLabel = dateFrom + ' — ' + dateTo;
+
       if (rev) {
-        rev.innerHTML='<div class="adm-stat-grid"><div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div><div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div><div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div><div class="adm-stat"><div class="adm-lbl">Всего</div><div class="adm-val" id="revTotal">0</div></div></div>';
-        setTimeout(() => {
-          animateRevenue(ge('revToday'), d.revenueToday||0, ' ₽');
-          animateRevenue(ge('revWeek'),  d.revenueWeek||0,  ' ₽');
-          animateRevenue(ge('revMonth'), d.revenueMonth||0, ' ₽');
-          animateCount(ge('revTotal'),   d.totalBookings||0, 800);
+        var showToday = _anlPeriod === 'day';
+        var showWeek  = _anlPeriod !== 'custom';
+        rev.innerHTML=
+          '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">'+escapeHtml(periodLabel)+'</div>' +
+          '<div class="adm-stat-grid">' +
+          (showToday ? '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' : '') +
+          (showWeek  ? '<div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div>' : '') +
+          '<div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
+          '<div class="adm-stat"><div class="adm-lbl">Записей</div><div class="adm-val" id="revTotal">0</div></div>' +
+          (d.revenueCustom !== undefined ? '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">За период</div><div class="adm-val" id="revCustom">0 ₽</div></div>' : '') +
+          '</div>';
+        setTimeout(function() {
+          if (ge('revToday'))  animateRevenue(ge('revToday'), d.revenueToday||0, ' ₽');
+          if (ge('revWeek'))   animateRevenue(ge('revWeek'),  d.revenueWeek||0,  ' ₽');
+          if (ge('revMonth'))  animateRevenue(ge('revMonth'), d.revenueMonth||0, ' ₽');
+          if (ge('revTotal'))  animateCount(ge('revTotal'),   d.totalBookings||0, 800);
+          if (ge('revCustom')) animateRevenue(ge('revCustom'), d.revenueCustom||0, ' ₽');
         }, 100);
       }
+
       const ts=d.topServices||[];
-      if (svc) svc.innerHTML=ts.length===0?'<div class="adm-loading">Нет данных</div>':ts.map(s=>'<div class="adm-top-item"><span class="adm-top-nm">'+s.name+'</span><span class="adm-top-cnt">'+s.count+'</span></div>').join('');
+      if (svc) svc.innerHTML=ts.length===0?'<div class="adm-loading">Нет данных</div>':ts.map(s=>'<div class="adm-top-item"><span class="adm-top-nm">'+escapeHtml(s.name)+'</span><span class="adm-top-cnt">'+s.count+'</span></div>').join('');
+
+      // Аналитика мастеров с рейтингом
       const ms=d.masterStats||[];
-      if (mst) mst.innerHTML=ms.length===0?'<div class="adm-loading">Нет данных</div>':ms.map(m=>'<div class="adm-top-item"><span class="adm-top-nm">'+m.name+'</span><span class="adm-top-cnt">'+m.count+'</span></div>').join('');
+      if (mst) {
+        if (ms.length===0) {
+          mst.innerHTML='<div class="adm-loading">Нет данных</div>';
+        } else {
+          mst.innerHTML = ms.map(function(m) {
+            var r = MASTER_RATINGS[m.name];
+            var ratingHtml = (r && r.count > 0)
+              ? '<div class="mst-rating">★ ' + r.avg.toFixed(1) + ' (' + r.count + ')</div>'
+              : '<div class="mst-rating" style="color:rgba(138,125,107,.3)">нет отзывов</div>';
+            return '<div class="adm-top-item" style="flex-direction:column;align-items:flex-start;gap:2px">' +
+              '<div style="display:flex;width:100%;justify-content:space-between;align-items:center">' +
+              '<span class="adm-top-nm">'+escapeHtml(m.name)+'</span>' +
+              '<span class="adm-top-cnt">'+m.count+' зап.</span>' +
+              '</div>' +
+              ratingHtml +
+              '</div>';
+          }).join('');
+        }
+      }
     })
-    .catch(()=>{ if(rev) rev.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
+    .catch(function() { if(rev) rev.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -3949,11 +4027,6 @@ admLoadSummary = function() {
 /* ────────────────────────────────────────────────────────
    2. ПОИСК КЛИЕНТА
    ──────────────────────────────────────────────────────── */
-var _srchDebounceTimer = null;
-function srchRunDebounced() {
-  clearTimeout(_srchDebounceTimer);
-  _srchDebounceTimer = setTimeout(srchRun, 400);
-}
 function srchRun() {
   var q = ((document.getElementById('srchInp')||{}).value||'').trim();
   var result = document.getElementById('srchResult');
@@ -3992,10 +4065,7 @@ window.srchRun = srchRun;
 
 document.addEventListener('DOMContentLoaded', function(){
   var i = document.getElementById('srchInp');
-  if (i) {
-    i.addEventListener('keydown', function(e){ if(e.key==='Enter') srchRun(); });
-    i.addEventListener('input', srchRunDebounced);
-  }
+  if (i) i.addEventListener('keydown', function(e){ if(e.key==='Enter') srchRun(); });
 });
 
 /* ────────────────────────────────────────────────────────
@@ -4329,7 +4399,7 @@ function summaryAutoStart() {
         _summaryLastCount = count;
       })
       .catch(function(){});
-  }, 2 * 60 * 1000); // каждые 2 минуты
+  }, 10 * 60 * 1000); // каждые 10 минут
 }
 
 function summaryAutoStop() {

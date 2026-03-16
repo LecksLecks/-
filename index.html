@@ -1503,10 +1503,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <!-- Сортировка -->
       <div class="cl-sort-row">
         <span class="cl-sort-lbl">Сортировка:</span>
-        <button class="cl-sort active" data-sort="ltv">LTV</button>
-        <button class="cl-sort" data-sort="visits">Визиты</button>
+        <button class="cl-sort active" data-sort="visits">Визиты</button>
         <button class="cl-sort" data-sort="spent">Выручка</button>
         <button class="cl-sort" data-sort="last">Последний</button>
+        <button class="cl-sort" data-sort="name">Имя</button>
       </div>
       <!-- Сводка -->
       <div class="cl-summary" id="clSummary"></div>
@@ -3897,7 +3897,7 @@ function bcLoadHistory() {
    ──────────────────────────────────────────────────────────── */
 
 let _clAllClients = [];
-let _clSort = 'ltv';
+let _clSort = 'visits';
 let _clSearch = '';
 let _clLoaded = false;
 let _clDebounce = null;
@@ -3967,11 +3967,11 @@ function clRenderSummary() {
   if (!sumEl) return;
   const total      = _clAllClients.length;
   const totalSpent = _clAllClients.reduce((s,c) => s+(c.totalSpent||0), 0);
-  const avgLtv     = total > 0 ? Math.round(_clAllClients.reduce((s,c) => s+(c.ltv||0), 0) / total) : 0;
+  const totalVisits = _clAllClients.reduce((s,c) => s+(c.totalBookings||0), 0);
   sumEl.innerHTML =
     '<div class="cl-sum-card"><div class="cl-sum-val">' + total + '</div><div class="cl-sum-lbl">Всего клиентов</div></div>' +
     '<div class="cl-sum-card"><div class="cl-sum-val">' + formatPrice(totalSpent) + '</div><div class="cl-sum-lbl">Выручка всего</div></div>' +
-    '<div class="cl-sum-card"><div class="cl-sum-val">' + formatPrice(avgLtv) + '</div><div class="cl-sum-lbl">Средний LTV</div></div>';
+    '<div class="cl-sum-card"><div class="cl-sum-val">' + totalVisits + '</div><div class="cl-sum-lbl">Визитов всего</div></div>';
 }
 
 // Очищает телефон от мусора: апостроф, #ERROR!, формулы
@@ -4009,10 +4009,10 @@ function clRender() {
 
   // Сортировка
   clients = clients.slice().sort((a,b) => {
-    if (_clSort==='ltv')    return (b.ltv||0)-(a.ltv||0);
     if (_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
     if (_clSort==='spent')  return (b.totalSpent||0)-(a.totalSpent||0);
     if (_clSort==='last')   return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
+    if (_clSort==='name')   return (a.name||'').localeCompare(b.name||'', 'ru');
     return 0;
   });
 
@@ -4065,7 +4065,6 @@ function clRender() {
         '<div class="cl-stat"><div class="cl-stat-val">' + (c.totalBookings||0) + '</div><div class="cl-stat-lbl">Визитов</div></div>' +
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
-        '<div class="cl-stat"><div class="cl-stat-val" style="color:var(--gold)">' + formatPrice(c.ltv||0) + '</div><div class="cl-stat-lbl">LTV/год</div></div>' +
       '</div>' +
       '<div class="cl-last">Последний визит: ' + escapeHtml(lastVisitStr) + lostBadge + '</div>';
 
@@ -4125,18 +4124,18 @@ function clToggleCard(cardKey) {
                (qDigits.length>=3 && phone.includes(qDigits)) || tg.includes(q);
       });
       clients = clients.slice().sort((a,b)=>{
-        if(_clSort==='ltv') return (b.ltv||0)-(a.ltv||0);
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);
         if(_clSort==='last') return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
+        if(_clSort==='name') return (a.name||'').localeCompare(b.name||'','ru');
         return 0;
       });
     } else {
       clients = clients.slice().sort((a,b)=>{
-        if(_clSort==='ltv') return (b.ltv||0)-(a.ltv||0);
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);
         if(_clSort==='last') return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
+        if(_clSort==='name') return (a.name||'').localeCompare(b.name||'','ru');
         return 0;
       });
     }

@@ -2044,7 +2044,7 @@ function initApp() {
 }
 
 var _INIT_CACHE_KEY = 'bs_init_cache';
-var _INIT_CACHE_TTL = 10 * 60 * 1000; // 10 минут
+var _INIT_CACHE_TTL = 30 * 60 * 1000; // 30 минут
 
 function loadInitCache() {
   try {
@@ -2052,13 +2052,21 @@ function loadInitCache() {
     if (!raw) return null;
     var obj = JSON.parse(raw);
     if (!obj || !obj.ts || (Date.now() - obj.ts) > _INIT_CACHE_TTL) return null;
+    // Кэш привязан к chatId — не применяем чужой кэш
+    var currentChatId = getChatId();
+    if (currentChatId && obj.chatId && obj.chatId !== currentChatId) return null;
     return obj.data;
   } catch(e) { return null; }
 }
 
 function saveInitCache(data) {
   try {
-    localStorage.setItem(_INIT_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
+    var currentChatId = getChatId();
+    localStorage.setItem(_INIT_CACHE_KEY, JSON.stringify({
+      ts: Date.now(),
+      chatId: currentChatId,
+      data: data
+    }));
   } catch(e) {}
 }
 
@@ -2084,30 +2092,36 @@ function applyInitData(d) {
 
 function loadInitData() {
   const chatId = getChatId();
-  const url = CONFIG.GS + '?action=getInitData' + (chatId ? '&chatId=' + encodeURIComponent(chatId) : '');
-  fetchWithTimeout(url)
+
+  // Если chatId недоступен (открыто не в Telegram) — сразу fallback
+  if (!chatId) {
+    loadInitDataFallback();
+    return;
+  }
+
+  const url = CONFIG.GS + '?action=getInitData&chatId=' + encodeURIComponent(chatId);
+  fetchWithTimeout(url, {}, 8000)
     .then(r => r.json())
     .then(d => {
-      // Если getInitData не поддерживается старым бэкендом — делаем fallback
-      if (d.error || (!d.masters && !d.role)) {
+      if (d.error || d.status === 'ok' && !d.role) {
+        // Бэкенд не поддерживает getInitData — используем fallback
         loadInitDataFallback();
         return;
       }
       applyInitData(d);
       saveInitCache(d);
       setTimeout(function(){ if (IS_ADMIN) admBadgeStart(); }, 1000);
+      // Предзагружаем слоты в фоне
       setTimeout(function() {
         if (Object.keys(allMastersData).length === 0) {
           fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
             .then(r => r.json())
-            .then(d => {
-              if (d.masters) { allMastersData = d.masters; _allMastersDataTs = Date.now(); }
-            })
+            .then(sd => { if (sd.masters) { allMastersData = sd.masters; _allMastersDataTs = Date.now(); } })
             .catch(function(){});
         }
       }, 2000);
     })
-    .catch(e => {
+    .catch(function(e) {
       console.warn('loadInitData failed, fallback:', e);
       loadInitDataFallback();
     });
@@ -2115,23 +2129,25 @@ function loadInitData() {
 
 function loadInitDataFallback() {
   const chatId = getChatId();
-  // Fallback: старые два раздельных запроса
-  fetchWithTimeout(CONFIG.GS + '?action=getAppData')
+
+  // 1. Данные приложения
+  fetchWithTimeout(CONFIG.GS + '?action=getAppData', {}, 8000)
     .then(r => r.json())
     .then(d => { applyInitData(d); })
     .catch(function(){});
 
+  // 2. Роль пользователя
   if (chatId) {
-    fetchWithTimeout(CONFIG.GS + '?action=getUserInfo&chatId=' + encodeURIComponent(chatId))
+    fetchWithTimeout(CONFIG.GS + '?action=getUserInfo&chatId=' + encodeURIComponent(chatId), {}, 8000)
       .then(r => r.json())
       .then(d => {
-        if (d.role && (d.role === 'admin' || d.role === 'master')) {
+        if (d.role) {
           applyInitData(d);
           saveInitCache(d);
-          setTimeout(function(){ if (IS_ADMIN) admBadgeStart(); }, 1000);
+          if (IS_ADMIN) setTimeout(function(){ admBadgeStart(); }, 500);
         }
       })
-      .catch(function(){});
+      .catch(function(e){ console.warn('getUserInfo fallback failed:', e); });
   }
 }
 

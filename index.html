@@ -997,6 +997,19 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-booking-resc{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold);padding:6px 10px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;white-space:nowrap}
 .adm-booking-resc:active{background:rgba(201,168,76,.2)}
 .adm-booking-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+/* Аналитика — строка мастера */
+.anl-master-row{padding:10px 0;border-bottom:1px solid rgba(201,168,76,.07)}
+.anl-master-row:last-child{border-bottom:none}
+.anl-master-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.anl-master-name{font-size:14px;color:var(--cream);font-weight:600}
+.anl-master-rev{font-size:15px;color:var(--gold);font-weight:700;letter-spacing:.5px}
+.anl-master-bar-bg{height:3px;background:rgba(201,168,76,.12);border-radius:2px;margin-bottom:5px}
+.anl-master-bar-fill{height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:2px;transition:width .6s ease}
+.anl-master-meta{display:flex;justify-content:space-between;align-items:center}
+.anl-master-cnt{font-size:11px;color:var(--gray);letter-spacing:.5px}
+.anl-master-avg{font-size:11px;color:rgba(201,168,76,.6);letter-spacing:.5px}
+.mst-rating-inline{font-size:11px;color:var(--gold);margin-left:6px;font-weight:400}
 </style>
 </head>
 
@@ -2798,6 +2811,11 @@ function admTab(tab, tabEl) {
   if (tab==='analytics') { anlInitPeriodTabs(); admLoadAnalytics(); }
   if (tab==='broadcast') bcInit();
   if (tab==='clients')   clInit();
+  if (tab==='manual')    manualBkInit();
+  if (tab==='compare')   compareInit();
+  if (tab==='topclients') topClientsInit();
+  // Фокус на поиск при открытии клиентов
+  if (tab==='clients') { var srch=ge('srchInp'); if(srch) setTimeout(function(){srch.focus();},300); }
 }
 
 var _admInited = false;
@@ -2864,7 +2882,95 @@ document.addEventListener('visibilitychange', function() {
 
 var admBkSelectedDate = formatDate_iso(new Date());
 
-/* admLoadSummary: оригинал удалён в v6 — используется только расширенная версия из П.1 ниже */
+/* admLoadSummary — загрузка сводки дня для админ-панели */
+function admLoadSummary() {
+  var chatId = getChatId();
+  var container = ge('admSummaryContent');
+  if (!container) return;
+  var todayStr = formatDate_iso(new Date());
+  container.innerHTML = '<div class="adm-loading">Загрузка сводки...</div>';
+
+  Promise.all([
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId)).then(function(r){return r.json();}),
+    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId) + '&period=day').then(function(r){return r.json();})
+  ])
+  .then(function(results) {
+    var bkData = results[0], anData = results[1];
+    if (bkData.error === 'Unauthorized' || anData.error === 'Unauthorized') {
+      container.innerHTML = '<div class="adm-loading">❌ Нет прав доступа</div>'; return;
+    }
+    var bookings = (bkData.bookings||[]).filter(function(b){return b.status==='confirmed';});
+    var revenueToday = anData.revenueToday || 0;
+    var now = new Date(), nowMin = now.getHours()*60+now.getMinutes();
+
+    // Метрики
+    var html = '<div class="adm-summary-date">Сводка на ' + now.toLocaleDateString('ru-RU', {day:'numeric',month:'long'}) + '</div>';
+    html += '<div class="adm-summary-metrics">';
+    html += '<div class="adm-summary-card"><div class="adm-lbl">Записей</div><div class="adm-val">' + bookings.length + '</div></div>';
+    html += '<div class="adm-summary-card"><div class="adm-lbl">Выручка</div><div class="adm-val">' + formatPrice(revenueToday) + '</div></div>';
+    var masters = {};
+    bookings.forEach(function(b){ masters[b.master] = (masters[b.master]||0)+1; });
+    var masterCount = Object.keys(masters).length;
+    html += '<div class="adm-summary-card"><div class="adm-lbl">Мастеров</div><div class="adm-val">' + masterCount + '</div></div>';
+    html += '</div>';
+
+    // По мастерам
+    Object.keys(masters).forEach(function(mName) {
+      var mBks = bookings.filter(function(b){return b.master===mName;});
+      var pct = Math.round(mBks.length / Math.max(bookings.length,1) * 100);
+      html += '<div class="adm-summary-master">';
+      html += '<div class="adm-summary-master-top"><span class="adm-summary-master-name">' + escapeHtml(mName) + '</span>';
+      html += '<span class="adm-summary-master-cnt">' + mBks.length + ' записей</span></div>';
+      html += '<div class="adm-summary-bar-bg"><div class="adm-summary-bar-fill" style="width:'+pct+'%"></div></div>';
+      html += '<div class="adm-summary-times">' + mBks.sort(function(a,b){return a.time<b.time?-1:1;}).map(function(b){return '<span>'+escapeHtml(b.time||'')+'</span>';}).join('') + '</div>';
+      html += '</div>';
+    });
+
+    // Ближайшие записи с кнопкой отмены
+    var upcoming = bookings.filter(function(b){
+      if (!b.time) return false;
+      var tp = b.time.split(':');
+      return parseInt(tp[0])*60+parseInt(tp[1]||0) >= nowMin;
+    }).sort(function(a,b){return a.time<b.time?-1:1;}).slice(0,5);
+
+    if (upcoming.length > 0) {
+      html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Ближайшие записи</div>';
+      upcoming.forEach(function(b) {
+        var tp = (b.time||'').split(':');
+        var minsLeft = tp.length>=2 ? parseInt(tp[0])*60+parseInt(tp[1]||0)-nowMin : -1;
+        var badge = '';
+        if (minsLeft>=0 && minsLeft<=15) badge = '<span class="adm-booking-badge soon">СКОРО</span>';
+        else if (minsLeft>0) badge = '<span class="adm-booking-badge mins">'+minsLeft+' мин</span>';
+        var safeId     = b.id ? String(b.id) : '';
+        var safeName   = escapeHtml(String(b.name||'')).replace(/'/g,'&#39;');
+        var safeMaster = escapeHtml(String(b.master||'')).replace(/'/g,'&#39;');
+        var safeDate   = escapeHtml(String(b.date||todayStr));
+        var safePhone  = String(b.phone||'').replace(/\D/g,'');
+        var cancelBtn = safeId ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
+        var rescBtn   = safeId ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
+        var msgBtn    = safePhone ? '<button class="adm-booking-msg" onclick="admMsgClient(\''+safePhone+'\',\''+safeName+'\')">✉ Написать</button>' : '';
+        html += '<div class="adm-booking">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+            '<div class="adm-booking-time">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
+          '</div>' +
+          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) +
+            (b.services ? '<br>' + escapeHtml(String(b.services)) : '') + '</div>' +
+          '<div class="adm-booking-actions">' + rescBtn + msgBtn + cancelBtn + '</div>' +
+        '</div>';
+      });
+    }
+
+    if (bookings.length === 0) {
+      html += '<div class="adm-loading" style="padding:24px 0">Записей на сегодня нет</div>';
+    }
+
+    container.innerHTML = html;
+  })
+  .catch(function(e) {
+    container.innerHTML = '<div class="adm-loading">Ошибка загрузки. Обновите страницу.</div>';
+    console.error('admLoadSummary error:', e);
+  });
+}
 
 function admBkInitDateStrip() {
   const strip=ge('admDateStrip'); if (!strip) return;
@@ -3119,7 +3225,6 @@ function admLoadAnalytics() {
     var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
     if (fromEl && fromEl.value) dateFrom = fromEl.value;
     if (toEl && toEl.value) dateTo = toEl.value;
-    // Защита: dateTo не может быть раньше dateFrom
     if (dateTo < dateFrom) dateTo = dateFrom;
   }
 
@@ -3136,37 +3241,33 @@ function admLoadAnalytics() {
         return;
       }
 
-      // FIX-5: человеческая метка периода
+      // ── Метка периода ──
       var periodLabel = '';
+      var mn2 = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
       if (_anlPeriod === 'day') {
         periodLabel = 'За сегодня, ' + anlFormatDateLabel(today);
       } else if (_anlPeriod === 'month') {
-        var mn2 = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
         periodLabel = 'За ' + mn2[new Date().getMonth()] + ' ' + new Date().getFullYear();
       } else {
         periodLabel = anlFormatDateLabel(dateFrom) + ' — ' + anlFormatDateLabel(dateTo);
       }
 
-      // FIX-1,2,3,4,7: логичный набор карточек для каждого режима
+      // ── Карточки выручки ──
       if (rev) {
         var cards = '';
-
         if (_anlPeriod === 'day') {
-          // День: показываем только сегодня + неделя + месяц для контекста
           cards =
-            '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">Выручка сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">За неделю</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
             '<div class="adm-stat"><div class="adm-lbl">Записей сегодня</div><div class="adm-val" id="revTotal">0</div></div>';
         } else if (_anlPeriod === 'month') {
-          // Месяц: месяц + неделя + всего записей за месяц
           cards =
             '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">За неделю</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
             '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
             '<div class="adm-stat"><div class="adm-lbl">Записей за месяц</div><div class="adm-val" id="revTotal">0</div></div>';
         } else {
-          // Свой период: только данные за период
           cards =
             '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">Выручка за период</div><div class="adm-val" id="revCustom">0 ₽</div></div>' +
             '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">Записей за период</div><div class="adm-val" id="revTotal">0</div></div>';
@@ -3181,47 +3282,60 @@ function admLoadAnalytics() {
             if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
             if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
             if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
-            // FIX-4,8: totalBookingsCustom = записей за период
-            if (ge('revTotal'))  animateCount(ge('revTotal'), d.totalBookingsCustom||0, 800);
+            if (ge('revTotal'))  animateCount(ge('revTotal'),    d.totalBookingsCustom||0, 800);
           } else if (_anlPeriod === 'month') {
             if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
             if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
             if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
-            if (ge('revTotal'))  animateCount(ge('revTotal'), d.totalBookingsCustom||0, 800);
+            if (ge('revTotal'))  animateCount(ge('revTotal'),    d.totalBookingsCustom||0, 800);
           } else {
             if (ge('revCustom')) animateRevenue(ge('revCustom'), d.revenueCustom||0, ' ₽');
-            if (ge('revTotal'))  animateCount(ge('revTotal'), d.totalBookingsCustom||0, 800);
+            if (ge('revTotal'))  animateCount(ge('revTotal'),    d.totalBookingsCustom||0, 800);
           }
         }, 100);
       }
 
+      // ── Топ услуг ──
       var ts = d.topServices || [];
       if (svc) svc.innerHTML = ts.length === 0
         ? '<div class="adm-loading">Нет данных за период</div>'
         : ts.map(function(s) {
-            return '<div class="adm-top-item"><span class="adm-top-nm">' + escapeHtml(s.name) + '</span><span class="adm-top-cnt">' + s.count + '</span></div>';
+            return '<div class="adm-top-item"><span class="adm-top-nm">' + escapeHtml(s.name) + '</span><span class="adm-top-cnt">' + s.count + ' раз</span></div>';
           }).join('');
 
+      // ── Мастера: записи + выручка ──
       var ms = d.masterStats || [];
       if (mst) {
         if (ms.length === 0) {
           mst.innerHTML = '<div class="adm-loading">Нет данных за период</div>';
         } else {
+          // Считаем максимум выручки для полоски
+          var maxRev = ms.reduce(function(mx, m){ return Math.max(mx, m.revenue||0); }, 0);
           mst.innerHTML = ms.map(function(m) {
+            var pct = maxRev > 0 ? Math.round((m.revenue||0) / maxRev * 100) : 0;
             var r = MASTER_RATINGS[m.name];
             var ratingHtml = (r && r.count > 0)
-              ? '<div class="mst-rating">★ ' + r.avg.toFixed(1) + ' (' + r.count + ')</div>'
-              : '<div class="mst-rating" style="color:rgba(138,125,107,.3)">нет отзывов</div>';
-            return '<div class="adm-top-item" style="flex-direction:column;align-items:flex-start;gap:2px">' +
-              '<div style="display:flex;width:100%;justify-content:space-between;align-items:center">' +
-              '<span class="adm-top-nm">' + escapeHtml(m.name) + '</span>' +
-              '<span class="adm-top-cnt">' + m.count + ' зап.</span>' +
-              '</div>' + ratingHtml + '</div>';
+              ? '<span class="mst-rating-inline">★ ' + r.avg.toFixed(1) + '</span>'
+              : '';
+            return '<div class="anl-master-row">' +
+              '<div class="anl-master-top">' +
+                '<span class="anl-master-name">' + escapeHtml(m.name) + ratingHtml + '</span>' +
+                '<span class="anl-master-rev">' + formatPrice(m.revenue||0) + '</span>' +
+              '</div>' +
+              '<div class="anl-master-bar-bg"><div class="anl-master-bar-fill" style="width:' + pct + '%"></div></div>' +
+              '<div class="anl-master-meta">' +
+                '<span class="anl-master-cnt">📋 ' + (m.count||0) + ' зап.</span>' +
+                (m.count > 0 ? '<span class="anl-master-avg">≈ ' + formatPrice(Math.round((m.revenue||0)/(m.count||1))) + ' / визит</span>' : '') +
+              '</div>' +
+            '</div>';
           }).join('');
         }
       }
     })
-    .catch(function() { if(rev) rev.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
+    .catch(function(e) {
+      if(rev) rev.innerHTML='<div class="adm-loading">Ошибка загрузки</div>';
+      console.error('admLoadAnalytics:', e);
+    });
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -3972,22 +4086,8 @@ function initMegaWow() {
   enhanceGlass();
 }
 
-/* ════════════════════════════════════════════════════════
-   НОВЫЕ ФИЧИ АДМИНКИ
-   ════════════════════════════════════════════════════════ */
-
-/* --- admTab расширение --- */
-var _origAdmTab = admTab;
-admTab = function(tab, tabEl) {
-  _origAdmTab(tab, tabEl);
-  if (tab === 'clients')    { var i=document.getElementById('srchInp'); if(i) setTimeout(function(){i.focus();},300); }
-  if (tab === 'manual')     manualBkInit();
-  if (tab === 'compare')    compareInit();
-  if (tab === 'topclients') topClientsInit();
-};
-
 /* ────────────────────────────────────────────────────────
-   1. КНОПКА ОТМЕНЫ В СВОДКЕ
+   1. КНОПКА ОТМЕНЫ В СВОДКЕ — admQuickCancel
    ──────────────────────────────────────────────────────── */
 function admQuickCancel(bookingId, clientName, btn) {
   haptic('medium');
@@ -4007,89 +4107,6 @@ function admQuickCancel(bookingId, clientName, btn) {
   });
 }
 window.admQuickCancel = admQuickCancel;
-
-/* Патчим admLoadSummary — добавляем кнопку отмены в ближайшие записи */
-var _origAdmLoadSummary = admLoadSummary;
-admLoadSummary = function() {
-  var chatId = getChatId();
-  var container = ge('admSummaryContent');
-  if (!container) return;
-  var todayStr = formatDate_iso(new Date());
-  container.innerHTML = '<div class="adm-loading">Загрузка сводки...</div>';
-
-  Promise.all([
-    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId)).then(function(r){return r.json();}),
-    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)).then(function(r){return r.json();})
-  ])
-  .then(function(results) {
-    var bkData = results[0], anData = results[1];
-    if (bkData.error === 'Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав</div>'; return; }
-    var bookings = (bkData.bookings||[]).filter(function(b){return b.status==='confirmed';});
-    var revenueToday = anData.revenueToday || 0;
-    var now = new Date(), nowMin = now.getHours()*60+now.getMinutes();
-
-    // Метрики
-    var html = '<div class="adm-summary-date">Сводка на ' + now.toLocaleDateString('ru-RU', {day:'numeric',month:'long'}) + '</div>';
-    html += '<div class="adm-summary-metrics">';
-    html += '<div class="adm-summary-card"><div class="adm-lbl">Записей</div><div class="adm-val">' + bookings.length + '</div></div>';
-    html += '<div class="adm-summary-card"><div class="adm-lbl">Выручка</div><div class="adm-val">' + formatPrice(revenueToday) + '</div></div>';
-    var masters = {};
-    bookings.forEach(function(b){ masters[b.master] = (masters[b.master]||0)+1; });
-    var masterCount = Object.keys(masters).length;
-    html += '<div class="adm-summary-card"><div class="adm-lbl">Мастеров</div><div class="adm-val">' + masterCount + '</div></div>';
-    html += '</div>';
-
-    // По мастерам
-    Object.keys(masters).forEach(function(mName) {
-      var mBks = bookings.filter(function(b){return b.master===mName;});
-      var total = MASTERS ? MASTERS.length : 1;
-      var pct = Math.round(mBks.length / Math.max(bookings.length,1) * 100);
-      html += '<div class="adm-summary-master">';
-      html += '<div class="adm-summary-master-top"><span class="adm-summary-master-name">' + escapeHtml(mName) + '</span>';
-      html += '<span class="adm-summary-master-cnt">' + mBks.length + ' записей</span></div>';
-      html += '<div class="adm-summary-bar-bg"><div class="adm-summary-bar-fill" style="width:'+pct+'%"></div></div>';
-      html += '<div class="adm-summary-times">' + mBks.sort(function(a,b){return a.time<b.time?-1:1;}).map(function(b){return '<span>'+escapeHtml(b.time||'')+'</span>';}).join('') + '</div>';
-      html += '</div>';
-    });
-
-    // Ближайшие записи с кнопкой отмены
-    var upcoming = bookings.filter(function(b){
-      if (!b.time) return false;
-      var tp = b.time.split(':');
-      return parseInt(tp[0])*60+parseInt(tp[1]||0) >= nowMin;
-    }).sort(function(a,b){return a.time<b.time?-1:1;}).slice(0,5);
-
-    if (upcoming.length > 0) {
-      html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Ближайшие записи</div>';
-      upcoming.forEach(function(b) {
-        var tp = (b.time||'').split(':');
-        var minsLeft = tp.length>=2 ? parseInt(tp[0])*60+parseInt(tp[1]||0)-nowMin : -1;
-        var badge = '';
-        if (minsLeft>=0 && minsLeft<=15) badge = '<span class="adm-booking-badge soon">СКОРО</span>';
-        else if (minsLeft>0) badge = '<span class="adm-booking-badge mins">'+minsLeft+' мин</span>';
-        var safeId   = b.id ? String(b.id) : '';
-        var safeName = escapeHtml(String(b.name||'')).replace(/'/g,'&#39;');
-        var safeMaster = escapeHtml(String(b.master||'')).replace(/'/g,'&#39;');
-        var safeDate = escapeHtml(String(b.date||todayStr));
-        var safePhone = String(b.phone||'').replace(/\D/g,'');
-        var cancelBtn = safeId ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
-        var rescBtn   = safeId ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
-        var msgBtn    = safePhone ? '<button class="adm-booking-msg" onclick="admMsgClient(\''+safePhone+'\',\''+safeName+'\')">' + '✉ Написать</button>' : '';
-        html += '<div class="adm-booking">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
-            '<div class="adm-booking-time">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
-          '</div>' +
-          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) +
-            (b.services ? '<br>' + escapeHtml(String(b.services)) : '') + '</div>' +
-          '<div class="adm-booking-actions">' + rescBtn + msgBtn + cancelBtn + '</div>' +
-        '</div>';
-      });
-    }
-
-    container.innerHTML = html;
-  })
-  .catch(function(e){ container.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; console.error(e); });
-};
 
 /* ────────────────────────────────────────────────────────
    2. ПОИСК КЛИЕНТА

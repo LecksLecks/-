@@ -672,6 +672,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .mp-spec{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-top:6px}
 .mp-rating{display:flex;align-items:center;gap:4px;margin-top:8px;font-size:14px;color:var(--gold)}
 .mp-close{position:absolute;top:16px;left:16px;width:36px;height:36px;border-radius:50%;background:rgba(10,8,5,.7);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1}
+.mp-share-hero{position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:20px;background:rgba(10,8,5,.7);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:11px;letter-spacing:1px;cursor:pointer;z-index:1;backdrop-filter:blur(4px)}
+.mp-share-hero:active{background:rgba(201,168,76,.15)}
 .mp-body{padding:16px 20px}
 .mp-section-ttl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:10px;margin-top:20px}
 .mp-book-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:20px;font-family:'Cormorant Garamond',serif;transition:all .2s}
@@ -1017,6 +1019,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 <div id="masterProfile">
   <div class="mp-hero" id="mpHero">
     <button class="mp-close" onclick="masterProfileClose()">‹</button>
+    <button class="mp-share-hero" id="mpShareBtn" onclick="masterShare(window._mpCurrentId)" title="Поделиться"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Поделиться</button>
     <div id="mpHeroImg"></div>
     <div class="mp-hero-gradient">
       <div class="mp-name" id="mpName"></div>
@@ -1052,7 +1055,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="home-city">✦ Батайск · Премиум барбершоп ✦</div>
   </div>
   <div class="hymn">
-    <div class="h-orn"><span class="h-line"></span><span class="h-phi"><svg width="22" height="22" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle"><polygon points="22,2 26,18 22,22 18,18" fill="#c9a84c"/><polygon points="22,42 26,26 22,22 18,26" fill="#c9a84c" opacity="0.55"/><polygon points="2,22 18,26 22,22 18,18" fill="#c9a84c" opacity="0.55"/><polygon points="42,22 26,26 22,22 26,18" fill="#c9a84c" opacity="0.55"/><polygon points="8,8 20,19 22,22 19,20" fill="#c9a84c" opacity="0.35"/><polygon points="36,8 24,19 22,22 25,20" fill="#c9a84c" opacity="0.35"/><polygon points="8,36 20,25 22,22 19,24" fill="#c9a84c" opacity="0.35"/><polygon points="36,36 24,25 22,22 25,24" fill="#c9a84c" opacity="0.35"/><circle cx="22" cy="22" r="3" fill="#c9a84c"/><circle cx="22" cy="22" r="5.5" fill="none" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/></svg></span><span class="h-line"></span></div>
+    <div class="h-orn"><span class="h-line"></span><span class="h-phi">φ</span><span class="h-line"></span></div>
     <div class="h-t1" id="h1TypeWriter"></div>
     <div class="h-orn2">
       <span class="h-line"></span>
@@ -1714,7 +1717,7 @@ let _myBkCache = {data: null, ts: 0, tab: ''};
 
 // FIX-10: флаг polling
 let _admPolling = false;
-var ADM_POLL_INTERVAL = 600000;
+var ADM_POLL_INTERVAL = 15000;
 var _admPollTimer = null;
 var _admLastUpdate = null;
 
@@ -2012,6 +2015,7 @@ function masterProfileOpen(mid) {
   const m = getMaster(mid);
   if (!m) return;
   _mpCurrentMaster = m;
+  window._mpCurrentId = mid;
 
   // Фото
   const heroImg = ge('mpHeroImg');
@@ -2066,21 +2070,10 @@ function masterShare(mid) {
   haptic('light');
   const m = getMaster(mid);
   if (!m) return;
-  const botUsername = 'barber_style_bot'; // замени на своего бота
+  const botUsername = 'barber_style_bot';
   const shareUrl = 'https://t.me/' + botUsername + '?startapp=master_' + mid;
-  const shareText = '✂️ ' + m.name + ' — мастер барбершопа BARBER STYLE\n\nЗапишись онлайн:';
-  if (tg && tg.shareMessage) {
-    try { tg.shareMessage(shareText + '\n' + shareUrl); return; } catch(e) {}
-  }
-  if (navigator.share) {
-    navigator.share({ title: 'BARBER STYLE — ' + m.name, text: shareText, url: shareUrl }).catch(()=>{});
-  } else {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareUrl).then(() => showToast('✅ Ссылка скопирована!', 'success'));
-    } else {
-      showToast('Ссылка: ' + shareUrl, 'info', 5000);
-    }
-  }
+  const shareText = encodeURIComponent('✂️ ' + m.name + ' — мастер барбершопа BARBER STYLE\n\nЗапишись онлайн: ' + shareUrl);
+  window.open('https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + shareText, '_blank');
 }
 window.masterShare = masterShare;
 
@@ -2091,7 +2084,7 @@ function renderMasters() {
     const d = document.createElement('div');
     d.className = 'm-item';
     const ratingHtml = getMasterRatingHtml(m.name);
-    const shareBtn = '<button class="m-share-btn" onclick="masterShare(' + m.id + ');return false;" title="Поделиться">↗</button>';
+    const shareBtn = '<button class="m-share-btn" onclick="masterShare(' + m.id + ');return false;" title="Поделиться"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>';
     const overlayHtml = '<div class="m-thumb-overlay"><div class="m-nm">' + escapeHtml(m.name) + '</div><div class="m-sp">' + escapeHtml(m.spec) + '</div>' + ratingHtml + '</div>';
     const photoHtml = m.photo
       ? '<div class="m-thumb" style="position:relative"><img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" loading="lazy">' + overlayHtml + shareBtn + '</div>'

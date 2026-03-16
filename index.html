@@ -3065,33 +3065,46 @@ function showConfirmModal(title, text, bookings, onConfirm) {
 
 // ── Период аналитики ──
 var _anlPeriod = 'day';
+var _anlTabsInited = false; // FIX-6: не вешаем обработчики повторно
 
 function anlInitPeriodTabs() {
-  document.querySelectorAll('.anl-period-btn').forEach(function(btn) {
-    btn.onclick = function() {
-      document.querySelectorAll('.anl-period-btn').forEach(function(b) { b.classList.remove('active'); });
-      this.classList.add('active');
-      _anlPeriod = this.dataset.period;
-      var customRange = ge('anlCustomRange');
-      if (customRange) customRange.style.display = _anlPeriod === 'custom' ? 'block' : 'none';
-      if (_anlPeriod !== 'custom') admLoadAnalytics();
-    };
-  });
-  // Инициализируем даты для custom
+  // FIX-6: инициализируем обработчики только один раз
+  if (!_anlTabsInited) {
+    document.querySelectorAll('.anl-period-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.anl-period-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        _anlPeriod = this.dataset.period;
+        var customRange = ge('anlCustomRange');
+        if (customRange) customRange.style.display = _anlPeriod === 'custom' ? 'block' : 'none';
+        if (_anlPeriod !== 'custom') admLoadAnalytics();
+      });
+    });
+    _anlTabsInited = true;
+  }
+  // Инициализируем даты для custom (каждый раз)
   var today = formatDate_iso(new Date());
   var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
   if (fromEl && !fromEl.value) fromEl.value = today;
   if (toEl && !toEl.value) toEl.value = today;
 }
 
-function admLoadAnalytics() {
-  const rev=ge('admRevenue'), svc=ge('admTopServices'), mst=ge('admMasterStats');
-  [rev,svc,mst].forEach(el => { if(el) el.innerHTML='<div class="adm-loading">Загрузка...</div>'; });
-  const chatId=getChatId();
+// FIX-5: человеческий формат даты для метки периода
+function anlFormatDateLabel(isoStr) {
+  if (!isoStr) return '';
+  var p = isoStr.split('-');
+  var mn = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  return parseInt(p[2]) + ' ' + mn[parseInt(p[1])-1];
+}
 
-  // Строим параметры периода
+function admLoadAnalytics() {
+  var rev=ge('admRevenue'), svc=ge('admTopServices'), mst=ge('admMasterStats');
+  [rev,svc,mst].forEach(function(el) { if(el) el.innerHTML='<div class="adm-loading">Загрузка...</div>'; });
+  var chatId = getChatId();
+
   var today = formatDate_iso(new Date());
   var dateFrom = today, dateTo = today;
+
   if (_anlPeriod === 'month') {
     var now = new Date();
     dateFrom = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
@@ -3100,53 +3113,93 @@ function admLoadAnalytics() {
     var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
     if (fromEl && fromEl.value) dateFrom = fromEl.value;
     if (toEl && toEl.value) dateTo = toEl.value;
+    // Защита: dateTo не может быть раньше dateFrom
+    if (dateTo < dateFrom) dateTo = dateFrom;
   }
 
-  var url = CONFIG.GS+'?action=getAnalytics&chatId='+encodeURIComponent(chatId)
-    + '&period='+encodeURIComponent(_anlPeriod)
-    + '&dateFrom='+encodeURIComponent(dateFrom)
-    + '&dateTo='+encodeURIComponent(dateTo);
+  var url = CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)
+    + '&period=' + encodeURIComponent(_anlPeriod)
+    + '&dateFrom=' + encodeURIComponent(dateFrom)
+    + '&dateTo=' + encodeURIComponent(dateTo);
 
   fetchWithTimeout(url)
-    .then(r=>r.json())
-    .then(d => {
-      if (d.error==='Unauthorized') { [rev,svc,mst].forEach(el=>{if(el) el.innerHTML='<div class="adm-loading">❌ Нет прав</div>';}); return; }
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error === 'Unauthorized') {
+        [rev,svc,mst].forEach(function(el){ if(el) el.innerHTML='<div class="adm-loading">❌ Нет прав</div>'; });
+        return;
+      }
 
-      // Метки периода
+      // FIX-5: человеческая метка периода
       var periodLabel = '';
-      if (_anlPeriod === 'day') periodLabel = 'За сегодня';
-      else if (_anlPeriod === 'month') periodLabel = 'За текущий месяц';
-      else periodLabel = dateFrom + ' — ' + dateTo;
+      if (_anlPeriod === 'day') {
+        periodLabel = 'За сегодня, ' + anlFormatDateLabel(today);
+      } else if (_anlPeriod === 'month') {
+        var mn2 = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+        periodLabel = 'За ' + mn2[new Date().getMonth()] + ' ' + new Date().getFullYear();
+      } else {
+        periodLabel = anlFormatDateLabel(dateFrom) + ' — ' + anlFormatDateLabel(dateTo);
+      }
 
+      // FIX-1,2,3,4,7: логичный набор карточек для каждого режима
       if (rev) {
-        var showToday = _anlPeriod === 'day';
-        var showWeek  = _anlPeriod !== 'custom';
-        rev.innerHTML=
-          '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">'+escapeHtml(periodLabel)+'</div>' +
-          '<div class="adm-stat-grid">' +
-          (showToday ? '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' : '') +
-          (showWeek  ? '<div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div>' : '') +
-          '<div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
-          '<div class="adm-stat"><div class="adm-lbl">Записей</div><div class="adm-val" id="revTotal">0</div></div>' +
-          (d.revenueCustom !== undefined ? '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">За период</div><div class="adm-val" id="revCustom">0 ₽</div></div>' : '') +
-          '</div>';
+        var cards = '';
+
+        if (_anlPeriod === 'day') {
+          // День: показываем только сегодня + неделя + месяц для контекста
+          cards =
+            '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">Месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">Записей сегодня</div><div class="adm-val" id="revTotal">0</div></div>';
+        } else if (_anlPeriod === 'month') {
+          // Месяц: месяц + неделя + всего записей за месяц
+          cards =
+            '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">Неделя</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
+            '<div class="adm-stat"><div class="adm-lbl">Записей за месяц</div><div class="adm-val" id="revTotal">0</div></div>';
+        } else {
+          // Свой период: только данные за период
+          cards =
+            '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">Выручка за период</div><div class="adm-val" id="revCustom">0 ₽</div></div>' +
+            '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">Записей за период</div><div class="adm-val" id="revTotal">0</div></div>';
+        }
+
+        rev.innerHTML =
+          '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">' + escapeHtml(periodLabel) + '</div>' +
+          '<div class="adm-stat-grid">' + cards + '</div>';
+
         setTimeout(function() {
-          if (ge('revToday'))  animateRevenue(ge('revToday'), d.revenueToday||0, ' ₽');
-          if (ge('revWeek'))   animateRevenue(ge('revWeek'),  d.revenueWeek||0,  ' ₽');
-          if (ge('revMonth'))  animateRevenue(ge('revMonth'), d.revenueMonth||0, ' ₽');
-          if (ge('revTotal'))  animateCount(ge('revTotal'),   d.totalBookings||0, 800);
-          if (ge('revCustom')) animateRevenue(ge('revCustom'), d.revenueCustom||0, ' ₽');
+          if (_anlPeriod === 'day') {
+            if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
+            if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
+            if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
+            // FIX-4,8: totalBookingsCustom = записей за период
+            if (ge('revTotal'))  animateCount(ge('revTotal'), d.totalBookingsCustom||0, 800);
+          } else if (_anlPeriod === 'month') {
+            if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
+            if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
+            if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
+            if (ge('revTotal'))  animateCount(ge('revTotal'), d.totalBookingsCustom||0, 800);
+          } else {
+            if (ge('revCustom')) animateRevenue(ge('revCustom'), d.revenueCustom||0, ' ₽');
+            if (ge('revTotal'))  animateCount(ge('revTotal'), d.totalBookingsCustom||0, 800);
+          }
         }, 100);
       }
 
-      const ts=d.topServices||[];
-      if (svc) svc.innerHTML=ts.length===0?'<div class="adm-loading">Нет данных</div>':ts.map(s=>'<div class="adm-top-item"><span class="adm-top-nm">'+escapeHtml(s.name)+'</span><span class="adm-top-cnt">'+s.count+'</span></div>').join('');
+      var ts = d.topServices || [];
+      if (svc) svc.innerHTML = ts.length === 0
+        ? '<div class="adm-loading">Нет данных за период</div>'
+        : ts.map(function(s) {
+            return '<div class="adm-top-item"><span class="adm-top-nm">' + escapeHtml(s.name) + '</span><span class="adm-top-cnt">' + s.count + '</span></div>';
+          }).join('');
 
-      // Аналитика мастеров с рейтингом
-      const ms=d.masterStats||[];
+      var ms = d.masterStats || [];
       if (mst) {
-        if (ms.length===0) {
-          mst.innerHTML='<div class="adm-loading">Нет данных</div>';
+        if (ms.length === 0) {
+          mst.innerHTML = '<div class="adm-loading">Нет данных за период</div>';
         } else {
           mst.innerHTML = ms.map(function(m) {
             var r = MASTER_RATINGS[m.name];
@@ -3155,11 +3208,9 @@ function admLoadAnalytics() {
               : '<div class="mst-rating" style="color:rgba(138,125,107,.3)">нет отзывов</div>';
             return '<div class="adm-top-item" style="flex-direction:column;align-items:flex-start;gap:2px">' +
               '<div style="display:flex;width:100%;justify-content:space-between;align-items:center">' +
-              '<span class="adm-top-nm">'+escapeHtml(m.name)+'</span>' +
-              '<span class="adm-top-cnt">'+m.count+' зап.</span>' +
-              '</div>' +
-              ratingHtml +
-              '</div>';
+              '<span class="adm-top-nm">' + escapeHtml(m.name) + '</span>' +
+              '<span class="adm-top-cnt">' + m.count + ' зап.</span>' +
+              '</div>' + ratingHtml + '</div>';
           }).join('');
         }
       }

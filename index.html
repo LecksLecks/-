@@ -2134,12 +2134,24 @@ function bkInit() {
   loadAllMastersData();
 }
 
-/* FIX-05: загружаем все данные один раз */
-function loadAllMastersData() {
+/* FIX-05 + v6: loadAllMastersData с TTL 2 минуты */
+var _allMastersDataTs = 0;
+var ALL_MASTERS_DATA_TTL = 2 * 60 * 1000;
+
+function loadAllMastersData(force) {
+  var now = Date.now();
+  if (!force && Object.keys(allMastersData).length > 0 && (now - _allMastersDataTs) < ALL_MASTERS_DATA_TTL) {
+    calRender(); renderTimeGrid(); updateHomeSlotCount();
+    return;
+  }
   fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
     .then(r => r.json())
     .then(d => {
-      if (d.masters) { allMastersData = d.masters; calRender(); renderTimeGrid(); updateHomeSlotCount(); }
+      if (d.masters) {
+        allMastersData = d.masters;
+        _allMastersDataTs = Date.now();
+        calRender(); renderTimeGrid(); updateHomeSlotCount();
+      }
     })
     .catch(e => console.error('loadAllMastersData:', e));
 }
@@ -2494,9 +2506,13 @@ function bkSubmit() {
         loadAllMastersData(); S.date=''; S.slot=''; calRender(); clearTime(); updateBar(); bkValidate(); return;
       }
       if (d.status==='double_booking') {
+        btn.style.display=''; ge('bkSpinner').classList.remove('show'); isSubmitting=false;
         showToast('⚠️ У вас уже есть запись на это время!', 'error'); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
-      if (d.status==='rate_limit') { showToast('⚠️ ' + d.error, 'error'); return; }
+      if (d.status==='rate_limit') {
+        btn.style.display=''; ge('bkSpinner').classList.remove('show'); btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
+        showToast('⚠️ ' + d.error, 'error'); return;
+      }
       if (d.error)                 { btn.style.display=''; ge('bkSpinner').classList.remove('show'); btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false; showToast('Ошибка: ' + d.error, 'error'); return; }
 
       // Успех
@@ -2614,9 +2630,14 @@ function _renderMyBkData(d) {
     const cardId = 'mybk-' + dateOnly + '-' + (timeOnly.replace(':','')||'0000');
 
     html += '<div class="my-card' + (isPast?' my-card-past':'') + '" id="' + cardId + '">';
-    const statusBadge = isPast
-      ? '<span style="font-size:9px;padding:2px 7px;background:rgba(138,125,107,.12);border:1px solid rgba(138,125,107,.2);color:var(--gray);letter-spacing:1px;text-transform:uppercase">Завершено</span>'
-      : '<span style="font-size:9px;padding:2px 7px;background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);color:#4caf7d;letter-spacing:1px;text-transform:uppercase">✓ Подтверждено</span>';
+    let statusBadge;
+    if (!isPast) {
+      statusBadge = '<span style="font-size:9px;padding:2px 7px;background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);color:#4caf7d;letter-spacing:1px;text-transform:uppercase">✓ Подтверждено</span>';
+    } else if (b.status === 'cancelled') {
+      statusBadge = '<span style="font-size:9px;padding:2px 7px;background:rgba(224,80,80,.12);border:1px solid rgba(224,80,80,.25);color:#e06060;letter-spacing:1px;text-transform:uppercase">✕ Отменено</span>';
+    } else {
+      statusBadge = '<span style="font-size:9px;padding:2px 7px;background:rgba(138,125,107,.12);border:1px solid rgba(138,125,107,.2);color:var(--gray);letter-spacing:1px;text-transform:uppercase">Завершено</span>';
+    }
     html += '<div class="my-card-hdr"><span class="my-card-master">✂️ ' + escapeHtml(b.master||'') + '</span>' + statusBadge + '</div>';
     html += '<div style="font-size:12px;color:var(--gold);margin-bottom:6px;letter-spacing:.5px">' + escapeHtml(displayDate) + '</div>';
     if (timeOnly) html += '<div class="my-card-time">⏰ ' + escapeHtml(timeOnly) + '</div>';
@@ -2733,7 +2754,8 @@ function admTab(tab, tabEl) {
   const labels = {
     summary:'Сводка', bookings:'Записи', slots:'Слоты',
     dayoffs:'Выходные', analytics:'Аналитика',
-    broadcast:'📢 Рассылка', clients:'👥 Клиенты'
+    broadcast:'📢 Рассылка', clients:'👥 Клиенты',
+    manual:'✏️ Ручная запись', compare:'📊 Сравнение', topclients:'🏆 Топ клиентов'
   };
   const lbl = ge('admBurgerLbl');
   if (lbl) lbl.textContent = labels[tab] || tab;
@@ -2755,6 +2777,7 @@ function admTab(tab, tabEl) {
   if (tab==='clients')   clInit();
 }
 
+var _admInited = false;
 function admInit() {
   if (!IS_ADMIN) return;
   const selBk=ge('admBkMaster'), selSl=ge('admSlotMaster'), selDayOff=ge('admDayOffMaster');
@@ -2763,7 +2786,12 @@ function admInit() {
   }
   admBkSelectedDate = formatDate_iso(new Date());
   admLoadSummary(); admLoadDayOffsList(); admStartPolling();
-  addClickHandler('admRefreshBtn', admRefresh);
+  // FIX: вешаем обработчик только один раз
+  if (!_admInited) {
+    var refreshBtn = ge('admRefreshBtn');
+    if (refreshBtn) refreshBtn.addEventListener('click', function(e) { e.preventDefault(); admRefresh(); });
+    _admInited = true;
+  }
 }
 
 /* FIX-10: polling без race condition */
@@ -2813,52 +2841,7 @@ document.addEventListener('visibilitychange', function() {
 
 var admBkSelectedDate = formatDate_iso(new Date());
 
-function admLoadSummary() {
-  const container = ge('admSummaryContent'); if (!container) return;
-  const chatId = getChatId();
-  const todayStr = formatDate_iso(new Date());
-
-  container.innerHTML = '<div class="adm-loading">Загрузка сводки...</div>';
-
-  Promise.all([
-    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId)).then(r=>r.json()),
-    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)).then(r=>r.json())
-  ])
-  .then(([bkData, anData]) => {
-    if (bkData.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
-    const bookings = (bkData.bookings||[]).filter(b=>b.status==='confirmed');
-    const revenueToday = anData.revenueToday||0;
-    const masterMap = {};
-    bookings.forEach(b => { if (!masterMap[b.master]) masterMap[b.master]=[]; masterMap[b.master].push(b.time); });
-
-    let html = '<div class="adm-summary-date">📅 Сегодня — ' + escapeHtml(formatDate_display(todayStr)) + '</div>';
-    html += '<div class="adm-summary-metrics">' +
-      '<div class="adm-summary-card"><div class="adm-lbl">Записей</div><div class="adm-val">' + bookings.length + '</div></div>' +
-      '<div class="adm-summary-card"><div class="adm-lbl">Выручка дня</div><div class="adm-val">' + formatPrice(revenueToday) + '</div></div>' +
-      '<div class="adm-summary-card"><div class="adm-lbl">Мастеров занято</div><div class="adm-val">' + Object.keys(masterMap).length + ' / ' + MASTERS.length + '</div></div>' +
-    '</div>';
-    html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Мастера сегодня</div>';
-    MASTERS.forEach(m => {
-      const mBks = masterMap[m.name]||[];
-      const pct = Math.round(mBks.length / SLOTS.length * 100);
-      html += '<div class="adm-summary-master"><div class="adm-summary-master-top"><span class="adm-summary-master-name">' + escapeHtml(m.name) + '</span><span class="adm-summary-master-cnt' + (mBks.length===0?' empty':'') + '">' + mBks.length + ' зап.</span></div>' +
-        '<div class="adm-summary-bar-bg"><div class="adm-summary-bar-fill' + (mBks.length===0?' empty':'') + '" style="width:' + pct + '%"></div></div>' +
-        (mBks.length>0 ? '<div class="adm-summary-times">' + mBks.sort().map(t=>'<span>'+escapeHtml(t)+'</span>').join('') + '</div>' : '') +
-      '</div>';
-    });
-    const now = new Date(), nowMin = now.getHours()*60+now.getMinutes();
-    const upcoming = bookings.filter(b=>{ if(!b.time) return false; const tp=b.time.split(':'); return parseInt(tp[0])*60+parseInt(tp[1]||0) >= nowMin; }).sort((a,b)=>a.time<b.time?-1:1).slice(0,3);
-    if (upcoming.length>0) {
-      html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Ближайшие записи</div>';
-      upcoming.forEach(b => {
-        html += '<div class="adm-booking"><div class="adm-booking-time">⏰ ' + escapeHtml(b.time) + ' — ' + escapeHtml(b.master) + '</div>' +
-          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) + (b.services?'<br>'+escapeHtml(String(b.services)):'') + '</div></div>';
-      });
-    }
-    container.innerHTML = html;
-  })
-  .catch(e => { console.error('admLoadSummary:', e); container.innerHTML='<div class="adm-loading">Ошибка загрузки</div>'; });
-}
+/* admLoadSummary: оригинал удалён в v6 — используется только расширенная версия из П.1 ниже */
 
 function admBkInitDateStrip() {
   const strip=ge('admDateStrip'); if (!strip) return;
@@ -3447,6 +3430,14 @@ function bcSend() {
             return;
           }
 
+          if (d.status === 'partial') {
+            result.className = 'bc-result error';
+            result.innerHTML = '⏳ Рассылка прервана (лимит времени)\n\n📨 Отправлено: <strong>' + d.sent + '</strong> · Осталось: ~' + d.remaining +
+              '\n\nПовторно нажмите «Отправить» — продолжится с того же места.';
+            result.style.display = 'block';
+            showToast('⏳ Рассылка прервана, продолжите отправку', 'error', 6000);
+            return;
+          }
           result.className = 'bc-result success';
           result.innerHTML = '✅ Рассылка завершена!\n\n📨 Доставлено: <strong>' + d.sent + '</strong>\n⏭ Пропущено: ' + d.skipped;
           result.style.display = 'block';
@@ -3976,8 +3967,9 @@ admTab = function(tab, tabEl) {
    1. КНОПКА ОТМЕНЫ В СВОДКЕ
    ──────────────────────────────────────────────────────── */
 function admQuickCancel(bookingId, clientName, btn) {
-  if (!confirm('Отменить запись клиента ' + clientName + '?')) return;
   haptic('medium');
+  confirmAction('Отменить запись клиента ' + clientName + '?').then(function(confirmed) {
+  if (!confirmed) return;
   btn.disabled = true; btn.textContent = 'Отмена...';
   var chatId = getChatId();
   fetchWithTimeout(CONFIG.GS + '?action=cancelBooking&bookingId=' + encodeURIComponent(bookingId) +
@@ -4092,7 +4084,7 @@ function srchRun() {
       d.clients.forEach(function(c) {
         var last = c.lastVisit ? new Date(c.lastVisit).toLocaleDateString('ru-RU') : '—';
         html += '<div class="srch-card"><div class="srch-name">' + escapeHtml(c.name||'—') + '</div>' +
-          '<div class="srch-phone">' + escapeHtml(c.phone||'—') + '</div>' +
+          '<div class="srch-phone">' + escapeHtml(cleanPhone(c.phone)||'—') + '</div>' +
           '<div class="srch-stats">' +
             '<div class="srch-stat"><div class="srch-stat-v">' + (c.totalVisits||0) + '</div><div class="srch-stat-l">Визитов</div></div>' +
             '<div class="srch-stat"><div class="srch-stat-v">' + formatPrice(c.totalSpent||0) + '</div><div class="srch-stat-l">Потрачено</div></div>' +
@@ -4122,6 +4114,7 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ────────────────────────────────────────────────────────
    3. РУЧНАЯ ЗАПИСЬ
    ──────────────────────────────────────────────────────── */
+var _manualBkInited = false;
 function manualBkInit() {
   var mSel = document.getElementById('mbkMaster');
   if (mSel && mSel.options.length <= 1 && typeof MASTERS !== 'undefined') {
@@ -4130,10 +4123,14 @@ function manualBkInit() {
   var today = formatDate_iso(new Date());
   var d = document.getElementById('mbkDate');
   if (d && !d.value) d.value = today;
-  var mSel2 = document.getElementById('mbkMaster');
-  if (mSel2) mSel2.addEventListener('change', manualBkLoadSlots);
-  var dInp = document.getElementById('mbkDate');
-  if (dInp) dInp.addEventListener('change', manualBkLoadSlots);
+  // FIX-12: обработчики вешаем только один раз
+  if (!_manualBkInited) {
+    var mSel2 = document.getElementById('mbkMaster');
+    var dInp  = document.getElementById('mbkDate');
+    if (mSel2) mSel2.addEventListener('change', manualBkLoadSlots);
+    if (dInp)  dInp.addEventListener('change',  manualBkLoadSlots);
+    _manualBkInited = true;
+  }
 }
 
 function manualBkLoadSlots() {
@@ -4146,9 +4143,17 @@ function manualBkLoadSlots() {
   fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + encodeURIComponent(mId) + '&date=' + encodeURIComponent(date))
     .then(function(r){ return r.json(); })
     .then(function(d){
+      // FIX-15: вычисляем freeSlots из booked+blocked (getMasterSchedule не возвращает freeSlots)
+      var booked2  = (d.booked  || d.slots  || {})[date] || [];
+      var blocked2 = (d.blocked || d.blocks || {})[date] || [];
+      var dayoffs2 = d.dayoffs || [];
+      if (dayoffs2.indexOf(date) >= 0) {
+        sSel.innerHTML='<option value="">Мастер в выходной</option>'; return;
+      }
+      var freeSlots2 = SLOTS.filter(function(s){ return booked2.indexOf(s)<0 && blocked2.indexOf(s)<0; });
+      if (!freeSlots2.length) { sSel.innerHTML='<option value="">Нет свободных слотов</option>'; return; }
       sSel.innerHTML = '<option value="">Выберите время</option>';
-      (d.freeSlots||[]).forEach(function(s){ var o=document.createElement('option'); o.value=s; o.textContent=s; sSel.appendChild(o); });
-      if (!(d.freeSlots||[]).length) sSel.innerHTML='<option value="">Нет свободных слотов</option>';
+      freeSlots2.forEach(function(s){ var o=document.createElement('option'); o.value=s; o.textContent=s; sSel.appendChild(o); });
     })
     .catch(function(){ sSel.innerHTML='<option value="">Ошибка загрузки</option>'; });
 }
@@ -4168,8 +4173,16 @@ function manualBkSubmit() {
   var master = MASTERS ? (MASTERS.find(function(m){return String(m.id)===String(mId);})||{}) : {};
   fetchWithTimeout(CONFIG.GS, {
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({action:'createBooking', name:name, phone:phone, master:master.name||'', masterId:mId,
-      date:date, slot:slot, services:svcs||'Ручная запись', chatId:getChatId(), isManual:true})
+    body: JSON.stringify({
+      name: name, phone: phone,
+      master: master.name||'', masterId: mId,
+      visitDate: formatDate_full(date), visitDateRaw: date,
+      time: slot,
+      services: svcs||'Ручная запись',
+      total: 0,
+      clientChatId: '',
+      isManual: true
+    })
   })
   .then(function(r){ return r.json(); })
   .then(function(d){
@@ -4211,7 +4224,7 @@ function compareLoad() {
 
 function renderCmpPeriod(elId, cur, prev, curLbl, prevLbl) {
   var el = document.getElementById(elId); if (!el) return;
-  var diff = cur - prev, pct = prev>0 ? Math.round(diff/prev*100) : 0;
+  var diff = cur - prev, pct = (prev>0 && isFinite(diff/prev)) ? Math.round(diff/prev*100) : 0;
   var diffHtml = diff > 0
     ? '<span class="cmp-diff cmp-up">▲ +' + formatPrice(diff) + ' (+' + pct + '%)</span>'
     : diff < 0
@@ -4301,7 +4314,7 @@ function topRender() {
     var days = c.lastVisit ? Math.floor((Date.now()-new Date(c.lastVisit))/86400000) : '?';
     html += '<div class="top-card"><div class="top-rank">' + (i<3?medals[i]:(i+1)+'.') + '</div>' +
       '<div class="top-name">' + escapeHtml(c.name||'—') + '</div>' +
-      '<div class="top-phone">' + escapeHtml(c.phone||'—') + '</div>' +
+      '<div class="top-phone">' + escapeHtml(cleanPhone(c.phone)||'—') + '</div>' +
       '<div class="top-stats">' +
         '<div class="top-stat"><div class="top-stat-v">' + (c.visits||c.totalVisits||0) + '</div><div class="top-stat-l">Визитов</div></div>' +
         '<div class="top-stat"><div class="top-stat-v">' + formatPrice(c.total||c.totalSpent||0) + '</div><div class="top-stat-l">Потрачено</div></div>' +
@@ -4369,13 +4382,23 @@ function rescLoadSlots() {
   fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + encodeURIComponent(masterId) + '&date=' + encodeURIComponent(date))
     .then(function(r){ return r.json(); })
     .then(function(d){
-      var slots = d.freeSlots || [];
-      if (!slots.length) {
+      // FIX-14: getMasterSchedule не возвращает freeSlots — вычисляем сами из booked+blocked
+      var booked  = (d.booked  || d.slots  || {})[date] || [];
+      var blocked = (d.blocked || d.blocks || {})[date] || [];
+      var dayoffs = d.dayoffs || [];
+      if (dayoffs.indexOf(date) >= 0) {
+        slotSel.innerHTML = '<option value="">Мастер в выходной</option>';
+        return;
+      }
+      var freeSlots = SLOTS.filter(function(s) {
+        return booked.indexOf(s) < 0 && blocked.indexOf(s) < 0;
+      });
+      if (!freeSlots.length) {
         slotSel.innerHTML = '<option value="">Нет свободных слотов</option>';
         return;
       }
       slotSel.innerHTML = '<option value="">Выберите время</option>' +
-        slots.map(function(s){ return '<option value="' + s + '">' + s + '</option>'; }).join('');
+        freeSlots.map(function(s){ return '<option value="' + s + '">' + s + '</option>'; }).join('');
       slotSel.onchange = function() {
         if (confirmBtn) confirmBtn.disabled = !slotSel.value;
       };

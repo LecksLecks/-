@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -415,6 +414,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .rev-btn:disabled{background:rgba(201,168,76,.3);cursor:not-allowed;color:rgba(10,8,5,.5)}
 .rev-card-master-row{margin-bottom:6px}
 .rev-card-master{font-size:11px;letter-spacing:1px;color:var(--gold);background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:2px 8px;display:inline-block}
+.rev-verified{font-size:10px;letter-spacing:.5px;color:var(--green);background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.25);padding:2px 8px;display:inline-flex;align-items:center;gap:4px;margin-left:6px}
+.rev-card.verified{border-color:rgba(76,175,125,.25);border-left:3px solid var(--green)}
 .rev-empty{text-align:center;color:var(--gray);font-style:italic;padding:20px 0}
 .rev-more-btn{width:100%;background:transparent;border:1px dashed rgba(201,168,76,.3);color:var(--gold);padding:10px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif;margin-top:10px}
 
@@ -727,6 +728,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .share-sheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 16px 8px}
 .share-btn-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.1);border-radius:8px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
 .share-btn-item:active{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.35);transform:scale(.95)}
+.share-btn-ico-app{width:44px;height:44px;border-radius:22%;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .share-btn-ico{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
 .share-btn-lbl{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--gray);text-align:center}
 .share-sheet-divider{height:1px;background:rgba(201,168,76,.08);margin:4px 16px 12px}
@@ -1702,55 +1704,69 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <div class="share-sheet-card-salon">✦ BARBER STYLE · Батайск</div>
     </div>
   </div>
-  <!-- Кнопки соцсетей -->
+  <!-- Кнопки соцсетей — стиль app-иконок как на главной -->
   <div class="share-sheet-grid" id="shareSheetGrid">
     <button class="share-btn-item" onclick="shareVia('telegram')">
-      <div class="share-btn-ico" style="background:rgba(41,182,246,.15)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#29B6F6"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.008 9.464c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.871.757z"/></svg>
+      <div class="share-btn-ico-app">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sh-tg-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#40c8f5"/><stop offset="100%" stop-color="#1a8fcf"/></linearGradient>
+            <linearGradient id="sh-tg-gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0.22"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <rect x="4" y="4" width="112" height="112" rx="26" fill="url(#sh-tg-g)"/>
+          <rect x="4" y="4" width="112" height="56" rx="26" fill="url(#sh-tg-gl)"/>
+          <path d="M22,59 L90,36 L73,85 L57,71 L51,88 L44,71 Z" fill="white"/>
+          <path d="M57,71 L60,76 L73,85 Z" fill="rgba(0,60,100,0.18)"/>
+        </svg>
       </div>
       <span class="share-btn-lbl">Telegram</span>
     </button>
     <button class="share-btn-item" onclick="shareVia('whatsapp')">
-      <div class="share-btn-ico" style="background:rgba(37,211,102,.15)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm4.88 13.49c-.2.56-1.16 1.07-1.6 1.14-.43.07-.98.1-1.58-.1-.36-.12-.83-.28-1.42-.55-2.49-1.08-4.12-3.6-4.25-3.77-.13-.17-1.05-1.4-1.05-2.67s.66-1.9.9-2.16c.24-.26.52-.32.69-.32l.5.01c.16 0 .38-.06.6.46l.82 2.02c.07.16.12.35.01.56l-.3.44-.42.49c-.14.14-.28.29-.12.57.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.2 1.37.27.14.43.12.59-.07l.76-.9c.19-.25.38-.21.64-.12l2.01.95c.19.09.31.13.36.21.05.38-.13 1.09-.33 1.54z"/></svg>
+      <div class="share-btn-ico-app">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sh-wa-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60d66a"/><stop offset="100%" stop-color="#25d366"/></linearGradient>
+            <linearGradient id="sh-wa-gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0.18"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <rect x="4" y="4" width="112" height="112" rx="26" fill="url(#sh-wa-g)"/>
+          <rect x="4" y="4" width="112" height="56" rx="26" fill="url(#sh-wa-gl)"/>
+          <path d="M60,22 C38,22 20,40 20,62 C20,69 22,76 25,82 L18,102 L39,95 C45,98 51,99 58,99 C80,99 98,81 98,59 C98,40 82,22 60,22 Z" fill="white"/>
+          <path d="M46,50 C46,50 48,46 51,46 C54,46 55,48 55,50 L55,54 C55,56 54,57 52,57 C50,57 48,58 50,63 C52,68 56,72 61,74 C66,76 68,74 70,72 C72,70 74,70 76,72 L80,76 C82,78 82,80 80,82 C76,86 70,88 64,86 C56,84 48,78 42,68 C36,58 38,52 46,50 Z" fill="url(#sh-wa-g)"/>
+        </svg>
       </div>
       <span class="share-btn-lbl">WhatsApp</span>
     </button>
     <button class="share-btn-item" onclick="shareVia('vk')">
-      <div class="share-btn-ico" style="background:rgba(74,118,168,.15)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#4A76A8"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.928 13.935c.288.287.593.56.874.858.118.128.228.26.311.408.118.21.02.44-.172.453l-1.146.002c-.296.024-.533-.094-.73-.288-.158-.155-.305-.32-.46-.478-.199-.205-.41-.394-.66-.536a.687.687 0 00-.36-.098c-.267.013-.337.186-.384.42-.053.287-.065.578-.032.866.02.168-.055.215-.228.223h-.517c-.762-.04-1.467-.25-2.102-.674-.567-.378-1.01-.885-1.408-1.433-.775-1.06-1.37-2.22-1.904-3.408-.121-.267-.043-.41.252-.415l1.149-.003c.272.004.45.148.556.4.363.855.8 1.665 1.366 2.41.146.193.295.387.507.516.233.143.41.088.524-.17.073-.165.103-.344.12-.522.055-.624.062-1.248-.048-1.868-.067-.378-.267-.623-.643-.695-.088-.016-.076-.054-.033-.108.076-.093.148-.15.29-.158h1.296c.415.076.51.27.563.687l.002 2.928c.005.16.08.647.376.758.23.083.384-.12.526-.27.558-.61.956-1.326 1.312-2.07.155-.33.292-.668.422-1.01.096-.258.272-.384.555-.38l1.21.002c.363 0 .44.183.336.537-.182.625-.563 1.146-.928 1.67-.385.56-.795 1.1-1.177 1.663-.14.207-.122.314.072.496z"/></svg>
+      <div class="share-btn-ico-app">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sh-vk-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5b9cf6"/><stop offset="100%" stop-color="#3d7de8"/></linearGradient>
+            <linearGradient id="sh-vk-gl" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0.22"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <rect x="4" y="4" width="112" height="112" rx="26" fill="url(#sh-vk-g)"/>
+          <rect x="4" y="4" width="112" height="56" rx="26" fill="url(#sh-vk-gl)"/>
+          <path d="M22,43 C22,43 26,43 28,48 L35,63 C38,70 42,72 44,71 C46,70 46,62 46,62 C46,53 44,51 41,50 C39,49 40,43 49,43 L58,43 C58,43 62,43 60,49 C59,52 55,57 55,62 C55,67 58,70 63,75 L68,80 C71,83 70,86 65,86 L55,86 C55,86 50,86 45,80 C40,74 36,74 34,76 C32,78 32,86 22,86 C22,86 12,87 11,73 C11,60 15,50 22,43 Z" fill="white"/>
+        </svg>
       </div>
       <span class="share-btn-lbl">ВКонтакте</span>
     </button>
-    <button class="share-btn-item" onclick="shareVia('viber')">
-      <div class="share-btn-ico" style="background:rgba(115,71,156,.15)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#7B519C"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm4.7 15.9c-.3.8-1.5 1.5-2.4 1.7-.6.1-1.3.1-1.9-.1-.5-.2-1.2-.5-2.1-1C8.3 15 6.9 12.8 6.7 12.5c-.2-.3-.9-1.2-.9-2.3 0-1.1.6-1.6.8-1.9.2-.2.4-.3.6-.3h.4c.1 0 .3 0 .4.3l.7 1.7c.1.1.1.3 0 .5l-.3.4-.4.4c-.1.1-.2.2-.1.4.1.2.6 1 1.3 1.6.9.8 1.7 1 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.7.8c.2.1.3.1.3.2 0 .4-.1.9-.3 1.3zM16.2 11c0 .2-.2.3-.4.3s-.4-.1-.4-.3c-.1-1.8-1.5-3.2-3.4-3.3-.2 0-.3-.2-.3-.4s.2-.4.4-.4c2.3.2 4 1.9 4.1 4.1zm1.8.1c0 .2-.2.4-.4.4s-.4-.2-.4-.4c-.1-2.7-2.3-4.9-5.2-5-.2 0-.4-.2-.4-.4s.2-.4.4-.4c3.3.1 5.9 2.6 6 5.8z"/></svg>
-      </div>
-      <span class="share-btn-lbl">Viber</span>
-    </button>
     <button class="share-btn-item" onclick="shareVia('instagram')">
-      <div class="share-btn-ico" style="background:rgba(225,48,108,.15)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="url(#igGrad)"><defs><linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="25%" style="stop-color:#e6683c"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="75%" style="stop-color:#cc2366"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      <div class="share-btn-ico-app">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sh-ig-ring" x1="1" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#feda77"/><stop offset="20%" stop-color="#f8a13f"/>
+              <stop offset="42%" stop-color="#f2674a"/><stop offset="62%" stop-color="#d93c8e"/>
+              <stop offset="82%" stop-color="#b135c4"/><stop offset="100%" stop-color="#833ab4"/>
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="112" height="112" rx="26" fill="#1e1c1e"/>
+          <rect x="19" y="19" width="82" height="82" rx="20" fill="none" stroke="url(#sh-ig-ring)" stroke-width="8.5"/>
+          <circle cx="60" cy="60" r="19" fill="none" stroke="url(#sh-ig-ring)" stroke-width="7"/>
+          <circle cx="87" cy="33" r="5.5" fill="url(#sh-ig-ring)"/>
+        </svg>
       </div>
       <span class="share-btn-lbl">Instagram</span>
-    </button>
-    <button class="share-btn-item" onclick="shareVia('odnoklassniki')">
-      <div class="share-btn-ico" style="background:rgba(237,139,0,.15)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#ED8B00"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.022 5.14a2.93 2.93 0 110 5.86 2.93 2.93 0 010-5.86zm3.742 8.048c.633.612 1.478.996 2.432 1.023.375.01.667.32.657.695s-.32.667-.695.657c-1.32-.037-2.51-.524-3.43-1.312l-.716 2.952a.676.676 0 01-1.312-.318l.787-3.242a4.37 4.37 0 01-1.487-.003l.787 3.245a.676.676 0 01-1.312.318l-.716-2.952c-.92.788-2.11 1.275-3.43 1.312a.676.676 0 01-.038-1.352c.954-.027 1.8-.411 2.432-1.023a4.382 4.382 0 01-2.085-3.74.676.676 0 011.352 0 3.03 3.03 0 006.06 0 .676.676 0 011.352 0 4.382 4.382 0 01-2.085 3.74z"/></svg>
-      </div>
-      <span class="share-btn-lbl">ОК</span>
-    </button>
-    <button class="share-btn-item" onclick="shareVia('twitter')">
-      <div class="share-btn-ico" style="background:rgba(0,0,0,.2)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </div>
-      <span class="share-btn-lbl">X (Twitter)</span>
-    </button>
-    <button class="share-btn-item" onclick="shareVia('native')">
-      <div class="share-btn-ico" style="background:rgba(201,168,76,.12)">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      </div>
-      <span class="share-btn-lbl">Ещё</span>
     </button>
   </div>
   <div class="share-sheet-divider"></div>
@@ -2139,6 +2155,13 @@ function initApp() {
       goPage('booking');
       requestAnimationFrame(() => requestAnimationFrame(() => bkSelMaster(mid)));
     }
+    // Deep link: review_BK-xxxx — открыть форму отзыва с привязкой к записи
+    const rv = sp.match(/^review_(BK-.+)$/);
+    if (rv) {
+      const bkId = rv[1];
+      // Ждём загрузки initData чтобы chatId был доступен, потом открываем форму
+      setTimeout(function() { openReviewForBooking(bkId); }, 1200);
+    }
   }
 }
 
@@ -2485,30 +2508,10 @@ function shareVia(platform) {
     case 'vk':
       shareUrl = 'https://vk.com/share.php?url=' + encoded + '&title=' + encodeURIComponent(text);
       break;
-    case 'viber':
-      shareUrl = 'viber://forward?text=' + encodedText;
-      break;
     case 'instagram':
-      // Instagram не поддерживает прямой share URL — копируем ссылку и открываем app
       shareCopyLink();
       showToast('Ссылка скопирована — вставьте в Instagram', 'success', 3500);
       return;
-    case 'odnoklassniki':
-      shareUrl = 'https://connect.ok.ru/offer?url=' + encoded + '&title=' + encodeURIComponent(text);
-      break;
-    case 'twitter':
-      shareUrl = 'https://twitter.com/intent/tweet?text=' + encodedText;
-      break;
-    case 'native':
-      if (navigator.share) {
-        navigator.share({ title: 'BARBER STYLE — ' + masterName, text: text, url: url })
-          .then(() => shareSheetClose())
-          .catch(() => {});
-        return;
-      } else {
-        shareCopyLink();
-        return;
-      }
   }
 
   if (shareUrl) {
@@ -3826,8 +3829,10 @@ function loadReviews(page) {
       if (reviews.length===0 && page===0) { container.innerHTML='<div class="rev-empty">Отзывов пока нет. Будьте первым!</div>'; return; }
       container.innerHTML = reviews.map(rev => {
         let stars=''; for(let i=0;i<5;i++) stars+=i<rev.rating?'★':'☆';
-        const mb=rev.master?'<div class="rev-card-master-row"><span class="rev-card-master">✂️ '+escapeHtml(rev.master)+'</span></div>':'';
-        return '<div class="rev-card"><div class="rev-card-hdr"><span class="rev-card-name">'+escapeHtml(rev.name)+'</span><span class="rev-card-rating">'+stars+'</span></div>'+mb+'<div class="rev-card-text">'+escapeHtml(rev.text)+'</div><div class="rev-card-date">'+escapeHtml(String(rev.date||''))+'</div></div>';
+        const mb=rev.master?'<span class="rev-card-master">✂️ '+escapeHtml(rev.master)+'</span>':'';
+        const vb=rev.verified?'<span class="rev-verified">✓ Проверенный визит</span>':'';
+        const vcls=rev.verified?' verified':'';
+        return '<div class="rev-card'+vcls+'"><div class="rev-card-hdr"><span class="rev-card-name">'+escapeHtml(rev.name)+'</span><span class="rev-card-rating">'+stars+'</span></div><div class="rev-card-master-row">'+mb+vb+'</div><div class="rev-card-text">'+escapeHtml(rev.text)+'</div><div class="rev-card-date">'+escapeHtml(String(rev.date||''))+'</div></div>';
       }).join('');
       const existingBtn=ge('revMoreBtn'); if(existingBtn) existingBtn.remove();
       if (d.hasMore) {
@@ -3837,6 +3842,9 @@ function loadReviews(page) {
     })
     .catch(e=>{ console.error('loadReviews:',e); container.innerHTML='<div class="rev-empty">Ошибка загрузки отзывов</div>'; });
 }
+
+// ID привязанной записи — устанавливается через deep link
+var _reviewBookingId = '';
 
 function submitReview() {
   if (isSubmittingReview) return;
@@ -3851,14 +3859,34 @@ function submitReview() {
   const btn=ge('revSubmit'); btn.disabled=true; btn.textContent='Отправка...';
   const masterVal=(ge('revMaster')?ge('revMaster').value:'')||'';
 
-  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'addReview', name, text, rating:reviewRating, master:masterVal, chatId:getChatId()})})
+  const payload = {
+    action:'addReview',
+    name: name,
+    text: text,
+    rating: reviewRating,
+    master: masterVal,
+    chatId: getChatId(),
+    bookingId: _reviewBookingId || ''
+  };
+
+  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
     .then(r=>r.json())
     .then(d => {
       isSubmittingReview=false; btn.disabled=false; btn.textContent='Отправить отзыв';
+      if (d.error === 'already_reviewed') {
+        showToast('Вы уже оставили отзыв на этот визит','error');
+        _reviewBookingId = '';
+        closeReviewBanner();
+        return;
+      }
       if (d.error) { showToast('Ошибка: '+d.error,'error'); return; }
       ge('revName').value=''; ge('revText').value=''; if(ge('revMaster')) ge('revMaster').value='';
       setReviewRating(0);
-      showToast('✅ Спасибо за ваш отзыв!','success');
+      _reviewBookingId = '';
+      closeReviewBanner();
+      const msg = d.verified ? '✅ Спасибо за проверенный отзыв!' : '✅ Спасибо за ваш отзыв!';
+      showToast(msg, 'success');
+      haptic('success');
       loadReviews(0);
     })
     .catch(e => {
@@ -3867,6 +3895,76 @@ function submitReview() {
       showToast('Ошибка отправки. Попробуйте позже.','error');
     });
 }
+
+/* ════════════════════════════════════════════════════════
+   ОТКРЫТЬ ФОРМУ ОТЗЫВА ПО DEEP LINK review_BK-xxxx
+   Загружает данные записи, предзаполняет форму, скроллит
+   ════════════════════════════════════════════════════════ */
+function openReviewForBooking(bookingId) {
+  const chatId = getChatId();
+  if (!chatId) { showToast('Откройте через Telegram', 'error'); return; }
+
+  fetchWithTimeout(CONFIG.GS + '?action=getBookingForReview&bookingId=' + encodeURIComponent(bookingId) + '&chatId=' + encodeURIComponent(chatId))
+    .then(r => r.json())
+    .then(d => {
+      if (d.error === 'already_reviewed') {
+        showToast('Вы уже оставили отзыв на этот визит', 'success');
+        return;
+      }
+      if (d.error) {
+        showToast('Не удалось загрузить данные визита', 'error');
+        return;
+      }
+
+      const bk = d.booking;
+      _reviewBookingId = bk.bookingId;
+
+      // Переходим на главную где форма отзывов
+      goPage('home');
+
+      requestAnimationFrame(function() {
+        // Предзаполняем форму
+        const nameInp = ge('revName');
+        if (nameInp && bk.name) nameInp.value = bk.name;
+
+        const masterSel = ge('revMaster');
+        if (masterSel && bk.master) {
+          for (let i = 0; i < masterSel.options.length; i++) {
+            if (masterSel.options[i].value === bk.master) { masterSel.selectedIndex = i; break; }
+          }
+        }
+
+        // Показываем баннер привязки
+        showReviewBanner(bk);
+
+        // Скроллим к форме
+        const form = document.querySelector('.reviews-form');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    })
+    .catch(function() { showToast('Ошибка загрузки', 'error'); });
+}
+
+function showReviewBanner(bk) {
+  closeReviewBanner();
+  const form = document.querySelector('.reviews-form');
+  if (!form) return;
+  const banner = document.createElement('div');
+  banner.id = 'revBanner';
+  banner.style.cssText = 'background:rgba(76,175,125,.08);border:1px solid rgba(76,175,125,.25);border-left:3px solid #4caf7d;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--cream);line-height:1.6';
+  banner.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+    '<div><span style="color:#4caf7d;font-weight:700">✓ Отзыв привязан к визиту</span><br>' +
+    '<span style="color:var(--gray);font-size:12px">Мастер: ' + escapeHtml(bk.master) + ' · ' + escapeHtml(bk.date || '') + '</span><br>' +
+    '<span style="color:var(--gray);font-size:11px">' + escapeHtml(bk.services || '') + '</span></div>' +
+    '<button onclick="closeReviewBanner();_reviewBookingId=\'\'" style="background:none;border:none;color:var(--gray);font-size:16px;cursor:pointer;padding:0 0 0 8px">✕</button></div>';
+  form.insertBefore(banner, form.firstChild);
+}
+
+function closeReviewBanner() {
+  const b = ge('revBanner');
+  if (b) b.remove();
+}
+window.closeReviewBanner = closeReviewBanner;
 
 // Глобальные функции для onclick в innerHTML
 window.myBkCancel     = myBkCancel;
@@ -5496,7 +5594,7 @@ var _admLastSeenTs = 0;
 function admBadgeStart() {
   if (!IS_ADMIN || _admBadgeTimer) return;
   admBadgeCheck();
-  _admBadgeTimer = setInterval(admBadgeCheck, 60000); // каждую минуту
+  _admBadgeTimer = setInterval(admBadgeCheck, 180000); // каждые 3 минуты
 }
 
 function admBadgeStop() {

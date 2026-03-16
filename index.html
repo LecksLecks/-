@@ -1415,24 +1415,17 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <div class="adm-panel" id="adm-analytics">
     <div class="adm-section">
       <div class="adm-section-ttl">Период аналитики</div>
-      <div class="anl-period-tabs" id="anlPeriodTabs">
-        <button class="anl-period-btn active" data-period="day">День</button>
-        <button class="anl-period-btn" data-period="month">Месяц</button>
-        <button class="anl-period-btn" data-period="custom">Свой</button>
-      </div>
-      <div class="anl-custom-range" id="anlCustomRange" style="display:none">
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <div style="flex:1">
-            <div class="resc-lbl">От</div>
-            <input type="date" class="adm-select" id="anlDateFrom" style="width:100%;margin:0">
-          </div>
-          <div style="flex:1">
-            <div class="resc-lbl">До</div>
-            <input type="date" class="adm-select" id="anlDateTo" style="width:100%;margin:0">
-          </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <div style="flex:1">
+          <div class="resc-lbl">От</div>
+          <input type="date" class="adm-select" id="anlDateFrom" style="width:100%;margin:0">
         </div>
-        <button class="adm-btn" style="width:100%;margin-top:8px;padding:10px" onclick="admLoadAnalytics()">Применить</button>
+        <div style="flex:1">
+          <div class="resc-lbl">До</div>
+          <input type="date" class="adm-select" id="anlDateTo" style="width:100%;margin:0">
+        </div>
       </div>
+      <button class="adm-btn" style="width:100%;margin-top:8px;padding:10px" onclick="admLoadAnalytics()">Применить</button>
     </div>
     <div class="adm-section">
       <div class="adm-section-ttl">Выручка</div>
@@ -3105,7 +3098,12 @@ function admSetLiveState(live) {
 function admRefresh() {
   const btn=ge('admRefreshBtn');
   if (btn) { btn.disabled=true; btn.textContent='↻ Загрузка...'; }
+  // Сбрасываем фронтенд-кэш клиентов чтобы при следующем открытии загрузились свежие данные
+  _clCacheTime = 0;
+  _clLoaded = false;
   admPollTick();
+  // Если сейчас открыта вкладка клиентов — перезагружаем принудительно
+  if (admCurrentTab === 'clients') clLoad(true);
   setTimeout(() => { if (btn) { btn.disabled=false; btn.textContent='↻ Обновить'; } }, 1000);
 }
 
@@ -3433,29 +3431,14 @@ function showConfirmModal(title, text, bookings, onConfirm) {
 }
 
 // ── Период аналитики ──
-var _anlPeriod = 'day';
-var _anlTabsInited = false; // FIX-6: не вешаем обработчики повторно
+var _anlTabsInited = false;
 
 function anlInitPeriodTabs() {
-  // FIX-6: инициализируем обработчики только один раз
-  if (!_anlTabsInited) {
-    document.querySelectorAll('.anl-period-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.anl-period-btn').forEach(function(b) { b.classList.remove('active'); });
-        this.classList.add('active');
-        _anlPeriod = this.dataset.period;
-        var customRange = ge('anlCustomRange');
-        if (customRange) customRange.style.display = _anlPeriod === 'custom' ? 'block' : 'none';
-        if (_anlPeriod !== 'custom') admLoadAnalytics();
-      });
-    });
-    _anlTabsInited = true;
-  }
-  // Инициализируем даты для custom (каждый раз)
+  // Инициализируем даты (каждый раз при открытии вкладки)
   var today = formatDate_iso(new Date());
   var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
   if (fromEl && !fromEl.value) fromEl.value = today;
-  if (toEl && !toEl.value) toEl.value = today;
+  if (toEl   && !toEl.value)   toEl.value   = today;
 }
 
 // FIX-5: человеческий формат даты для метки периода
@@ -3472,23 +3455,15 @@ function admLoadAnalytics() {
   var chatId = getChatId();
 
   var today = formatDate_iso(new Date());
-  var dateFrom = today, dateTo = today;
-
-  if (_anlPeriod === 'month') {
-    var now = new Date();
-    dateFrom = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-01';
-    dateTo = today;
-  } else if (_anlPeriod === 'custom') {
-    var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
-    if (fromEl && fromEl.value) dateFrom = fromEl.value;
-    if (toEl && toEl.value) dateTo = toEl.value;
-    if (dateTo < dateFrom) dateTo = dateFrom;
-  }
+  var fromEl = ge('anlDateFrom'), toEl = ge('anlDateTo');
+  var dateFrom = (fromEl && fromEl.value) ? fromEl.value : today;
+  var dateTo   = (toEl   && toEl.value)   ? toEl.value   : today;
+  if (dateTo < dateFrom) dateTo = dateFrom;
 
   var url = CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)
-    + '&period=' + encodeURIComponent(_anlPeriod)
+    + '&period=custom'
     + '&dateFrom=' + encodeURIComponent(dateFrom)
-    + '&dateTo=' + encodeURIComponent(dateTo);
+    + '&dateTo='   + encodeURIComponent(dateTo);
 
   fetchWithTimeout(url)
     .then(function(r) { return r.json(); })
@@ -3498,57 +3473,27 @@ function admLoadAnalytics() {
         return;
       }
 
-      // ── Метка периода ──
-      var periodLabel = '';
-      var mn2 = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
-      if (_anlPeriod === 'day') {
-        periodLabel = 'За сегодня, ' + anlFormatDateLabel(today);
-      } else if (_anlPeriod === 'month') {
-        periodLabel = 'За ' + mn2[new Date().getMonth()] + ' ' + new Date().getFullYear();
-      } else {
-        periodLabel = anlFormatDateLabel(dateFrom) + ' — ' + anlFormatDateLabel(dateTo);
-      }
-
-      // ── Карточки выручки ──
+      // ── Блок выручки — всегда показываем сегодня / неделю / месяц (не трогаем) ──
       if (rev) {
-        var cards = '';
-        if (_anlPeriod === 'day') {
-          cards =
-            '<div class="adm-stat"><div class="adm-lbl">Выручка сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">За неделю</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">Записей сегодня</div><div class="adm-val" id="revTotal">0</div></div>';
-        } else if (_anlPeriod === 'month') {
-          cards =
-            '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">За неделю</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">Сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
-            '<div class="adm-stat"><div class="adm-lbl">Записей за месяц</div><div class="adm-val" id="revTotal">0</div></div>';
-        } else {
-          cards =
-            '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">Выручка за период</div><div class="adm-val" id="revCustom">0 ₽</div></div>' +
-            '<div class="adm-stat" style="grid-column:span 2"><div class="adm-lbl">Записей за период</div><div class="adm-val" id="revTotal">0</div></div>';
-        }
+        var periodLabel = dateFrom === dateTo
+          ? anlFormatDateLabel(dateFrom)
+          : anlFormatDateLabel(dateFrom) + ' — ' + anlFormatDateLabel(dateTo);
+
+        var cards =
+          '<div class="adm-stat"><div class="adm-lbl">Выручка сегодня</div><div class="adm-val" id="revToday">0 ₽</div></div>' +
+          '<div class="adm-stat"><div class="adm-lbl">За неделю</div><div class="adm-val" id="revWeek">0 ₽</div></div>' +
+          '<div class="adm-stat"><div class="adm-lbl">За месяц</div><div class="adm-val" id="revMonth">0 ₽</div></div>' +
+          '<div class="adm-stat"><div class="adm-lbl">За период</div><div class="adm-val" id="revCustom">0 ₽</div></div>';
 
         rev.innerHTML =
           '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">' + escapeHtml(periodLabel) + '</div>' +
           '<div class="adm-stat-grid">' + cards + '</div>';
 
         setTimeout(function() {
-          if (_anlPeriod === 'day') {
-            if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
-            if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
-            if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
-            if (ge('revTotal'))  animateCount(ge('revTotal'),    d.totalBookingsCustom||0, 800);
-          } else if (_anlPeriod === 'month') {
-            if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
-            if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
-            if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
-            if (ge('revTotal'))  animateCount(ge('revTotal'),    d.totalBookingsCustom||0, 800);
-          } else {
-            if (ge('revCustom')) animateRevenue(ge('revCustom'), d.revenueCustom||0, ' ₽');
-            if (ge('revTotal'))  animateCount(ge('revTotal'),    d.totalBookingsCustom||0, 800);
-          }
+          if (ge('revToday'))  animateRevenue(ge('revToday'),  d.revenueToday||0,  ' ₽');
+          if (ge('revWeek'))   animateRevenue(ge('revWeek'),   d.revenueWeek||0,   ' ₽');
+          if (ge('revMonth'))  animateRevenue(ge('revMonth'),  d.revenueMonth||0,  ' ₽');
+          if (ge('revCustom')) animateRevenue(ge('revCustom'), d.revenueCustom||0, ' ₽');
         }, 100);
       }
 
@@ -3566,7 +3511,6 @@ function admLoadAnalytics() {
         if (ms.length === 0) {
           mst.innerHTML = '<div class="adm-loading">Нет данных за период</div>';
         } else {
-          // Считаем максимум выручки для полоски
           var maxRev = ms.reduce(function(mx, m){ return Math.max(mx, m.revenue||0); }, 0);
           mst.innerHTML = ms.map(function(m) {
             var pct = maxRev > 0 ? Math.round((m.revenue||0) / maxRev * 100) : 0;
@@ -3902,6 +3846,8 @@ let _clSearch = '';
 let _clLoaded = false;
 let _clDebounce = null;
 let _clExpanded = {}; // развёрнутые карточки
+let _clCacheTime = 0; // время последней загрузки (ms)
+const _CL_CACHE_TTL = 120000; // 2 минуты
 
 function clInit() {
   // Кнопки сортировки
@@ -3935,10 +3881,18 @@ function clInit() {
   }
   if (searchBtn) searchBtn.onclick = doSearch;
 
-  if (!_clLoaded) clLoad();
+  clLoad();
 }
 
-function clLoad() {
+function clLoad(force) {
+  const now = Date.now();
+  // Используем кэш если данные свежие и не принудительная перезагрузка
+  if (!force && _clLoaded && _clAllClients.length > 0 && (now - _clCacheTime) < _CL_CACHE_TTL) {
+    clRenderSummary();
+    clRender();
+    return;
+  }
+
   const chatId = getChatId();
   const listEl = ge('clList');
   if (listEl) listEl.innerHTML = '<div class="adm-loading">Загрузка клиентов...</div>';
@@ -3954,6 +3908,7 @@ function clLoad() {
       }
       _clAllClients = d.clients || [];
       _clLoaded = true;
+      _clCacheTime = Date.now();
       clRenderSummary();
       clRender();
     })

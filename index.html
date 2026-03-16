@@ -772,7 +772,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* П.6 REVEAL АНИМАЦИЯ ЗАГОЛОВКОВ */
 @keyframes revealUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.sec-ttl .reveal-word{display:inline-block;opacity:0;animation:revealUp .5s ease forwards}
+.sec-ttl .reveal-word{display:inline-block;margin-right:0.25em;opacity:0;animation:revealUp .5s ease forwards}
 .sec-lbl.reveal-lbl{opacity:0;animation:revealUp .4s ease .1s forwards}
 
 /* П.7 ОНЛАЙН ИНДИКАТОР */
@@ -1520,14 +1520,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <div class="cl-search-row">
         <input type="text" class="cl-search-inp" id="clSearchInput" placeholder="Имя, фамилия или телефон...">
         <button class="cl-search-btn" id="clSearchBtn">🔍</button>
-      </div>
-      <!-- Сортировка -->
-      <div class="cl-sort-row">
-        <span class="cl-sort-lbl">Сортировка:</span>
-        <button class="cl-sort active" data-sort="visits">Визиты</button>
-        <button class="cl-sort" data-sort="spent">Выручка</button>
-        <button class="cl-sort" data-sort="last">Последний</button>
-        <button class="cl-sort" data-sort="name">Имя</button>
       </div>
       <!-- Сводка -->
       <div class="cl-summary" id="clSummary"></div>
@@ -3967,7 +3959,7 @@ function bcLoadHistory() {
    ──────────────────────────────────────────────────────────── */
 
 let _clAllClients = [];
-let _clSort = 'visits';
+let _clSort = 'newest';
 let _clSearch = '';
 let _clLoaded = false;
 let _clDebounce = null;
@@ -3976,16 +3968,6 @@ let _clCacheTime = 0; // время последней загрузки (ms)
 const _CL_CACHE_TTL = 120000; // 2 минуты
 
 function clInit() {
-  // Кнопки сортировки
-  document.querySelectorAll('.cl-sort').forEach(btn => {
-    btn.onclick = function() {
-      document.querySelectorAll('.cl-sort').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      _clSort = this.dataset.sort;
-      clRender();
-    };
-  });
-
   // Поиск с debounce 300ms — живой, без нажатия кнопки
   const searchInput = ge('clSearchInput');
   const searchBtn   = ge('clSearchBtn');
@@ -4137,8 +4119,9 @@ function clRender() {
     });
   }
 
-  // Сортировка
+  // Сортировка — новые клиенты сверху
   clients = clients.slice().sort((a,b) => {
+    if (_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?1:(b.firstVisit||'')<(a.firstVisit||'')?-1:0;
     if (_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
     if (_clSort==='spent')  return (b.totalSpent||0)-(a.totalSpent||0);
     if (_clSort==='last')   return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
@@ -4189,6 +4172,7 @@ function clRender() {
           '<div class="cl-name">' + nameHl + '</div>' +
           '<div class="cl-phone">' + phoneHl + '</div>' +
           (c.telegram && !c.telegram.startsWith('#') ? '<div class="cl-tg">' + escapeHtml(c.telegram) + '</div>' : '') +
+          (c.firstVisit ? '<div style="font-size:11px;color:rgba(138,125,107,.5);margin-top:2px">Записался ' + escapeHtml(formatDate(c.firstVisit, 'short')) + '</div>' : '') +
         '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">' +
           '<span class="cl-badge ' + escapeHtml(c.category||'новый') + '">' + escapeHtml(c.category||'новый') + '</span>' +
@@ -4240,15 +4224,30 @@ function clRender() {
 function clCallClient(phone) {
   var digits = String(phone || '').replace(/\D/g, '');
   if (!digits) { showToast('Нет номера телефона', 'error'); return; }
-  // Нормализуем: 8XXXXXXXXXX → 7XXXXXXXXXX
   if (digits.charAt(0) === '8') digits = '7' + digits.slice(1);
-  var telUrl = 'tel:+' + digits;
+  var formatted = '+' + digits;
   haptic('light');
-  // В Telegram WebApp обычные tel: ссылки не работают — используем tg.openLink
-  if (tg && tg.openLink) {
-    tg.openLink(telUrl);
+
+  // Telegram WebApp не поддерживает tel: ссылки напрямую
+  // Используем showPopup — пользователь нажимает кнопку и Telegram открывает звонок
+  if (tg && tg.showPopup) {
+    tg.showPopup({
+      title: 'Позвонить клиенту',
+      message: formatted,
+      buttons: [
+        { id: 'call', type: 'default', text: '📞 Позвонить' },
+        { id: 'cancel', type: 'cancel', text: 'Отмена' }
+      ]
+    }, function(btnId) {
+      if (btnId === 'call') {
+        // После подтверждения открываем через openLink
+        if (tg.openLink) tg.openLink('tel:' + formatted);
+        else window.location.href = 'tel:' + formatted;
+      }
+    });
   } else {
-    window.location.href = telUrl;
+    // Fallback для браузера
+    window.location.href = 'tel:' + formatted;
   }
 }
 window.clCallClient = clCallClient;
@@ -4358,6 +4357,7 @@ function clToggleCard(cardKey) {
                (qDigits.length>=3 && phone.includes(qDigits)) || tg.includes(q);
       });
       clients = clients.slice().sort((a,b)=>{
+        if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?1:(b.firstVisit||'')<(a.firstVisit||'')?-1:0;
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);
         if(_clSort==='last') return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;
@@ -4366,6 +4366,7 @@ function clToggleCard(cardKey) {
       });
     } else {
       clients = clients.slice().sort((a,b)=>{
+        if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?1:(b.firstVisit||'')<(a.firstVisit||'')?-1:0;
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);
         if(_clSort==='last') return (b.lastVisit||'')>(a.lastVisit||'')?-1:1;

@@ -6,6 +6,9 @@
 <!-- ВАЖНО: замените значение gs-url на ваш реальный GAS endpoint после деплоя -->
 <meta name="gs-url" content="https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec">
 <title>BARBER STYLE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://script.google.com">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -2014,14 +2017,22 @@ function initApp() {
   if (bkPhone) bkPhone.addEventListener('input', onPhoneInput);
 
   initTabs();
-  checkUserRole();
-  renderMasters();
-  renderPrices();
-  bkInit();
   initReviews();
-  loadAppData();
-  initWowEffects();
-  initMegaWow();
+
+  // Пробуем отрисовать из кэша сразу — до ответа сервера
+  const cached = loadInitCache();
+  if (cached) {
+    applyInitData(cached);
+  }
+
+  // Один запрос вместо двух (getUserInfo + getAppData)
+  loadInitData();
+
+  // WOW-эффекты откладываем — не блокируют первый рендер
+  setTimeout(function() {
+    initWowEffects();
+    initMegaWow();
+  }, 800);
 
   // FIX-09: deep link ?startapp=master_N
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
@@ -2035,6 +2046,75 @@ function initApp() {
   }
 }
 
+var _INIT_CACHE_KEY = 'bs_init_cache';
+var _INIT_CACHE_TTL = 10 * 60 * 1000; // 10 минут
+
+function loadInitCache() {
+  try {
+    var raw = localStorage.getItem(_INIT_CACHE_KEY);
+    if (!raw) return null;
+    var obj = JSON.parse(raw);
+    if (!obj || !obj.ts || (Date.now() - obj.ts) > _INIT_CACHE_TTL) return null;
+    return obj.data;
+  } catch(e) { return null; }
+}
+
+function saveInitCache(data) {
+  try {
+    localStorage.setItem(_INIT_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data }));
+  } catch(e) {}
+}
+
+function applyInitData(d) {
+  // Применяем данные приложения
+  if (d.masters && d.masters.length > 0) MASTERS = d.masters;
+  if (d.prices && Object.keys(d.prices).length > 0) PRICES = d.prices;
+  if (d.ratings) MASTER_RATINGS = d.ratings;
+  renderMasters(); renderPrices(); renderMsGrid();
+
+  // Применяем роль
+  if (d.role && (d.role === 'admin' || d.role === 'master')) {
+    USER_ROLE = d.role;
+    USER_INFO = d.master || null;
+    IS_ADMIN  = true;
+    const admTab = ge('tab-admin');
+    if (admTab) admTab.style.display = '';
+    const badge = ge('userRoleBadge');
+    if (badge) badge.innerHTML = '<span class="role-badge ' + d.role + '">' +
+      (d.role === 'admin' ? 'Администратор' : 'Мастер') + '</span>';
+  }
+}
+
+function loadInitData() {
+  const chatId = getChatId();
+  const url = CONFIG.GS + '?action=getInitData' + (chatId ? '&chatId=' + encodeURIComponent(chatId) : '');
+  fetchWithTimeout(url)
+    .then(r => r.json())
+    .then(d => {
+      applyInitData(d);
+      saveInitCache(d);
+      // Запускаем бейдж после получения роли
+      setTimeout(function(){ if (IS_ADMIN) admBadgeStart(); }, 1000);
+      // Предзагружаем слоты в фоне — переход на Запись будет мгновенным
+      setTimeout(function() {
+        if (Object.keys(allMastersData).length === 0) {
+          fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
+            .then(r => r.json())
+            .then(d => {
+              if (d.masters) {
+                allMastersData = d.masters;
+                _allMastersDataTs = Date.now();
+              }
+            })
+            .catch(function(){});
+        }
+      }, 2000);
+    })
+    .catch(e => {
+      console.warn('loadInitData failed, using cache:', e);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   try { initApp(); } catch(e) {
     console.error('initApp:', e);
@@ -2046,23 +2126,9 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ────────────────────────────────────────────────────────────
    РОЛИ
    ──────────────────────────────────────────────────────────── */
-async function checkUserRole() {
-  const chatId = getChatId();
-  if (!chatId) return;
-  try {
-    const response = await fetchWithTimeout(CONFIG.GS + '?action=getUserInfo&chatId=' + chatId);
-    const data = await response.json();
-    USER_ROLE = data.role || 'client';
-    USER_INFO = data.master || null;
-    if (USER_ROLE === 'admin' || USER_ROLE === 'master') {
-      IS_ADMIN = true;
-      const admTab = ge('tab-admin');
-      if (admTab) admTab.style.display = '';
-      const badge = ge('userRoleBadge');
-      if (badge) badge.innerHTML = '<span class="role-badge ' + USER_ROLE + '">' + (USER_ROLE === 'admin' ? 'Администратор' : 'Мастер') + '</span>';
-    }
-  } catch(e) { console.error('checkUserRole:', e); }
-}
+// Заменены на loadInitData — оставлены для обратной совместимости
+function checkUserRole() { /* объединено в loadInitData */ }
+function loadAppData()   { /* объединено в loadInitData */ }
 
 /* ────────────────────────────────────────────────────────────
    НАВИГАЦИЯ
@@ -2147,18 +2213,6 @@ function goPage(id) {
 /* ────────────────────────────────────────────────────────────
    МАСТЕРА И ЦЕНЫ
    ──────────────────────────────────────────────────────────── */
-function loadAppData() {
-  fetchWithTimeout(CONFIG.GS + '?action=getAppData')
-    .then(r => r.json())
-    .then(d => {
-      if (d.masters && d.masters.length > 0) MASTERS = d.masters;
-      if (d.prices && Object.keys(d.prices).length > 0) PRICES = d.prices;
-      if (d.ratings) MASTER_RATINGS = d.ratings;
-      renderMasters(); renderPrices(); renderMsGrid();
-    })
-    .catch(e => console.warn('loadAppData: резервные данные', e));
-}
-
 function getMasterRatingHtml(masterName) {
   const r = MASTER_RATINGS[masterName];
   if (!r || r.count === 0) return '<div class="m-rating" style="color:rgba(138,125,107,.3);font-size:11px">Нет отзывов</div>';
@@ -2771,7 +2825,7 @@ function bkSubmit() {
     // formOpenedAt убран: клиентская временная метка легко подделывается ботами
   };
 
-  fetchWithTimeout(CONFIG.GS, {method:'POST', mode:'cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
+  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
     .then(r => r.json())
     .then(d => {
       btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
@@ -3659,7 +3713,7 @@ function submitReview() {
   const btn=ge('revSubmit'); btn.disabled=true; btn.textContent='Отправка...';
   const masterVal=(ge('revMaster')?ge('revMaster').value:'')||'';
 
-  fetchWithTimeout(CONFIG.GS, {method:'POST', mode:'cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'addReview', name, text, rating:reviewRating, master:masterVal, chatId:getChatId()})})
+  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'addReview', name, text, rating:reviewRating, master:masterVal, chatId:getChatId()})})
     .then(r=>r.json())
     .then(d => {
       isSubmittingReview=false; btn.disabled=false; btn.textContent='Отправить отзыв';
@@ -4101,14 +4155,19 @@ function clRender() {
 
   // Счётчик результатов
   const todayMs = Date.now();
+  const PAGE_SIZE = 20;
   let html = '';
+  let _clRenderClients = clients; // сохраняем для "Показать ещё"
 
   if (q) {
     html += '<div style="font-size:11px;color:var(--gray);letter-spacing:.5px;margin-bottom:8px;padding:0 2px">' +
       'Найдено: <b style="color:var(--gold)">' + clients.length + '</b></div>';
   }
 
-  clients.forEach((c, idx) => {
+  // Рендерим только первые PAGE_SIZE клиентов
+  const visibleClients = clients.slice(0, PAGE_SIZE);
+
+  visibleClients.forEach((c, idx) => {
     const lastVisitStr   = c.lastVisit ? formatDate(c.lastVisit, 'short') : '—';
     const daysSinceLast  = c.lastVisit ? Math.floor((todayMs - new Date(c.lastVisit).getTime()) / 86400000) : null;
     const isLost         = daysSinceLast !== null && daysSinceLast >= 20;
@@ -4143,10 +4202,10 @@ function clRender() {
       '</div>' +
       '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>' +
       (phoneClean ? '<div style="margin-top:10px;border-top:1px solid rgba(201,168,76,.08);padding-top:10px">' +
-        '<a href="tel:+' + phoneClean.replace(/\D/g,'') + '" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid rgba(76,175,125,.3);color:#4caf7d;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:background .15s" onclick="haptic(\'light\')">' +
+        '<button onclick="clCallClient(\'' + escapeHtml(phoneClean) + '\')" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid rgba(76,175,125,.3);color:#4caf7d;background:transparent;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer">' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>' +
           'Позвонить' +
-        '</a>' +
+        '</button>' +
       '</div>' : '');
 
     // Раскрывающаяся история записей
@@ -4159,13 +4218,107 @@ function clRender() {
     html += '</div>';
   });
 
+  // Кнопка "Показать ещё" если клиентов больше PAGE_SIZE
+  if (clients.length > PAGE_SIZE) {
+    html += '<button onclick="clRenderMore(this)" data-offset="' + PAGE_SIZE + '" ' +
+      'style="width:100%;margin-top:8px;padding:12px;background:transparent;border:1px solid rgba(201,168,76,.2);' +
+      'color:rgba(201,168,76,.7);font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:2px;' +
+      'text-transform:uppercase;cursor:pointer">' +
+      'Показать ещё (' + (clients.length - PAGE_SIZE) + ')' +
+    '</button>';
+  }
+
   listEl.innerHTML = html;
+  listEl._clClients = clients; // сохраняем для "Показать ещё"
 
   // Если уже были раскрытые карточки — подгружаем их историю
   Object.keys(_clExpanded).forEach(key => {
     if (_clExpanded[key]) clLoadHistory(key, _clExpanded[key]);
   });
 }
+
+function clCallClient(phone) {
+  var digits = String(phone || '').replace(/\D/g, '');
+  if (!digits) { showToast('Нет номера телефона', 'error'); return; }
+  // Нормализуем: 8XXXXXXXXXX → 7XXXXXXXXXX
+  if (digits.charAt(0) === '8') digits = '7' + digits.slice(1);
+  var telUrl = 'tel:+' + digits;
+  haptic('light');
+  // В Telegram WebApp обычные tel: ссылки не работают — используем tg.openLink
+  if (tg && tg.openLink) {
+    tg.openLink(telUrl);
+  } else {
+    window.location.href = telUrl;
+  }
+}
+window.clCallClient = clCallClient;
+
+function clRenderMore(btn) {
+  const listEl = ge('clList');
+  if (!listEl || !listEl._clClients) return;
+  const clients  = listEl._clClients;
+  const offset   = parseInt(btn.dataset.offset) || 20;
+  const PAGE_SIZE = 20;
+  const todayMs  = Date.now();
+  const q = _clSearch.toLowerCase().trim();
+  let html = '';
+
+  clients.slice(offset, offset + PAGE_SIZE).forEach((c, i) => {
+    const idx = offset + i;
+    const lastVisitStr  = c.lastVisit ? formatDate(c.lastVisit, 'short') : '—';
+    const daysSinceLast = c.lastVisit ? Math.floor((todayMs - new Date(c.lastVisit).getTime()) / 86400000) : null;
+    const isLost        = daysSinceLast !== null && daysSinceLast >= 20;
+    const lostBadge     = isLost ? '<span style="font-size:9px;color:#e05050;margin-left:4px">⚠ ' + daysSinceLast + ' дн.</span>' : '';
+    const phoneClean    = cleanPhone(c.phone || '');
+    const nameHl        = q ? clHighlight(c.name || '—', q) : escapeHtml(c.name || '—');
+    const phoneHl       = (q && phoneClean) ? clHighlight(phoneClean, q) : escapeHtml(phoneClean || '—');
+    const cardKey       = 'cl-card-' + idx;
+    const isOpen        = !!_clExpanded[cardKey];
+
+    html += '<div class="cl-card" id="' + cardKey + '">' +
+      '<div class="cl-card-top" onclick="clToggleCard(\'' + cardKey + '\')" style="cursor:pointer">' +
+        '<div>' +
+          '<div class="cl-name">' + nameHl + '</div>' +
+          '<div class="cl-phone">' + phoneHl + '</div>' +
+          (c.telegram && !c.telegram.startsWith('#') ? '<div class="cl-tg">' + escapeHtml(c.telegram) + '</div>' : '') +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">' +
+          '<span class="cl-badge ' + escapeHtml(c.category||'новый') + '">' + escapeHtml(c.category||'новый') + '</span>' +
+          '<span style="font-size:10px;color:var(--gray)">' + (isOpen ? '▲' : '▼') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cl-stats">' +
+        '<div class="cl-stat"><div class="cl-stat-val visits">' + (c.totalBookings||0) + '</div><div class="cl-stat-lbl">Визитов</div></div>' +
+        '<div class="cl-stat"><div class="cl-stat-val gold">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +
+        '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
+      '</div>' +
+      '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>' +
+      (phoneClean ? '<div style="margin-top:10px;border-top:1px solid rgba(201,168,76,.08);padding-top:10px">' +
+        '<button onclick="clCallClient(\'' + escapeHtml(phoneClean) + '\')" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid rgba(76,175,125,.3);color:#4caf7d;background:transparent;font-family:\'Cormorant Garamond\',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>' +
+          'Позвонить</button></div>' : '') +
+      '<div class="cl-history" id="' + cardKey + '-hist" style="display:none">' +
+        '<div class="cl-hist-ttl">История записей</div>' +
+        '<div id="' + cardKey + '-bk" class="cl-hist-list"><div class="adm-loading" style="padding:8px 0;font-size:12px">Загрузка истории...</div></div>' +
+      '</div>' +
+    '</div>';
+  });
+
+  var newOffset = offset + PAGE_SIZE;
+  if (newOffset < clients.length) {
+    html += '<button onclick="clRenderMore(this)" data-offset="' + newOffset + '" ' +
+      'style="width:100%;margin-top:8px;padding:12px;background:transparent;border:1px solid rgba(201,168,76,.2);' +
+      'color:rgba(201,168,76,.7);font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:2px;' +
+      'text-transform:uppercase;cursor:pointer">' +
+      'Показать ещё (' + (clients.length - newOffset) + ')' +
+    '</button>';
+  }
+
+  btn.insertAdjacentHTML('beforebegin', html);
+  btn.remove();
+  haptic('light');
+}
+window.clRenderMore = clRenderMore;
 
 // Подсветка совпадения
 function clHighlight(text, query) {
@@ -4340,39 +4493,12 @@ window.worksLightboxBgClick = worksLightboxBgClick;
    WOW EFFECTS JS
    ═══════════════════════════════════════════════════════════ */
 
-/* П.2: Фоновые частицы */
-function initBgParticles() {
-  const container = ge('bgParticles');
-  if (!container) return;
-  for (let i = 0; i < 14; i++) {
-    const p = document.createElement('div');
-    p.className = 'bg-particle';
-    const size = 1.5 + Math.random() * 2.5;
-    const left = Math.random() * 100;
-    const duration = 12 + Math.random() * 20;
-    const delay = Math.random() * 15;
-    p.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + left + '%;bottom:-10px;opacity:' + (0.15 + Math.random() * 0.25) + ';animation-duration:' + duration + 's;animation-delay:' + delay + 's';
-    container.appendChild(p);
-  }
+/* ИНИЦИАЛИЗАЦИЯ ВСЕХ WOW */
+function initWowEffects() {
+  initRipple();
+  initMasterTilt();
+  setTimeout(updateHomeSlotCount, 3000);
 }
-
-/* П.1: Параллакс главной */
-function initParallax() {
-  const hero = document.querySelector('.home-hero');
-  if (!hero) return;
-  const page = ge('page-home');
-  if (!page) return;
-  page.addEventListener('scroll', function() {
-    const y = page.scrollTop || window.scrollY;
-    hero.style.transform = 'translateY(' + (y * 0.35) + 'px)';
-  }, {passive: true});
-  window.addEventListener('scroll', function() {
-    const y = window.scrollY;
-    hero.style.transform = 'translateY(' + (y * 0.35) + 'px)';
-  }, {passive: true});
-}
-
-/* П.5: Touch ripple */
 function initRipple() {
   document.addEventListener('touchstart', function(e) {
     const t = e.touches[0];
@@ -5358,7 +5484,7 @@ function admBadgeClear() {
 }
 
 // Запускаем бейдж после инициализации приложения
-setTimeout(function(){ if (IS_ADMIN) admBadgeStart(); }, 3000);
+// admBadgeStart вызывается из loadInitData после получения роли
 
 /* ════════════════════════════════════════════════════════
    П.8: БЫСТРОЕ СООБЩЕНИЕ КЛИЕНТУ

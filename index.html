@@ -597,21 +597,24 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cl-sum-card{border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02);padding:10px;text-align:center}
 .cl-sum-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold)}
 .cl-sum-lbl{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-top:2px}
-.cl-card{border:1px solid rgba(201,168,76,.1);background:rgba(201,168,76,.02);margin-bottom:8px;padding:12px 14px;transition:border-color .15s}
+.cl-card{border:1px solid rgba(201,168,76,.1);background:rgba(201,168,76,.02);margin-bottom:8px;padding:14px 16px;transition:border-color .15s}
 .cl-card:active{border-color:rgba(201,168,76,.35)}
-.cl-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-.cl-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--cream)}
-.cl-badge{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:2px}
+.cl-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.cl-name{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--cream);line-height:1.2}
+.cl-badge{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:2px}
 .cl-badge.vip{background:rgba(201,168,76,.2);color:var(--gold);border:1px solid rgba(201,168,76,.3)}
 .cl-badge.постоянный{background:rgba(76,175,125,.15);color:#4caf7d;border:1px solid rgba(76,175,125,.3)}
 .cl-badge.активный{background:rgba(58,130,246,.12);color:#60a5fa;border:1px solid rgba(58,130,246,.2)}
 .cl-badge.новый{background:rgba(138,125,107,.12);color:var(--gray);border:1px solid rgba(138,125,107,.2)}
-.cl-phone{font-size:13px;color:var(--gold);margin-bottom:6px}
-.cl-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.cl-phone{font-size:20px;font-weight:700;color:rgba(201,168,76,.85);margin-bottom:3px;letter-spacing:.5px}
+.cl-tg{font-size:14px;color:rgba(138,125,107,.6);margin-bottom:8px}
+.cl-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border-top:1px solid rgba(201,168,76,.08);padding-top:14px;margin-top:4px}
 .cl-stat{text-align:center;padding:6px 4px;background:rgba(0,0,0,.15);border-radius:2px}
-.cl-stat-val{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--cream)}
-.cl-stat-lbl{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--gray);margin-top:1px}
-.cl-last{font-size:11px;color:var(--gray);margin-top:6px;letter-spacing:.5px}
+.cl-stat-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--cream)}
+.cl-stat-val.visits{font-size:28px}
+.cl-stat-val.gold{color:var(--gold)}
+.cl-stat-lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-top:5px}
+.cl-last{font-size:14px;color:var(--gray);margin-top:10px;border-top:1px solid rgba(201,168,76,.08);padding-top:10px;letter-spacing:.2px}
 .cl-history{margin-top:10px;border-top:1px solid rgba(201,168,76,.1);padding-top:10px}
 .cl-hist-ttl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
 .cl-hist-list{display:flex;flex-direction:column;gap:8px}
@@ -4007,21 +4010,20 @@ function clRender() {
       '<div class="cl-card-top" onclick="clToggleCard(\'' + cardKey + '\')" style="cursor:pointer">' +
         '<div>' +
           '<div class="cl-name">' + nameHl + '</div>' +
-          '<div class="cl-phone">' + phoneHl +
-            (c.telegram && !c.telegram.startsWith('#') ? ' · <span style="color:rgba(201,168,76,.6)">' + escapeHtml(c.telegram) + '</span>' : '') +
-          '</div>' +
+          '<div class="cl-phone">' + phoneHl + '</div>' +
+          (c.telegram && !c.telegram.startsWith('#') ? '<div class="cl-tg">' + escapeHtml(c.telegram) + '</div>' : '') +
         '</div>' +
-        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">' +
           '<span class="cl-badge ' + escapeHtml(c.category||'новый') + '">' + escapeHtml(c.category||'новый') + '</span>' +
           '<span style="font-size:10px;color:var(--gray)">' + (isOpen ? '▲' : '▼') + '</span>' +
         '</div>' +
       '</div>' +
       '<div class="cl-stats">' +
-        '<div class="cl-stat"><div class="cl-stat-val">' + (c.totalBookings||0) + '</div><div class="cl-stat-lbl">Визитов</div></div>' +
-        '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +
+        '<div class="cl-stat"><div class="cl-stat-val visits">' + (c.totalBookings||0) + '</div><div class="cl-stat-lbl">Визитов</div></div>' +
+        '<div class="cl-stat"><div class="cl-stat-val gold">' + formatPrice(c.avgCheck||0) + '</div><div class="cl-stat-lbl">Ср. чек</div></div>' +
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
       '</div>' +
-      '<div class="cl-last">Последний визит: ' + escapeHtml(lastVisitStr) + lostBadge + '</div>';
+      '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>';
 
     // Раскрывающаяся история записей
     html += '<div class="cl-history" id="' + cardKey + '-hist" style="display:' + (isOpen ? 'block' : 'none') + '">';

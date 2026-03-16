@@ -2510,12 +2510,7 @@ function shareVia(platform) {
       break;
     case 'instagram':
       shareCopyLink();
-      showToast('Ссылка скопирована — вставьте в Direct или Stories', 'success', 3500);
-      var igUrl = 'https://www.instagram.com/barber_stayle161';
-      setTimeout(function() {
-        if (tg && tg.openLink) { tg.openLink(igUrl); } else { window.open(igUrl, '_blank'); }
-        shareSheetClose();
-      }, 600);
+      showToast('Ссылка на бота скопирована — вставьте в Direct или Stories', 'success', 3500);
       return;
   }
 

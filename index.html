@@ -3283,6 +3283,8 @@ function admLoadSummary() {
       html += renderBookingCard(b, nowMin, todayStr);
     });
 
+    // FIX-12: передаём уже загруженный счётчик в admBadgeClear — доп. запроса не будет
+    admBadgeClear(bookings.length);
     container.innerHTML = html;
   })
   .catch(function(e) {
@@ -5403,10 +5405,19 @@ function admBadgeShow(count) {
   badge.style.display = 'flex';
 }
 
-function admBadgeClear() {
+// FIX-12: принимает опциональный knownCount — если admLoadSummary уже загрузила
+// данные, передаём счётчик сюда и не делаем дублирующий запрос getBookings.
+function admBadgeClear(knownCount) {
   var badge = ge('admTabBadge');
   if (badge) badge.style.display = 'none';
-  // Запоминаем текущее количество как "просмотренное"
+
+  if (typeof knownCount === 'number') {
+    // Данные уже есть — просто запоминаем без лишнего запроса
+    _admLastSeenCount = knownCount;
+    return;
+  }
+
+  // Данных нет (вызов не из admLoadSummary) — делаем запрос сами
   var chatId = getChatId();
   var todayStr = formatDate_iso(new Date());
   fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))

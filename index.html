@@ -2852,7 +2852,7 @@ function admLoadSummary() {
       html += '<div class="adm-section-ttl" style="margin-top:16px;margin-bottom:10px">Ближайшие записи</div>';
       upcoming.forEach(b => {
         html += '<div class="adm-booking"><div class="adm-booking-time">⏰ ' + escapeHtml(b.time) + ' — ' + escapeHtml(b.master) + '</div>' +
-          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(String(b.phone||'')) + (b.services?'<br>'+escapeHtml(String(b.services)):'') + '</div></div>';
+          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) + (b.services?'<br>'+escapeHtml(String(b.services)):'') + '</div></div>';
       });
     }
     container.innerHTML = html;
@@ -2912,7 +2912,7 @@ function admLoadBookings() {
       byMaster[mn].forEach(b => {
         const sb=b.status==='confirmed'?'✅':b.status==='cancelled'?'❌':'⏳';
         html+='<div class="adm-booking"><div class="adm-booking-time">'+sb+' '+escapeHtml(String(b.time||''))+'</div>' +
-          '<div class="adm-booking-info">'+escapeHtml(String(b.name||''))+'<br>'+escapeHtml(String(b.phone||''))+(b.telegram?' | '+escapeHtml(String(b.telegram)):'')+'<br>'+escapeHtml(String(b.services||''))+(b.total?' | '+escapeHtml(String(b.total)):'')+
+          '<div class="adm-booking-info">'+escapeHtml(String(b.name||''))+'<br>'+escapeHtml(cleanPhone(b.phone))+(b.telegram?' | '+escapeHtml(String(b.telegram)):'')+'<br>'+escapeHtml(String(b.services||''))+(b.total?' | '+escapeHtml(String(b.total)):'')+
           '</div></div>';
       });
       html+='</div>';
@@ -3056,7 +3056,7 @@ function showConfirmModal(title, text, bookings, onConfirm) {
   modalTitle.textContent=title; modalText.textContent=text;
   if (bookings && bookings.length>0) {
     modalList.style.display='block';
-    modalList.innerHTML=bookings.map(b=>'<div class="adm-modal-list-item">• '+b.time+' — '+b.name+' ('+b.phone+')</div>').join('');
+    modalList.innerHTML=bookings.map(b=>'<div class="adm-modal-list-item">• '+b.time+' — '+b.name+' ('+cleanPhone(b.phone)+')</div>').join('');
   } else { modalList.style.display='none'; }
   modal.classList.add('show');
   confirmBtn.onclick = () => { modal.classList.remove('show'); if(onConfirm) onConfirm(); };
@@ -4012,7 +4012,7 @@ admLoadSummary = function() {
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
             '<div class="adm-booking-time">⏰ ' + escapeHtml(b.time||'') + ' — ' + escapeHtml(b.master||'') + '</div>' + badge +
           '</div>' +
-          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(String(b.phone||'')) +
+          '<div class="adm-booking-info">' + escapeHtml(String(b.name||'')) + ', ' + escapeHtml(cleanPhone(b.phone)) +
             (b.services ? '<br>' + escapeHtml(String(b.services)) : '') + '</div>' +
           '<div class="adm-booking-actions">' + rescBtn + msgBtn + cancelBtn + '</div>' +
         '</div>';

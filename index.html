@@ -2031,6 +2031,27 @@ function makeCall() {
   try { window.location.href = tel; } catch(e) {}
 }
 
+// Отдельный обработчик для phoneLink — без preventDefault
+// чтобы нативный href="tel:" сработал если tg.openLink недоступен
+(function() {
+  function setupPhoneLink() {
+    var el = document.getElementById('phoneLink');
+    if (!el) return;
+    el.addEventListener('click', function(e) {
+      if (tg && tg.openLink) {
+        e.preventDefault();
+        try { tg.openLink('tel:+79525608898', { try_instant_view: false }); return; } catch(err) {}
+      }
+      // Если tg.openLink не сработал — не блокируем, пусть браузер откроет href="tel:"
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupPhoneLink);
+  } else {
+    setupPhoneLink();
+  }
+})();
+
 /* FIX-02: getMaster — только по id, не по индексу */
 function getMaster(mid) {
   if (mid === null || mid === undefined) return null;
@@ -2263,7 +2284,7 @@ function initTabs() {
   }
 
   addClickHandler('btnToBooking', () => goPage('booking'));
-  addClickHandler('phoneLink', makeCall);
+  // phoneLink: нативный href="tel:" — не вешаем addClickHandler (он блокирует e.preventDefault)
   addClickHandler('succPhoneLink', makeCall);
   addClickHandler('callFab', makeCall);
   addClickHandler('btnBkReset', bkReset);

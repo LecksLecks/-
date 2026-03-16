@@ -951,11 +951,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cmp-bar-day.today{color:var(--gold)}
 
 /* ТОП КЛИЕНТОВ */
-.top-tabs{display:flex;gap:6px;margin-bottom:14px}
-.top-tab{flex:1;padding:8px 4px;text-align:center;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;font-family:'Cormorant Garamond',serif}
-.top-tab.active{background:rgba(201,168,76,.08);border-color:var(--gold);color:var(--gold)}
-.top-card{border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02);padding:12px 14px;margin-bottom:8px;position:relative}
-.top-rank{position:absolute;top:10px;right:12px;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:rgba(201,168,76,.12)}
+
 .top-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--cream);margin-bottom:3px}
 .top-phone{font-size:12px;color:var(--gold);margin-bottom:8px}
 .top-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
@@ -1390,10 +1386,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <button class="adm-menu-item" data-admtab="compare">
         <span class="adm-menu-ico">📊</span>
         <div><span class="adm-menu-nm">Сравнение</span><span class="adm-menu-desc">Неделя / месяц</span></div>
-      </button>
-      <button class="adm-menu-item" data-admtab="clients">
-        <span class="adm-menu-ico">🏆</span>
-        <div><span class="adm-menu-nm">Топ клиентов</span><span class="adm-menu-desc">По выручке и визитам</span></div>
       </button>
     </div>
   </div>
@@ -5261,54 +5253,6 @@ function renderCmpMasters(stats) {
   });
   html += '</tbody></table>';
   el.innerHTML = html;
-}
-
-/* ────────────────────────────────────────────────────────
-   5. ТОП КЛИЕНТОВ
-   ──────────────────────────────────────────────────────── */
-var _topData = null, _topTab = 'bySum';
-function topClientsInit() { if (!_topData) topClientsLoad(); }
-function topClientsLoad() {
-  var list = document.getElementById('topList');
-  if (list) list.innerHTML = '<div class="adm-loading">Загрузка...</div>';
-  fetchWithTimeout(CONFIG.GS + '?action=getTopClients&chatId=' + encodeURIComponent(getChatId()))
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.error==='Unauthorized') { if(list) list.innerHTML='<div class="adm-loading">Нет прав</div>'; return; }
-      _topData = d;
-      topRender();
-    })
-    .catch(function(){ if(list) list.innerHTML='<div class="adm-loading">Ошибка</div>'; });
-}
-
-function topSwitch(tab, btn) {
-  _topTab = tab;
-  document.querySelectorAll('.top-tab').forEach(function(b){ b.classList.remove('active'); });
-  if (btn) btn.classList.add('active');
-  haptic('select');
-  if (_topData) topRender(); else topClientsLoad();
-}
-window.topSwitch = topSwitch;
-
-function topRender() {
-  var list = document.getElementById('topList'); if (!list || !_topData) return;
-  var clients = _topData[_topTab] || [];
-  if (!clients.length) { list.innerHTML='<div class="adm-loading">Нет данных</div>'; return; }
-  var medals = ['🥇','🥈','🥉'];
-  var html = '';
-  clients.forEach(function(c, i) {
-    var last = c.lastVisit ? new Date(c.lastVisit).toLocaleDateString('ru-RU') : '—';
-    var days = c.lastVisit ? Math.floor((Date.now()-new Date(c.lastVisit))/86400000) : '?';
-    html += '<div class="top-card"><div class="top-rank">' + (i<3?medals[i]:(i+1)+'.') + '</div>' +
-      '<div class="top-name">' + escapeHtml(c.name||'—') + '</div>' +
-      '<div class="top-phone">' + escapeHtml(cleanPhone(c.phone)||'—') + '</div>' +
-      '<div class="top-stats">' +
-        '<div class="top-stat"><div class="top-stat-v">' + (c.visits||c.totalVisits||0) + '</div><div class="top-stat-l">Визитов</div></div>' +
-        '<div class="top-stat"><div class="top-stat-v">' + formatPrice(c.total||c.totalSpent||0) + '</div><div class="top-stat-l">Потрачено</div></div>' +
-        '<div class="top-stat"><div class="top-stat-v">' + (_topTab==='byLast'?days+' д':last) + '</div><div class="top-stat-l">' + (_topTab==='byLast'?'Не был':'Последний') + '</div></div>' +
-      '</div></div>';
-  });
-  list.innerHTML = html;
 }
 
 

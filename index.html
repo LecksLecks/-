@@ -2139,9 +2139,7 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ────────────────────────────────────────────────────────────
    РОЛИ
    ──────────────────────────────────────────────────────────── */
-// Заменены на loadInitData — оставлены для обратной совместимости
-function checkUserRole() { /* объединено в loadInitData */ }
-function loadAppData()   { /* объединено в loadInitData */ }
+// loadInitData заменяет оба старых вызова
 
 /* ────────────────────────────────────────────────────────────
    НАВИГАЦИЯ
@@ -3983,7 +3981,7 @@ function bcLoadHistory() {
    ──────────────────────────────────────────────────────────── */
 
 let _clAllClients = [];
-let _clSort = 'newest';
+let _clSort = 'last';
 let _clSearch = '';
 let _clDateFilter = ''; // фильтр по дате записи
 let _clLoaded = false;
@@ -4580,35 +4578,6 @@ function revealPageHeaders(pageId) {
   }
 }
 
-/* П.3: Счётчик анимации для аналитики */
-function animateCount(el, target, duration) {
-  if (!el) return;
-  const start = 0;
-  const startTime = performance.now();
-  function update(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const current = Math.round(start + (target - start) * eased);
-    el.textContent = current.toLocaleString('ru-RU');
-    if (progress < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
-}
-
-function animateRevenue(el, target, suffix) {
-  if (!el) return;
-  const duration = 1200;
-  const startTime = performance.now();
-  function update(now) {
-    const p = Math.min((now - startTime) / duration, 1);
-    const eased = 1 - Math.pow(1 - p, 3);
-    const val = Math.round(target * eased);
-    el.textContent = val.toLocaleString('ru-RU') + (suffix || ' ₽');
-    if (p < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
-}
 
 /* П.7: Количество свободных слотов на главной */
 function updateHomeSlotCount() {
@@ -5394,32 +5363,6 @@ goPage = function(id) {
    П.9: БЕЙДЖ НОВЫХ ЗАПИСЕЙ НА ИКОНКЕ АДМИНКИ
    ════════════════════════════════════════════════════════ */
 var _admBadgeCount = 0;
-var _admBadgeKey = 'adm_last_seen_ts'; // localStorage ключ
-
-function admBadgeUpdate() {
-  if (!IS_ADMIN) return;
-  var chatId = getChatId();
-  var todayStr = formatDate_iso(new Date());
-  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var bookings = d.bookings || [];
-      // Берём timestamp последнего просмотра из памяти
-      var lastSeen = _admLastSeenTs || 0;
-      // Считаем записи созданные после последнего просмотра
-      var newCount = bookings.filter(function(b){
-        return b.status === 'confirmed';
-      }).length;
-      // Показываем бейдж только если не в админке прямо сейчас
-      var currentPage = document.querySelector('.page.active');
-      var inAdmin = currentPage && currentPage.id === 'admin';
-      if (!inAdmin && newCount > _admBadgeCount) {
-        _admBadgeCount = newCount;
-        admBadgeShow(newCount > _admBadgeCount ? newCount - _admBadgeCount : 0);
-      }
-    })
-    .catch(function(){});
-}
 
 // Отдельный таймер для бейджа — работает только когда не в админке
 var _admBadgeTimer = null;

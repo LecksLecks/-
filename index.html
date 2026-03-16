@@ -2509,8 +2509,16 @@ function shareVia(platform) {
       shareUrl = 'https://vk.com/share.php?url=' + encoded + '&title=' + encodeURIComponent(text);
       break;
     case 'instagram':
-      shareCopyLink();
-      showToast('Ссылка на бота скопирована — вставьте в Direct или Stories', 'success', 3500);
+      var botLink = 'https://t.me/BarberStyleBataysk_bot';
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(botLink).then(function() {
+          showToast('Ссылка на бота скопирована — вставьте в Direct или Stories', 'success', 3500);
+        }).catch(function() {
+          prompt('Скопируйте ссылку:', botLink);
+        });
+      } else {
+        prompt('Скопируйте ссылку:', botLink);
+      }
       return;
   }
 

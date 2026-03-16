@@ -176,10 +176,11 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .info-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:2px}
 .info-val{font-size:14px;color:var(--cream)}
 .info-val a{color:var(--gold)}
-.soc{display:flex;gap:8px;padding:0 24px 24px}
-.soc a{flex:1;padding:14px 8px;text-align:center;border:1px solid rgba(201,168,76,.22);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:5px}
-.soc a:active{background:rgba(201,168,76,.1);border-color:var(--gold)}
-.soc-ico{font-size:18px;display:block}
+.soc{display:flex;gap:20px;padding:0 12px 24px;justify-content:center}
+.soc a{display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .15s,opacity .15s;flex:1;max-width:90px}
+.soc a:active{transform:scale(.93);opacity:.85}
+.soc-ico-wrap{width:100%;aspect-ratio:1/1;border-radius:22%;overflow:visible;display:flex;align-items:center;justify-content:center}
+.soc-lbl{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(201,168,76,.75);text-align:center;width:100%}
 
 /* CALL BUTTON */
 
@@ -1166,10 +1167,105 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="soc">
-    <a href="https://t.me/barber_sty1le" target="_blank"><span class="soc-ico">✈</span>TG</a>
-    <a href="https://www.instagram.com/barber_stayle161?igsh=MWMwbno5d215dnhzag==" target="_blank"><span class="soc-ico">◎</span>INST</a>
-    <a href="https://vk.com/club211199483" target="_blank"><span class="soc-ico">◈</span>VK</a>
-    <a href="https://yandex.ru/maps/?text=Батайск+Октябрьская+108" target="_blank"><span class="soc-ico">⊕</span>MAP</a>
+
+    <!-- TELEGRAM -->
+    <a href="https://t.me/barber_sty1le" target="_blank">
+      <span class="soc-ico-wrap">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="tg-g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#40c8f5"/>
+              <stop offset="100%" stop-color="#1a8fcf"/>
+            </linearGradient>
+            <linearGradient id="tg-gloss" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fff" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="tg-sh"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.38"/></filter>
+          </defs>
+          <g filter="url(#tg-sh)">
+            <rect x="4" y="4" width="112" height="112" rx="26" fill="url(#tg-g)"/>
+            <rect x="4" y="4" width="112" height="56" rx="26" fill="url(#tg-gloss)"/>
+          </g>
+          <path d="M22,59 L90,36 L73,85 L57,71 L51,88 L44,71 Z" fill="white"/>
+          <path d="M57,71 L60,76 L73,85 Z" fill="rgba(0,60,100,0.18)"/>
+        </svg>
+      </span>
+      <span class="soc-lbl">Telegram</span>
+    </a>
+
+    <!-- INSTAGRAM -->
+    <a href="https://www.instagram.com/barber_stayle161?igsh=MWMwbno5d215dnhzag==" target="_blank">
+      <span class="soc-ico-wrap">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ig-ring" x1="1" y1="1" x2="0" y2="0">
+              <stop offset="0%"   stop-color="#feda77"/>
+              <stop offset="20%"  stop-color="#f8a13f"/>
+              <stop offset="42%"  stop-color="#f2674a"/>
+              <stop offset="62%"  stop-color="#d93c8e"/>
+              <stop offset="82%"  stop-color="#b135c4"/>
+              <stop offset="100%" stop-color="#833ab4"/>
+            </linearGradient>
+            <filter id="ig-sh"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/></filter>
+          </defs>
+          <g filter="url(#ig-sh)">
+            <rect x="4" y="4" width="112" height="112" rx="26" fill="#1e1c1e"/>
+          </g>
+          <rect x="19" y="19" width="82" height="82" rx="20" fill="none" stroke="url(#ig-ring)" stroke-width="8.5"/>
+          <circle cx="60" cy="60" r="19" fill="none" stroke="url(#ig-ring)" stroke-width="7"/>
+          <circle cx="87" cy="33" r="5.5" fill="url(#ig-ring)"/>
+        </svg>
+      </span>
+      <span class="soc-lbl">Instagram</span>
+    </a>
+
+    <!-- ВКОНТАКТЕ -->
+    <a href="https://vk.com/club211199483" target="_blank">
+      <span class="soc-ico-wrap">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="vk-g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#5b9cf6"/>
+              <stop offset="100%" stop-color="#3d7de8"/>
+            </linearGradient>
+            <linearGradient id="vk-gloss" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fff" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="vk-sh"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.38"/></filter>
+          </defs>
+          <g filter="url(#vk-sh)">
+            <rect x="4" y="4" width="112" height="112" rx="26" fill="url(#vk-g)"/>
+            <rect x="4" y="4" width="112" height="56" rx="26" fill="url(#vk-gloss)"/>
+          </g>
+          <path d="M22,43 C22,43 26,43 28,48 L35,63 C38,70 42,72 44,71 C46,70 46,62 46,62 C46,53 44,51 41,50 C39,49 40,43 49,43 L58,43 C58,43 62,43 60,49 C59,52 55,57 55,62 C55,67 58,70 63,75 L68,80 C71,83 70,86 65,86 L55,86 C55,86 50,86 45,80 C40,74 36,74 34,76 C32,78 32,86 22,86 C22,86 12,87 11,73 C11,60 15,50 22,43 Z" fill="white"/>
+        </svg>
+      </span>
+      <span class="soc-lbl">ВКонтакте</span>
+    </a>
+
+    <!-- КАРТЫ -->
+    <a href="https://yandex.ru/maps/?text=Батайск+Октябрьская+108" target="_blank">
+      <span class="soc-ico-wrap">
+        <svg width="100%" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="map-pin" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#f05a28"/>
+              <stop offset="100%" stop-color="#c83010"/>
+            </linearGradient>
+            <filter id="map-sh"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/></filter>
+          </defs>
+          <g filter="url(#map-sh)">
+            <rect x="4" y="4" width="112" height="112" rx="26" fill="#1e1c1c"/>
+          </g>
+          <path d="M60,12 C43,12 29,26 29,43 C29,55 36,65 46,71 L60,98 L74,71 C84,65 91,55 91,43 C91,26 77,12 60,12 Z" fill="url(#map-pin)"/>
+          <circle cx="60" cy="42" r="13" fill="#1e1c1c"/>
+        </svg>
+      </span>
+      <span class="soc-lbl">Карты</span>
+    </a>
+
   </div>
   <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="reviews-section">

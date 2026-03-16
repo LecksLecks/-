@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<!-- ВАЖНО: замените значение gs-url на ваш реальный GAS endpoint после деплоя -->
+<meta name="gs-url" content="https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec">
 <title>BARBER STYLE</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
@@ -1576,7 +1578,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
    ================================================================================ */
 
 const CONFIG = {
-  GS: "https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec",
+  GS: (document.querySelector('meta[name="gs-url"]') || {}).content ||
+      "https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec",
   TIME_BUFFER_MINUTES: 30,
   FETCH_TIMEOUT_MS: 15000,
   REVIEWS_PER_PAGE: 20,
@@ -2112,7 +2115,7 @@ function renderPrices() {
     const el = ge(map[k]);
     if (!el) return;
     el.innerHTML = (PRICES[k]||[]).map(r =>
-      '<div class="p-row"><div class="p-nm">' + r[0] + '</div><div class="p-dots"></div><div class="p-pr">' + formatPrice(r[1]) + '</div></div>'
+      '<div class="p-row"><div class="p-nm">' + escapeHtml(String(r[0]||'')) + '</div><div class="p-dots"></div><div class="p-pr">' + formatPrice(r[1]) + '</div></div>'
     ).join('');
   });
 }
@@ -2365,7 +2368,7 @@ function renderSvcList() {
       const isHidden = cat==='head' ? (idx >= CONFIG.SVC_VISIBLE_COUNT && !svcExpanded) : !svcExpanded;
       const row = document.createElement('div');
       row.className = 'svc-item' + (isOn?' on':'') + (isHidden?' hidden':'');
-      row.innerHTML = '<div class="svc-chk" data-key="' + key + '">✓</div><div class="svc-nm">' + svc[0] + '</div><div class="svc-pr">' + formatPrice(svc[1]) + '</div>';
+      row.innerHTML = '<div class="svc-chk" data-key="' + key + '">✓</div><div class="svc-nm">' + escapeHtml(String(svc[0]||'')) + '</div><div class="svc-pr">' + formatPrice(svc[1]) + '</div>';
       row.querySelector('.svc-chk').onclick = e => { e.preventDefault(); toggleSvc(key); };
       sec.appendChild(row);
     });
@@ -2423,7 +2426,7 @@ function renderCart() {
   S.cart.forEach(key => {
     const svc=getSvcByKey(key); if(!svc) return;
     sum += svc[1];
-    html += '<div class="cart-row"><span class="cart-row-nm">'+svc[0]+'</span><span class="cart-row-pr">'+formatPrice(svc[1])+'</span><span class="cart-row-rm" data-key="'+key+'">✕</span></div>';
+    html += '<div class="cart-row"><span class="cart-row-nm">'+escapeHtml(String(svc[0]||''))+'</span><span class="cart-row-pr">'+formatPrice(svc[1])+'</span><span class="cart-row-rm" data-key="'+key+'">✕</span></div>';
   });
   items.innerHTML = html;
   sumEl.textContent = formatPrice(sum);
@@ -2488,7 +2491,9 @@ function bkSubmit() {
     visitDate: formatDate_full(S.date), visitDateRaw: S.date,
     time: S.slot, name, phone, telegram: tgUsername,
     services, total,  // FIX-04: число, не строка
-    clientChatId: getChatId()
+    clientChatId: getChatId(),
+    initData: tg ? (tg.initData || '') : ''  // КРИТ-2 FIX: HMAC-подпись для верификации chatId
+    // formOpenedAt убран: клиентская временная метка легко подделывается ботами
   };
 
   fetchWithTimeout(CONFIG.GS, {method:'POST', mode:'cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
@@ -2585,8 +2590,9 @@ function myBkRender() {
 
   container.innerHTML = _myBkTabsHtml() + [1,2,3].map(()=>'<div class="skel-card"><div class="skel-row"><div class="skel-circle skeleton"></div><div style="flex:1"><div class="skel-line skeleton w80"></div><div class="skel-line skeleton w60"></div></div></div><div class="skel-block skeleton"></div></div>').join('');
   const action = myBkTab==='history' ? 'getMyBookingsHistory' : 'getMyBookings';
+  const initData = getInitData();
 
-  fetchWithTimeout(CONFIG.GS + '?action=' + action + '&chatId=' + encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS + '?action=' + action + '&chatId=' + encodeURIComponent(chatId) + (initData ? '&initData=' + initData : ''))
     .then(r => r.json())
     .then(d => {
       _myBkCache = {data: d, ts: Date.now(), tab: myBkTab};
@@ -2681,7 +2687,9 @@ function myBkCancel(masterId, date, time, masterName) {
     .then(function(confirmed) {
       if (!confirmed) return;
       const chatId = getChatId();
-      fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
+      // КРИТ-2 FIX: передаём initData чтобы бэкенд мог верифицировать chatId
+      const initData = tg ? (tg.initData || '') : '';
+      fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time, initData})})
         .then(r => r.json())
         .then(d => {
           if (d.status==='ok') {
@@ -2712,7 +2720,8 @@ function myBkReschedule(masterId, date, time, masterName) {
     .then(function(confirmed) {
       if (!confirmed) return;
       const chatId = getChatId();
-      fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time})})
+      const initData = tg ? (tg.initData || '') : '';
+      fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({action:'cancelBooking', chatId, masterId, master: masterName, date, time, initData})})
         .then(r => r.json())
         .then(d => {
           if (d.status!=='ok') { showToast('Не удалось отменить: ' + (d.error||'ошибка'), 'error'); return; }
@@ -3039,7 +3048,7 @@ function showConfirmModal(title, text, bookings, onConfirm) {
   modalTitle.textContent=title; modalText.textContent=text;
   if (bookings && bookings.length>0) {
     modalList.style.display='block';
-    modalList.innerHTML=bookings.map(b=>'<div class="adm-modal-list-item">• '+b.time+' — '+b.name+' ('+cleanPhone(b.phone)+')</div>').join('');
+    modalList.innerHTML=bookings.map(b=>'<div class="adm-modal-list-item">• '+escapeHtml(String(b.time||''))+' — '+escapeHtml(String(b.name||''))+' ('+escapeHtml(cleanPhone(b.phone||''))+')</div>').join('');
   } else { modalList.style.display='none'; }
   modal.classList.add('show');
   confirmBtn.onclick = () => { modal.classList.remove('show'); if(onConfirm) onConfirm(); };

@@ -1273,31 +1273,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
   </div>
   <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
-  <div class="reviews-section">
-    <div class="reviews-hdr">
-      <div class="sec-lbl">✦ Что говорят клиенты</div>
-      <h2 class="sec-ttl">Отзы<em>вы</em></h2>
-    </div>
-    <div class="reviews-list" id="reviewsList">
-      <div class="rev-loading">Загрузка отзывов...</div>
-    </div>
-    <div class="reviews-form">
-      <div class="rev-form-ttl">Оставить отзыв</div>
-      <div class="rev-stars" id="revStars">
-        <span class="rev-star" data-rating="1">★</span>
-        <span class="rev-star" data-rating="2">★</span>
-        <span class="rev-star" data-rating="3">★</span>
-        <span class="rev-star" data-rating="4">★</span>
-        <span class="rev-star" data-rating="5">★</span>
-      </div>
-      <select class="rev-inp rev-master-sel" id="revMaster">
-        <option value="">Мастер (необязательно)</option>
-      </select>
-      <input type="text" class="rev-inp" id="revName" placeholder="Ваше имя">
-      <textarea class="rev-txt" id="revText" placeholder="Напишите ваш отзыв..."></textarea>
-      <button class="rev-btn" id="revSubmit">Отправить отзыв</button>
-    </div>
-  </div>
+
 </div>
 
 <!-- PAGE: MASTERS -->
@@ -2160,7 +2136,6 @@ function initApp() {
   if (bkPhone) bkPhone.addEventListener('input', onPhoneInput);
 
   initTabs();
-  initReviews();
 
   // Пробуем отрисовать из кэша сразу — до ответа сервера
   const cached = loadInitCache();
@@ -2345,7 +2320,6 @@ function initTabs() {
   addClickHandler('calPrevBtn', calPrev);
   addClickHandler('calNextBtn', calNext);
   addClickHandler('bkSub', bkSubmit);
-  addClickHandler('revSubmit', submitReview);
   addClickHandler('admAddDayOffBtn', admAddDayOff);
   addClickHandler('admRemoveDayOffBtn', admRemoveDayOff);
 

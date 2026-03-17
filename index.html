@@ -110,14 +110,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .tab.active{
   color:var(--gold);
 }
-.tab.active::before{
-  content:'';
-  position:absolute;
-  top:0;left:50%;
-  transform:translateX(-50%);
-  width:24px;height:2px;
-  background:var(--gold);
-  border-radius:0 0 2px 2px;
+.tab-ico{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  padding:4px 12px;
+  transition:background .2s ease;
+}
+.tab.active .tab-ico{
+  background:rgba(201,168,76,.14);
 }
 
 .tab svg{
@@ -1786,28 +1788,28 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 <!-- BOTTOM NAV -->
 <nav class="tabs" id="mainTabs">
   <button class="tab active" id="tab-home" data-page="home">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
     Главная
   </button>
   <button class="tab" id="tab-masters" data-page="masters">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <span class="tab-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
     Мастера
   </button>
   <button class="tab" id="tab-booking" data-page="booking">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span class="tab-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
     Запись
   </button>
   <button class="tab" id="tab-mybookings" data-page="mybookings">
-    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+    <span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></span>
     Мои
   </button>
   <button class="tab" id="tab-reviews" data-page="reviews">
-    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span class="tab-ico"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
     Отзывы
   </button>
   <button class="tab" id="tab-admin" data-page="admin" style="display:none">
     <span class="adm-tab-badge" id="admTabBadge" style="display:none"></span>
-    <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    <span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
     Админ
   </button>
 </nav>
@@ -3397,8 +3399,8 @@ function admLoadSummary() {
   container.innerHTML = '<div class="adm-loading">Загрузка сводки...</div>';
 
   Promise.all([
-    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId)).then(function(r){return r.json();}),
-    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId) + '&period=day').then(function(r){return r.json();})
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : '')).then(function(r){return r.json();}),
+    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId) + '&period=day' + (getInitData() ? '&initData=' + getInitData() : '')).then(function(r){return r.json();})
   ])
   .then(function(results) {
     var bkData = results[0], anData = results[1];
@@ -3590,7 +3592,7 @@ function admLoadBookings() {
   const titleEl=ge('admBkTitle');
   if (titleEl) titleEl.textContent = dateStr===formatDate_iso(new Date()) ? 'Записи на сегодня — '+formatDate_display(dateStr) : 'Записи — '+formatDate_display(dateStr);
   const chatId=getChatId();
-  let url=CONFIG.GS+'?action=getBookings&date='+dateStr+'&chatId='+encodeURIComponent(chatId);
+  let url=CONFIG.GS+'?action=getBookings&date='+dateStr+'&chatId='+encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : '');
   if (masterId) url+='&masterId='+masterId;
   fetchWithTimeout(url).then(r=>r.json()).then(d => {
     if (d.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
@@ -3672,7 +3674,7 @@ function admSetDayOffAction(masterId, dateStr) {
     .then(function(confirmed) {
       if (!confirmed) return;
       const chatId=getChatId();
-      fetchWithTimeout(CONFIG.GS+'?action=dayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+      fetchWithTimeout(CONFIG.GS+'?action=dayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId + (getInitData() ? '&initData=' + getInitData() : ''))
         .then(r=>r.json())
         .then(d => {
           if (d.success||d.status==='ok') { showToast('✅ Выходной день установлен','success'); admLoadSlots(); admLoadDayOffsList(); }
@@ -3686,7 +3688,7 @@ function admSetDayOffAction(masterId, dateStr) {
 
 function admForceSetDayOff(masterId, dateStr) {
   const chatId=getChatId(), master=getMaster(masterId);
-  fetchWithTimeout(CONFIG.GS+'?action=forceDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+  fetchWithTimeout(CONFIG.GS+'?action=forceDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(r=>r.json())
     .then(d => {
       if (d.success||d.status==='ok') { showToast('✅ Выходной установлен. Отменено записей: '+(d.cancelledClients?d.cancelledClients.length:0),'success'); admLoadSlots(); admLoadDayOffsList(); }
@@ -3702,7 +3704,7 @@ function admRemoveDayOffAction(masterId, dateStr) {
     .then(function(confirmed) {
       if (!confirmed) return;
       const chatId=getChatId();
-      fetchWithTimeout(CONFIG.GS+'?action=removeDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
+      fetchWithTimeout(CONFIG.GS+'?action=removeDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId + (getInitData() ? '&initData=' + getInitData() : ''))
         .then(r=>r.json())
         .then(d => {
           if (d.success||d.status==='ok') { showToast('✅ Выходной день снят','success'); admLoadSlots(); admLoadDayOffsList(); }
@@ -3727,7 +3729,7 @@ function admRemoveDayOff() {
 function admLoadDayOffsList() {
   const container=ge('admDayOffsList'), chatId=getChatId();
   container.innerHTML='<div class="adm-loading">Загрузка...</div>';
-  fetchWithTimeout(CONFIG.GS+'?action=getAllDayOffs&chatId='+encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS+'?action=getAllDayOffs&chatId='+encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(r=>r.json())
     .then(d => {
       if (d.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
@@ -3787,7 +3789,7 @@ function admLoadAnalytics() {
   var dateTo   = (toEl   && toEl.value)   ? toEl.value   : today;
   if (dateTo < dateFrom) dateTo = dateFrom;
 
-  var url = CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)
+  var url = CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : '')
     + '&period=custom'
     + '&dateFrom=' + encodeURIComponent(dateFrom)
     + '&dateTo='   + encodeURIComponent(dateTo);
@@ -4229,7 +4231,7 @@ function bcLoadAudience() {
 
   // Иначе загружаем с сервера
   const chatId = getChatId();
-  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(r => r.json())
     .then(d => {
       if (d.error) { ge('bcAudienceCount').innerHTML = 'Ошибка загрузки'; return; }
@@ -4450,7 +4452,7 @@ function clLoad(force) {
   const sumEl = ge('clSummary');
   if (sumEl) sumEl.innerHTML = '';
 
-  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(r => r.json())
     .then(d => {
       if (d.error === 'Unauthorized') {
@@ -4848,7 +4850,7 @@ function clLoadHistory(cardKey, client) {
   const q = cleanPhone(client.phone||'').replace(/\D/g,'') || encodeURIComponent(client.name||'');
   if (!q) { bkEl.innerHTML = '<div style="color:var(--gray);font-size:12px;padding:4px 0">Нет данных</div>'; return; }
 
-  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(cleanPhone(client.phone||'') || client.name||'') + '&chatId=' + encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(cleanPhone(client.phone||'') || client.name||'') + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(r => r.json())
     .then(d => {
       if (!d.clients || !d.clients.length) {
@@ -5197,7 +5199,7 @@ function admMarkDone(bookingId, btn) {
   haptic('medium');
   if (btn) { btn.disabled = true; btn.textContent = '...'; }
 
-  fetchWithTimeout(CONFIG.GS + '?action=markBookingDone&bookingId=' + encodeURIComponent(bookingId) + '&chatId=' + encodeURIComponent(getChatId()))
+  fetchWithTimeout(CONFIG.GS + '?action=markBookingDone&bookingId=' + encodeURIComponent(bookingId) + '&chatId=' + encodeURIComponent(getChatId()) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error) {
@@ -5418,7 +5420,7 @@ function srchRun() {
   if (!q) { if(result) result.innerHTML='<div style="color:var(--gray);font-size:13px;padding:8px 0">Введите имя или телефон</div>'; return; }
   if (result) result.innerHTML = '<div class="adm-loading">Поиск...</div>';
   haptic('light');
-  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(q) + '&chatId=' + encodeURIComponent(getChatId()))
+  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(q) + '&chatId=' + encodeURIComponent(getChatId()) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (!d.clients || !d.clients.length) { result.innerHTML='<div style="color:var(--gray);font-size:13px;padding:8px 0">Не найдено</div>'; return; }
@@ -5551,7 +5553,7 @@ function compareLoad() {
   ['cmpWeek','cmpMonth','cmpDays','cmpMasters'].forEach(function(id){
     var e=document.getElementById(id); if(e) e.innerHTML='<div class="adm-loading">Загрузка...</div>';
   });
-  fetchWithTimeout(CONFIG.GS + '?action=getCompareStats&chatId=' + encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS + '?action=getCompareStats&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error==='Unauthorized') { showToast('Нет прав','error'); return; }
@@ -5711,7 +5713,7 @@ function rescConfirm() {
 
   fetchWithTimeout(CONFIG.GS + '?action=rescheduleBooking&bookingId=' + encodeURIComponent(_rescBookingId) +
     '&newDate=' + encodeURIComponent(date) + '&newSlot=' + encodeURIComponent(slot) +
-    '&chatId=' + encodeURIComponent(getChatId()))
+    '&chatId=' + encodeURIComponent(getChatId()) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error) {
@@ -5742,7 +5744,7 @@ function summaryAutoStart() {
   _summaryAutoTimer = setInterval(function() {
     var chatId = getChatId();
     var todayStr = formatDate_iso(new Date());
-    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
       .then(function(r){ return r.json(); })
       .then(function(d){
         var bookings = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; });
@@ -5818,7 +5820,7 @@ function admBadgeCheck() {
 
   var chatId = getChatId();
   var todayStr = formatDate_iso(new Date());
-  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(function(r){ return r.json(); })
     .then(function(d){
       var count = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; }).length;
@@ -5852,7 +5854,7 @@ function admBadgeClear(knownCount) {
   // Данных нет (вызов не из admLoadSummary) — делаем запрос сами
   var chatId = getChatId();
   var todayStr = formatDate_iso(new Date());
-  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
+  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
     .then(function(r){ return r.json(); })
     .then(function(d){
       _admLastSeenCount = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; }).length;

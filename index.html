@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -167,6 +168,22 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .btn-g:active::after{background:rgba(255,255,255,.15)}
 .btn-g:active{transform:scale(.99)}
 .btn-o{flex:1;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:10px}
+.btn-quick-free{width:100%;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.45);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:10px;font-family:'Cormorant Garamond',serif;transition:all .2s;position:relative;overflow:hidden}
+.btn-quick-free:active{background:rgba(201,168,76,.1);transform:scale(.99)}
+.btn-quick-free.loading{opacity:.6;pointer-events:none}
+.qbf-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+.qbf-modal{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.qbf-modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px}
+.qbf-modal-sub{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:20px}
+.qbf-slot-card{border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .2s;background:rgba(201,168,76,.03)}
+.qbf-slot-card:active{background:rgba(201,168,76,.1);border-color:var(--gold)}
+.qbf-slot-card:hover{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.06)}
+.qbf-slot-master{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);font-weight:600}
+.qbf-slot-time{font-size:20px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:2px 0}
+.qbf-slot-date{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.qbf-empty{text-align:center;padding:30px 0;color:var(--muted);font-size:14px}
+.qbf-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:4px 10px}
 
 .home-divider{display:flex;align-items:center;gap:12px;padding:0 24px;margin:4px 0}.home-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent)}.home-divider-ico{font-size:10px;color:rgba(201,168,76,.4)}
 .info-block{margin:0 24px 20px;border:1px solid rgba(201,168,76,.12);background:rgba(7,5,3,.3);border-radius:12px;overflow:hidden}
@@ -1123,6 +1140,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
   <div class="home-btns" style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться онлайн ✦</button>
+  </div>
+  <div style="padding:0 24px 20px">
+    <button class="btn-quick-free" id="btnQuickFree" onclick="quickBookFree()">⚡ Записаться к свободному</button>
   </div>
   <div class="home-divider"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="info-block">
@@ -5821,3 +5841,185 @@ window.admMsgClient = admMsgClient;
 </script>
 </body>
 </html>
+<script>
+/* ════════════════════════════════════════════════════════════
+   QUICK BOOK FREE — «Записаться к свободному»
+   Ищет ближайшие свободные слоты по всем мастерам
+   ════════════════════════════════════════════════════════════ */
+
+function quickBookFree() {
+  haptic('select');
+  var btn = document.getElementById('btnQuickFree');
+  if (btn) btn.classList.add('loading');
+
+  // Если данные ещё не загружены — загружаем, потом показываем
+  if (Object.keys(allMastersData).length === 0) {
+    fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.masters) {
+          allMastersData = d.masters;
+          _allMastersDataTs = Date.now();
+        }
+        if (btn) btn.classList.remove('loading');
+        qbfShowModal();
+      })
+      .catch(function() {
+        if (btn) btn.classList.remove('loading');
+        qbfShowModal();
+      });
+  } else {
+    if (btn) btn.classList.remove('loading');
+    qbfShowModal();
+  }
+}
+
+/* Собирает список: до 3 ближайших слотов у каждого мастера,
+   сортирует всё по дате+времени, берёт первые 10 */
+function qbfGetFreeSlots() {
+  var now     = new Date();
+  var todayStr = formatDate_iso(now);
+  var nowMin  = now.getHours() * 60 + now.getMinutes();
+  var buffer  = CONFIG.TIME_BUFFER_MINUTES || 30;
+  var results = [];
+
+  // Ищем в диапазоне сегодня + 30 дней
+  for (var dayOffset = 0; dayOffset <= 30; dayOffset++) {
+    var d = new Date();
+    d.setDate(d.getDate() + dayOffset);
+    d.setHours(0,0,0,0);
+    var ds = formatDate_iso(d);
+
+    MASTERS.forEach(function(m) {
+      var data = allMastersData[m.name];
+      if (!data) return;
+      if (data.dayoffs && data.dayoffs.indexOf(ds) >= 0) return;
+
+      var busy    = (data.slots  || {})[ds] || [];
+      var blocked = (data.blocks || {})[ds] || [];
+
+      var masterFree = [];
+      SLOTS.forEach(function(slot) {
+        if (ds === todayStr) {
+          var slMin = parseInt(slot.split(':')[0]) * 60 + parseInt(slot.split(':')[1]);
+          if (slMin <= nowMin + buffer) return;
+        }
+        if (busy.indexOf(slot) < 0 && blocked.indexOf(slot) < 0) {
+          masterFree.push(slot);
+        }
+      });
+
+      // Берём первые 2 слота у каждого мастера на каждый день
+      masterFree.slice(0, 2).forEach(function(slot) {
+        results.push({ master: m, date: ds, slot: slot, dateObj: d });
+      });
+    });
+
+    // Если уже накопили 15+ — дальше не идём (оптимизация)
+    if (results.length >= 15) break;
+  }
+
+  // Сортируем: сначала по дате, потом по времени
+  results.sort(function(a, b) {
+    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+    return a.slot < b.slot ? -1 : 1;
+  });
+
+  return results.slice(0, 10);
+}
+
+/* Форматирует дату для отображения */
+function qbfFormatDate(ds) {
+  var today = formatDate_iso(new Date());
+  var tomorrow = formatDate_iso(new Date(Date.now() + 86400000));
+  if (ds === today) return 'Сегодня';
+  if (ds === tomorrow) return 'Завтра';
+  var parts = ds.split('-');
+  var days = ['вс','пн','вт','ср','чт','пт','сб'];
+  var dt = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+  var dow = days[dt.getDay()];
+  var months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  return dow + ', ' + parseInt(parts[2]) + ' ' + months[parseInt(parts[1])-1];
+}
+
+/* Показывает модальное окно со свободными слотами */
+function qbfShowModal() {
+  var slots = qbfGetFreeSlots();
+
+  var html = '<div class="qbf-modal-overlay" id="qbfOverlay" onclick="qbfCloseModal(event)">'
+    + '<div class="qbf-modal" style="position:relative">'
+    + '<button class="qbf-close" onclick="qbfClose()">✕</button>'
+    + '<div class="qbf-modal-title">⚡ Свободные окна</div>'
+    + '<div class="qbf-modal-sub">Ближайшее доступное время</div>';
+
+  if (slots.length === 0) {
+    html += '<div class="qbf-empty">😔 Нет свободных слотов<br>на ближайшие 30 дней</div>';
+  } else {
+    slots.forEach(function(item) {
+      var dateLabel = qbfFormatDate(item.date);
+      var midEncoded = item.master.id;
+      html += '<div class="qbf-slot-card" onclick="qbfSelect(' + midEncoded + ',\'' + item.date + '\',\'' + item.slot + '\')">'
+        + '<div class="qbf-slot-master">' + escapeHtml(item.master.name) + '</div>'
+        + '<div class="qbf-slot-time">' + item.slot + '</div>'
+        + '<div class="qbf-slot-date">' + dateLabel + '</div>'
+        + '</div>';
+    });
+  }
+
+  html += '</div></div>';
+
+  var overlay = document.createElement('div');
+  overlay.innerHTML = html;
+  document.body.appendChild(overlay.firstChild);
+}
+
+/* Закрывает модал по клику на оверлей */
+function qbfCloseModal(e) {
+  if (e && e.target && e.target.id === 'qbfOverlay') qbfClose();
+}
+
+function qbfClose() {
+  var el = document.getElementById('qbfOverlay');
+  if (el) {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .2s';
+    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 200);
+  }
+}
+
+/* Выбор слота — закрываем модал, идём на страницу бронирования,
+   предвыбираем мастера, дату и время */
+function qbfSelect(masterId, date, slot) {
+  haptic('impact');
+  qbfClose();
+
+  // Переходим на страницу бронирования
+  goPage('booking');
+
+  // Небольшая задержка чтобы страница успела инициализироваться
+  setTimeout(function() {
+    // Выбираем мастера (загружает его расписание)
+    bkSelMaster(masterId);
+
+    setTimeout(function() {
+      // Устанавливаем дату и время через официальные функции
+      var dateParts = date.split('-');
+      S.cy = parseInt(dateParts[0]);
+      S.cm = parseInt(dateParts[1]) - 1;
+      bkPickDate(date);
+
+      setTimeout(function() {
+        bkPickTime(slot);
+        // Скроллим к подтверждению
+        var bar = document.querySelector('.bk-bar');
+        if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 150);
+    }, 200);
+  }, 300);
+}
+
+window.quickBookFree = quickBookFree;
+window.qbfClose = qbfClose;
+window.qbfCloseModal = qbfCloseModal;
+window.qbfSelect = qbfSelect;
+</script>

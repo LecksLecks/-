@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -3895,7 +3894,7 @@ function loadReviewsPage(page) {
   var container = ge('reviewsListPage');
   if (!container) return;
   if (page === 0) container.innerHTML = '<div class="rev-loading">Загрузка отзывов...</div>';
-  fetch(CONFIG.GAS_URL + '?action=getReviews&page=' + page)
+  fetchWithTimeout(CONFIG.GS + '?action=getReviews&offset=' + (page * CONFIG.REVIEWS_PER_PAGE) + '&limit=' + CONFIG.REVIEWS_PER_PAGE)
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var reviews = d.reviews||[];
@@ -3926,7 +3925,7 @@ function submitReviewPage() {
   if (!name.trim()) { showToast('Введите имя'); return; }
   if (!text.trim()) { showToast('Напишите отзыв'); return; }
   var btn = ge('revSubmitPage'); if (btn) { btn.disabled=true; btn.textContent='Отправка...'; }
-  fetch(CONFIG.GAS_URL, { method:'POST', body: JSON.stringify({action:'addReview', rating:rating, name:name.trim(), text:text.trim(), master:master}) })
+  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({action:'addReview', rating:rating, name:name.trim(), text:text.trim(), master:master}) })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.ok) {

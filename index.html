@@ -3816,10 +3816,10 @@ function admLoadAnalytics() {
           '<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">' + escapeHtml(periodLabel) + '</div>' +
           '<div class="adm-stat-grid">' + cards + '</div>';
 
-        if (ge('revToday'))  ge('revToday').textContent  = formatPrice(d.revenueToday||0) + ' ₽';
-        if (ge('revWeek'))   ge('revWeek').textContent   = formatPrice(d.revenueWeek||0)  + ' ₽';
-        if (ge('revMonth'))  ge('revMonth').textContent  = formatPrice(d.revenueMonth||0) + ' ₽';
-        if (ge('revCustom')) ge('revCustom').textContent = formatPrice(d.revenueCustom||0) + ' ₽';
+        if (ge('revToday'))  ge('revToday').textContent  = formatPrice(d.revenueToday||0);
+        if (ge('revWeek'))   ge('revWeek').textContent   = formatPrice(d.revenueWeek||0);
+        if (ge('revMonth'))  ge('revMonth').textContent  = formatPrice(d.revenueMonth||0);
+        if (ge('revCustom')) ge('revCustom').textContent = formatPrice(d.revenueCustom||0);
       }
 
       // ── Топ услуг ──

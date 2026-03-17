@@ -2458,7 +2458,22 @@ function masterShare(mid) {
   const botUsername = 'BarberStyleBataysk_bot';
   _shareCurrentUrl = 'https://t.me/' + botUsername + '?startapp=master_' + mid;
 
-  // Заполняем карточку
+  // ── Нативный Web Share API (iOS / Android) ──────────────────────
+  if (navigator.share) {
+    navigator.share({
+      title: m.name + ' — BARBER STYLE',
+      text:  '✂️ Запишись к мастеру ' + m.name + ' онлайн!',
+      url:   _shareCurrentUrl
+    }).catch(function(err) {
+      // AbortError = пользователь закрыл попап — это нормально, не ошибка
+      if (err && err.name !== 'AbortError') {
+        console.warn('masterShare native error:', err);
+      }
+    });
+    return; // нативный шер открылся — кастомный sheet не нужен
+  }
+
+  // ── Fallback: кастомный sheet для десктопа / старых браузеров ───
   const photoEl = ge('shareSheetPhoto');
   if (m.photo) {
     photoEl.innerHTML = '<img src="' + escapeHtml(m.photo) + '" alt="' + escapeHtml(m.name) + '" class="share-sheet-card-photo">';
@@ -2470,11 +2485,9 @@ function masterShare(mid) {
   ge('shareSheetSpec').textContent = m.spec;
   ge('shareUrlInput').value = _shareCurrentUrl;
 
-  // Сбрасываем кнопку копирования
   const copyBtn = ge('shareCopyBtn');
   if (copyBtn) { copyBtn.textContent = 'Копировать'; copyBtn.style.background = ''; }
 
-  // Открываем sheet
   ge('shareSheetOverlay').classList.add('open');
   ge('shareSheet').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -4120,11 +4133,19 @@ function bcSend() {
       result.style.display = 'none';
 
       const chatId = getChatId();
-      const url = CONFIG.GS + '?action=broadcast&chatId=' + encodeURIComponent(chatId) +
-        '&message=' + encodeURIComponent(text) +
-        '&filterCategory=' + _bcFilter;
 
-      fetchWithTimeout(url, {}, 120000) // 2 минуты таймаут — рассылка может быть долгой
+      // v6.7-FIX-3: broadcast через POST — длинные сообщения обрезались в GET URL (~2048 символов)
+      fetchWithTimeout(CONFIG.GS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'broadcast',
+          chatId: chatId,
+          clientChatId: chatId,
+          message: text,
+          filterCategory: _bcFilter
+        })
+      }, 120000) // 2 минуты таймаут — рассылка может быть долгой
         .then(r => r.json())
         .then(d => {
           _bcIsSending = false;

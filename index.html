@@ -1071,55 +1071,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .anl-master-avg{font-size:11px;color:rgba(201,168,76,.6);letter-spacing:.5px}
 .mst-rating-inline{font-size:11px;color:var(--gold);margin-left:6px;font-weight:400}
 </style>
-<style>
-#callPopup { -webkit-overflow-scrolling: touch; }
-#callPopup[style*="flex"] { display:flex !important; }
-</style>
 </head>
 <body>
-<div id="callPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:rgba(0,0,0,0.6);-webkit-transform:translateZ(0);transform:translateZ(0);align-items:flex-end;justify-content:center;padding:0 16px 50px;box-sizing:border-box;flex-direction:column">
-  <div style="width:100%;max-width:400px;margin:0 auto;border-radius:14px;overflow:hidden;background:rgba(28,28,30,0.98);margin-bottom:8px">
-    <div style="padding:14px 20px;text-align:center;border-bottom:0.5px solid rgba(255,255,255,0.15)">
-      <div style="font-size:13px;color:rgba(255,255,255,0.45);font-family:-apple-system,sans-serif;margin-bottom:2px">Барбершоп BARBER STYLE</div>
-      <div style="font-size:15px;color:rgba(255,255,255,0.85);font-family:-apple-system,sans-serif">+7 (952) 560-88-98</div>
-    </div>
-    <button onclick="callPopupDial()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:400;cursor:pointer;font-family:-apple-system,sans-serif;text-align:center">Позвонить</button>
-  </div>
-  <div style="width:100%;max-width:400px;margin:0 auto;border-radius:14px;overflow:hidden;background:rgba(28,28,30,0.98)">
-    <button onclick="callPopupClose()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif;text-align:center">Отменить</button>
-  </div>
-</div>
-
-<script>
-(function(){
-  function hs(){var e=document.getElementById('splash');if(e){e.style.display='none';}}
-  setTimeout(hs,1500);
-  setTimeout(hs,2500);
-  window.addEventListener('load',function(){setTimeout(hs,300);});
-})();
-</script>
-
-<!-- МОДАЛКА ПЕРЕНОСА ЗАПИСИ -->
-<div id="rescheduleModal">
-  <div class="resc-box">
-    <div class="resc-ttl">Перенос записи</div>
-    <div id="rescClientInfo" style="font-size:13px;color:var(--gray);margin-bottom:12px;padding:8px;border:1px solid rgba(201,168,76,.1)"></div>
-    <div class="resc-row">
-      <div class="resc-lbl">Новая дата</div>
-      <input type="date" class="resc-inp" id="rescDate">
-    </div>
-    <div class="resc-row">
-      <div class="resc-lbl">Новое время</div>
-      <select class="resc-inp" id="rescSlot"><option value="">Выберите дату</option></select>
-    </div>
-    <div class="resc-btns">
-      <button class="resc-btn-cancel" onclick="rescClose()">Отмена</button>
-      <button class="resc-btn-ok" id="rescConfirmBtn" onclick="rescConfirm()" disabled>Перенести</button>
-    </div>
-  </div>
-</div>
-
-
 <!-- СТРАНИЦА ПРОФИЛЯ МАСТЕРА -->
 <div id="masterProfile">
   <div class="mp-hero" id="mpHero">
@@ -1168,9 +1121,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
-  <div class="home-btns" style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+  <div class="home-btns" style="padding:20px 24px">
     <button class="btn-g" id="btnToBooking">✦ Записаться онлайн ✦</button>
-    <button onclick="makeCall()" style="display:block;width:100%;text-align:center;border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--gold);background:transparent;border-radius:10px;font-family:'Cormorant Garamond',serif;cursor:pointer">Позвонить · +7 (952) 560-88-98</button>
   </div>
   <div class="home-divider"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="info-block">
@@ -2061,30 +2013,6 @@ function fetchWithTimeout(url, options, timeout) {
   ]);
 }
 
-function makeCall() {
-  var popup = document.getElementById('callPopup');
-  if (!popup) return;
-  popup.style.cssText = popup.style.cssText.replace('display:none','display:flex');
-  popup.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  popup.onclick = function(e) { if (e.target === popup) callPopupClose(); };
-  try { haptic('light'); } catch(e) {}
-}
-
-function callPopupClose() {
-  var popup = document.getElementById('callPopup');
-  if (popup) popup.style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function callPopupDial() {
-  callPopupClose();
-  var tel = 'tel:+79525608898';
-  if (tg && tg.openLink) {
-    try { tg.openLink(tel, { try_instant_view: false }); return; } catch(e) {}
-  }
-  window.location.href = tel;
-}
 
 
 
@@ -2348,8 +2276,6 @@ function initTabs() {
 
   addClickHandler('btnToBooking', () => goPage('booking'));
   // phoneLink: нативный href="tel:" — не вешаем addClickHandler (он блокирует e.preventDefault)
-  addClickHandler('succPhoneLink', makeCall);
-  addClickHandler('callFab', makeCall);
   addClickHandler('btnBkReset', bkReset);
   addClickHandler('calPrevBtn', calPrev);
   addClickHandler('calNextBtn', calNext);

@@ -2047,11 +2047,25 @@ function fetchWithTimeout(url, options, timeout) {
 
 function makeCall() {
   haptic('light');
+  var popup = document.getElementById('callPopup');
+  if (popup) {
+    popup.style.display = 'flex';
+    popup.onclick = function(e) { if (e.target === popup) callPopupClose(); };
+  }
+}
+
+function callPopupDial() {
+  callPopupClose();
   var tel = 'tel:+79525608898';
   if (tg && tg.openLink) {
     try { tg.openLink(tel, { try_instant_view: false }); return; } catch(e) {}
   }
-  try { window.location.href = tel; } catch(e) {}
+  window.location.href = tel;
+}
+
+function callPopupClose() {
+  var popup = document.getElementById('callPopup');
+  if (popup) popup.style.display = 'none';
 }
 
 // Отдельный обработчик для phoneLink — без preventDefault
@@ -5859,5 +5873,25 @@ function admMsgClient(phone, name) {
 window.admMsgClient = admMsgClient;
 
 </script>
+
+<!-- CALL POPUP -->
+<div id="callPopup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);align-items:flex-end;justify-content:center;padding-bottom:40px">
+  <div style="width:calc(100% - 32px);max-width:400px;border-radius:14px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif">
+    <div style="background:rgba(30,30,32,0.95);backdrop-filter:blur(20px);border-radius:14px;overflow:hidden;margin-bottom:8px">
+      <div style="padding:16px 16px 4px;text-align:center">
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:4px">+7 (952) 560-88-98</div>
+      </div>
+      <div style="height:0.5px;background:rgba(255,255,255,0.15);margin:0 16px"></div>
+      <button onclick="callPopupDial()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:400;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;letter-spacing:0;text-transform:none">
+        Позвонить +7 (952) 560-88-98
+      </button>
+    </div>
+    <div style="background:rgba(30,30,32,0.95);backdrop-filter:blur(20px);border-radius:14px;overflow:hidden">
+      <button onclick="callPopupClose()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:600;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;letter-spacing:0;text-transform:none">
+        Отменить
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -3885,27 +3885,34 @@ function setReviewRating(rating) {
 function loadReviews(page) {
   page = page||0;
   const container=ge('reviewsList');
-  container.innerHTML='<div class="rev-loading">Загрузка отзывов...</div>';
+  // FIX: при первой загрузке — показываем индикатор; при «Показать ещё» — не трогаем существующие
+  if (page === 0) container.innerHTML='<div class="rev-loading">Загрузка отзывов...</div>';
+  const existingBtn=ge('revMoreBtn'); if(existingBtn) existingBtn.remove();
   const offset=page*CONFIG.REVIEWS_PER_PAGE;
   fetchWithTimeout(CONFIG.GS+'?action=getReviews&offset='+offset+'&limit='+CONFIG.REVIEWS_PER_PAGE)
     .then(r=>r.json())
     .then(d => {
       const reviews=d.reviews||[];
       if (reviews.length===0 && page===0) { container.innerHTML='<div class="rev-empty">Отзывов пока нет. Будьте первым!</div>'; return; }
-      container.innerHTML = reviews.map(rev => {
+      const html = reviews.map(rev => {
         let stars=''; for(let i=0;i<5;i++) stars+=i<rev.rating?'★':'☆';
         const mb=rev.master?'<span class="rev-card-master">✂️ '+escapeHtml(rev.master)+'</span>':'';
         const vb=rev.verified?'<span class="rev-verified">✓ Проверенный визит</span>':'';
         const vcls=rev.verified?' verified':'';
         return '<div class="rev-card'+vcls+'"><div class="rev-card-hdr"><span class="rev-card-name">'+escapeHtml(rev.name)+'</span><span class="rev-card-rating">'+stars+'</span></div><div class="rev-card-master-row">'+mb+vb+'</div><div class="rev-card-text">'+escapeHtml(rev.text)+'</div><div class="rev-card-date">'+escapeHtml(String(rev.date||''))+'</div></div>';
       }).join('');
-      const existingBtn=ge('revMoreBtn'); if(existingBtn) existingBtn.remove();
+      // FIX: page===0 — полная замена; page>0 — добавление к существующим
+      if (page === 0) {
+        container.innerHTML = html;
+      } else {
+        container.insertAdjacentHTML('beforeend', html);
+      }
       if (d.hasMore) {
         const btn=document.createElement('button'); btn.id='revMoreBtn'; btn.className='rev-more-btn'; btn.textContent='Показать ещё';
         btn.onclick=()=>loadReviews(page+1); container.after(btn);
       }
     })
-    .catch(e=>{ console.error('loadReviews:',e); container.innerHTML='<div class="rev-empty">Ошибка загрузки отзывов</div>'; });
+    .catch(e=>{ console.error('loadReviews:',e); if(page===0) container.innerHTML='<div class="rev-empty">Ошибка загрузки отзывов</div>'; });
 }
 
 // ID привязанной записи — устанавливается через deep link
@@ -5615,7 +5622,7 @@ function rescConfirm() {
 window.rescConfirm = rescConfirm;
 
 /* ════════════════════════════════════════════════════════
-   П.2: ЖИВОЕ ОБНОВЛЕНИЕ СВОДКИ — каждые 2 минуты
+   П.2: ЖИВОЕ ОБНОВЛЕНИЕ СВОДКИ — каждые 10 минут
    ════════════════════════════════════════════════════════ */
 var _summaryAutoTimer = null;
 var _summaryLastCount = -1;
@@ -5681,7 +5688,7 @@ var _admBadgeCount = 0;
 
 // Отдельный таймер для бейджа — работает только когда не в админке
 var _admBadgeTimer = null;
-var _admLastSeenCount = 0;
+var _admLastSeenCount = -1; // FIX: -1 = ещё не инициализирован, первый запрос — калибровка
 var _admLastSeenTs = 0;
 
 function admBadgeStart() {
@@ -5705,6 +5712,8 @@ function admBadgeCheck() {
     .then(function(r){ return r.json(); })
     .then(function(d){
       var count = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; }).length;
+      // FIX: первый запрос — калибровка, просто запоминаем текущее количество
+      if (_admLastSeenCount < 0) { _admLastSeenCount = count; return; }
       var diff = count - _admLastSeenCount;
       if (diff > 0) admBadgeShow(diff);
     })

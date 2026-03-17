@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1153,7 +1154,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
   <div class="home-btns" style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
     <button class="btn-g" id="btnToBooking">✦ Записаться онлайн ✦</button>
-    <a href="tel:+79525608898" id="phoneLink" style="display:block;text-align:center;border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--gold);text-decoration:none;border-radius:10px;font-family:'Cormorant Garamond',serif">Позвонить &middot; +7 (952) 560-88-98</a>
+    <button onclick="makeCall()" style="display:block;width:100%;text-align:center;border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:var(--gold);background:transparent;border-radius:10px;font-family:'Cormorant Garamond',serif;cursor:pointer">Позвонить · +7 (952) 560-88-98</button>
   </div>
   <div class="home-divider"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="info-block">
@@ -1400,6 +1401,31 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 </div>
 
 <!-- PAGE: ADMIN -->
+<div class="page" id="page-reviews">
+  <div class="page-hdr"><h1 class="page-ttl">Отзы<em>вы</em></h1></div>
+  <div style="padding:0 16px 16px">
+    <div class="reviews-list" id="reviewsListPage">
+      <div class="rev-loading">Загрузка отзывов...</div>
+    </div>
+    <div class="reviews-form" style="margin-top:24px">
+      <div class="rev-form-ttl">Оставить отзыв</div>
+      <div class="rev-stars" id="revStarsPage">
+        <span class="rev-star" data-rating="1">★</span>
+        <span class="rev-star" data-rating="2">★</span>
+        <span class="rev-star" data-rating="3">★</span>
+        <span class="rev-star" data-rating="4">★</span>
+        <span class="rev-star" data-rating="5">★</span>
+      </div>
+      <select class="rev-inp rev-master-sel" id="revMasterPage">
+        <option value="">Мастер (необязательно)</option>
+      </select>
+      <input type="text" class="rev-inp" id="revNamePage" placeholder="Ваше имя">
+      <textarea class="rev-txt" id="revTextPage" placeholder="Напишите ваш отзыв..."></textarea>
+      <button class="rev-btn" id="revSubmitPage">Отправить отзыв</button>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-admin">
   <div class="sec-hdr">
     <div class="sec-lbl">✦ Управление</div>
@@ -1795,6 +1821,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   <button class="tab" id="tab-mybookings" data-page="mybookings">
     <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
     Мои
+  </button>
+  <button class="tab" id="tab-reviews" data-page="reviews">
+    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    Отзывы
   </button>
   <button class="tab" id="tab-admin" data-page="admin" style="display:none">
     <span class="adm-tab-badge" id="admTabBadge" style="display:none"></span>
@@ -2362,6 +2392,7 @@ function goPage(id) {
   }
   if (id === 'booking')    bkInit();
   if (id === 'mybookings') myBkInit();
+  if (id === 'reviews')    revPageInit();
   if (id === 'admin')      admInit();
   if (id !== 'admin')      admStopPolling();
   // Бейдж: останавливаем таймер когда в админке (незачем проверять), возобновляем при выходе
@@ -3881,6 +3912,81 @@ function setReviewRating(rating) {
   document.querySelectorAll('.rev-star').forEach(star =>
     star.classList.toggle('active', parseInt(star.getAttribute('data-rating')) <= rating)
   );
+}
+
+
+function revPageInit() {
+  var sel = ge('revMasterPage');
+  if (sel && sel.options.length <= 1) {
+    MASTERS.forEach(function(m) { var o = document.createElement('option'); o.value = m.name; o.textContent = m.name; sel.appendChild(o); });
+  }
+  document.querySelectorAll('#revStarsPage .rev-star').forEach(function(star) {
+    star.addEventListener('click', function() {
+      window._revPageRating = parseInt(this.getAttribute('data-rating'));
+      document.querySelectorAll('#revStarsPage .rev-star').forEach(function(s) {
+        s.classList.toggle('active', parseInt(s.getAttribute('data-rating')) <= window._revPageRating);
+      });
+    });
+  });
+  var btn = ge('revSubmitPage');
+  if (btn && !btn._bound) {
+    btn._bound = true;
+    btn.addEventListener('click', submitReviewPage);
+  }
+  loadReviewsPage(0);
+}
+
+function loadReviewsPage(page) {
+  page = page||0;
+  var container = ge('reviewsListPage');
+  if (!container) return;
+  if (page === 0) container.innerHTML = '<div class="rev-loading">Загрузка отзывов...</div>';
+  fetch(CONFIG.GAS_URL + '?action=getReviews&page=' + page)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var reviews = d.reviews||[];
+      if (reviews.length === 0 && page === 0) { container.innerHTML = '<div class="rev-empty">Отзывов пока нет. Будьте первым!</div>'; return; }
+      var html = reviews.map(function(rev) {
+        var stars = Array.from({length:5}, function(_,i) { return '<span style="color:'+(i<rev.rating?'var(--gold)':'rgba(201,168,76,.2)')+';font-size:16px">★</span>'; }).join('');
+        var mb = rev.master ? '<span class="rev-card-master">✂️ '+escapeHtml(rev.master)+'</span>' : '';
+        var vb = rev.verified ? '<span class="rev-verified">✓ Проверенный визит</span>' : '';
+        var vcls = rev.verified ? ' rev-card-verified' : '';
+        return '<div class="rev-card'+vcls+'"><div class="rev-card-hdr"><span class="rev-card-name">'+escapeHtml(rev.name)+'</span><span class="rev-card-rating">'+stars+'</span></div><div class="rev-card-master-row">'+mb+vb+'</div><div class="rev-card-text">'+escapeHtml(rev.text)+'</div><div class="rev-card-date">'+escapeHtml(String(rev.date||''))+'</div></div>';
+      }).join('');
+      if (page === 0) container.innerHTML = html; else container.insertAdjacentHTML('beforeend', html);
+      var old = ge('revMoreBtnPage'); if (old) old.remove();
+      if (d.hasMore) {
+        var btn2 = document.createElement('button'); btn2.id = 'revMoreBtnPage'; btn2.className = 'rev-more-btn'; btn2.textContent = 'Показать ещё';
+        btn2.onclick = function() { loadReviewsPage(page+1); }; container.after(btn2);
+      }
+    })
+    .catch(function() { if (page===0) container.innerHTML = '<div class="rev-empty">Ошибка загрузки отзывов</div>'; });
+}
+
+function submitReviewPage() {
+  var rating = window._revPageRating||0;
+  var name = (ge('revNamePage')||{}).value||'';
+  var text = (ge('revTextPage')||{}).value||'';
+  var master = (ge('revMasterPage')||{}).value||'';
+  if (!rating) { showToast('Поставьте оценку'); return; }
+  if (!name.trim()) { showToast('Введите имя'); return; }
+  if (!text.trim()) { showToast('Напишите отзыв'); return; }
+  var btn = ge('revSubmitPage'); if (btn) { btn.disabled=true; btn.textContent='Отправка...'; }
+  fetch(CONFIG.GAS_URL, { method:'POST', body: JSON.stringify({action:'addReview', rating:rating, name:name.trim(), text:text.trim(), master:master}) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.ok) {
+        showToast('Спасибо за отзыв!');
+        if (ge('revNamePage')) ge('revNamePage').value='';
+        if (ge('revTextPage')) ge('revTextPage').value='';
+        if (ge('revMasterPage')) ge('revMasterPage').value='';
+        window._revPageRating = 0;
+        document.querySelectorAll('#revStarsPage .rev-star').forEach(function(s) { s.classList.remove('active'); });
+        loadReviewsPage(0);
+      } else { showToast('Ошибка: ' + (d.error||'попробуйте ещё раз')); }
+    })
+    .catch(function() { showToast('Ошибка отправки'); })
+    .finally(function() { if (btn) { btn.disabled=false; btn.textContent='Отправить отзыв'; } });
 }
 
 function loadReviews(page) {

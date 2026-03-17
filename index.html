@@ -406,6 +406,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .reviews-hdr{text-align:center;margin-bottom:20px;padding:0 24px}
 .reviews-list{padding:0 24px;margin-bottom:20px;max-height:320px;overflow-y:auto}
 .rev-loading{text-align:center;color:var(--gray);font-style:italic;padding:20px 0}
+.rev-masters-rating{padding:16px;margin-bottom:4px}
+.rev-masters-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.5);margin-bottom:12px}
+.rev-mrating-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rev-mrating-row:last-child{margin-bottom:0}
+.rev-mrating-name{font-size:13px;color:var(--cream);min-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rev-mrating-bar-bg{flex:1;height:5px;background:rgba(201,168,76,.1);border-radius:3px;overflow:hidden}
+.rev-mrating-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c9a84c,#f0d080);transition:width .6s ease}
+.rev-mrating-score{font-size:13px;color:var(--gold);font-weight:700;min-width:28px;text-align:right}
+.rev-mrating-count{font-size:10px;color:rgba(201,168,76,.35);min-width:36px;text-align:right}
+.rev-section-divider{height:1px;background:rgba(201,168,76,.08);margin:4px 0 20px}
 .rev-card{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);padding:14px;margin-bottom:10px;border-radius:12px}
 .rev-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .rev-card-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream)}
@@ -1367,10 +1377,12 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 <div class="page" id="page-reviews">
   <div class="page-hdr"><h1 class="page-ttl">Отзы<em>вы</em></h1></div>
   <div style="padding:0 16px 16px">
-    <div class="reviews-list" id="reviewsListPage">
-      <div class="rev-loading">Загрузка отзывов...</div>
+    <div class="rev-masters-rating" id="revMastersRating">
+      <div class="rev-masters-title">Рейтинг мастеров</div>
+      <div id="revMastersRatingList"></div>
     </div>
-    <div class="reviews-form" style="margin-top:24px">
+    <div class="rev-section-divider"></div>
+    <div class="reviews-form" style="margin-top:0">
       <div class="rev-form-ttl">Оставить отзыв</div>
       <div class="rev-stars" id="revStarsPage">
         <span class="rev-star" data-rating="1">★</span>
@@ -1385,6 +1397,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <input type="text" class="rev-inp" id="revNamePage" placeholder="Ваше имя">
       <textarea class="rev-txt" id="revTextPage" placeholder="Напишите ваш отзыв..."></textarea>
       <button class="rev-btn" id="revSubmitPage">Отправить отзыв</button>
+    </div>
+    <div class="rev-section-divider" style="margin:20px 0 16px"></div>
+    <div class="reviews-list" id="reviewsListPage">
+      <div class="rev-loading">Загрузка отзывов...</div>
     </div>
   </div>
 </div>
@@ -3868,7 +3884,41 @@ function setReviewRating(rating) {
 }
 
 
+function renderMastersRating() {
+  var list = ge('revMastersRatingList');
+  if (!list) return;
+  var masters = MASTERS.slice(); // копия чтобы не мутировать
+  // Сортируем: сначала с отзывами по убыванию рейтинга, потом без
+  masters.sort(function(a, b) {
+    var ra = MASTER_RATINGS[a.name];
+    var rb = MASTER_RATINGS[b.name];
+    var hasA = ra && ra.count > 0;
+    var hasB = rb && rb.count > 0;
+    if (hasA && !hasB) return -1;
+    if (!hasA && hasB) return 1;
+    if (hasA && hasB) return rb.avg - ra.avg;
+    return 0;
+  });
+  // Максимальный рейтинг для нормировки шкалы
+  var maxRating = 5;
+  list.innerHTML = masters.map(function(m) {
+    var r = MASTER_RATINGS[m.name];
+    var hasRating = r && r.count > 0;
+    var score = hasRating ? r.avg.toFixed(1) : '—';
+    var fillPct = hasRating ? Math.round((r.avg / maxRating) * 100) : 0;
+    var countTxt = hasRating ? r.count + ' отз.' : 'нет';
+    var opacity = hasRating ? '1' : '0.35';
+    return '<div class="rev-mrating-row" style="opacity:' + opacity + '">'
+      + '<div class="rev-mrating-name">' + escapeHtml(m.name) + '</div>'
+      + '<div class="rev-mrating-bar-bg"><div class="rev-mrating-bar-fill" style="width:' + fillPct + '%"></div></div>'
+      + '<div class="rev-mrating-score">' + score + '</div>'
+      + '<div class="rev-mrating-count">' + countTxt + '</div>'
+      + '</div>';
+  }).join('');
+}
+
 function revPageInit() {
+  renderMastersRating();
   var sel = ge('revMasterPage');
   if (sel && sel.options.length <= 1) {
     MASTERS.forEach(function(m) { var o = document.createElement('option'); o.value = m.name; o.textContent = m.name; sel.appendChild(o); });

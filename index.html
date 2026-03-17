@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -3068,31 +3069,42 @@ function bkReset() {
    МОИ ЗАПИСИ — FIX-08: кэш
    ──────────────────────────────────────────────────────────── */
 var myBkTab = 'upcoming';
+var myBkHistoryOffset = 0; // v6.7-FIX-7: offset для пагинации истории
 
-function myBkInit() { myBkTab='upcoming'; _myBkCache={data:null,ts:0,tab:''}; myBkRender(); }
-function myBkSwitchTab(tab) { myBkTab=tab; myBkRender(); }
+function myBkInit() { myBkTab='upcoming'; myBkHistoryOffset=0; _myBkCache={data:null,ts:0,tab:''}; myBkRender(); }
+function myBkSwitchTab(tab) { myBkTab=tab; if(tab==='history') myBkHistoryOffset=0; myBkRender(); }
 
 function myBkRender() {
   const container = ge('myBkContent');
   const chatId = getChatId();
   if (!chatId) { container.innerHTML='<div class="my-no-tg">Откройте приложение через Telegram</div>'; return; }
 
-  // FIX-08: кэш на 30 секунд
+  // FIX-08: кэш на 30 секунд (только для первой страницы)
   const now = Date.now();
-  if (_myBkCache.data && _myBkCache.tab === myBkTab && (now - _myBkCache.ts) < CONFIG.MY_BK_CACHE_TTL_MS) {
-    _renderMyBkData(_myBkCache.data);
+  if (myBkHistoryOffset === 0 && _myBkCache.data && _myBkCache.tab === myBkTab && (now - _myBkCache.ts) < CONFIG.MY_BK_CACHE_TTL_MS) {
+    _renderMyBkData(_myBkCache.data, false);
     return;
   }
 
-  container.innerHTML = _myBkTabsHtml() + [1,2,3].map(()=>'<div class="skel-card"><div class="skel-row"><div class="skel-circle skeleton"></div><div style="flex:1"><div class="skel-line skeleton w80"></div><div class="skel-line skeleton w60"></div></div></div><div class="skel-block skeleton"></div></div>').join('');
+  // Скелетон только при первой загрузке
+  if (myBkHistoryOffset === 0) {
+    container.innerHTML = _myBkTabsHtml() + [1,2,3].map(()=>'<div class="skel-card"><div class="skel-row"><div class="skel-circle skeleton"></div><div style="flex:1"><div class="skel-line skeleton w80"></div><div class="skel-line skeleton w60"></div></div></div><div class="skel-block skeleton"></div></div>').join('');
+  }
+
   const action = myBkTab==='history' ? 'getMyBookingsHistory' : 'getMyBookings';
   const initData = getInitData();
+  // v6.7-FIX-7: передаём offset — бекенд поддерживает пагинацию по 30 записей
+  const offsetParam = (myBkTab==='history') ? '&offset=' + myBkHistoryOffset : '';
 
-  fetchWithTimeout(CONFIG.GS + '?action=' + action + '&chatId=' + encodeURIComponent(chatId) + (initData ? '&initData=' + initData : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=' + action + '&chatId=' + encodeURIComponent(chatId) + offsetParam + (initData ? '&initData=' + initData : ''))
     .then(r => r.json())
     .then(d => {
-      _myBkCache = {data: d, ts: Date.now(), tab: myBkTab};
-      _renderMyBkData(d);
+      if (myBkHistoryOffset === 0) {
+        _myBkCache = {data: d, ts: Date.now(), tab: myBkTab};
+        _renderMyBkData(d, false);
+      } else {
+        _renderMyBkData(d, true); // append mode
+      }
     })
     .catch(e => {
       console.error('myBkRender:', e);
@@ -3107,12 +3119,12 @@ function _myBkTabsHtml() {
     '</div>';
 }
 
-function _renderMyBkData(d) {
+function _renderMyBkData(d, appendMode) {
   const container = ge('myBkContent');
   const bks = d.bookings || [];
   const tabsHtml = _myBkTabsHtml();
 
-  if (bks.length===0) {
+  if (!appendMode && bks.length===0) {
     const emptyText = myBkTab==='history' ? 'Истории посещений пока нет' : 'У вас нет предстоящих записей';
     const emptyAction = myBkTab==='upcoming'
       ? '<button onclick="goPage(\'booking\')" style="margin-top:16px;background:var(--gold);color:var(--black);border:none;padding:12px 28px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:\'Cormorant Garamond\',serif">✦ Записаться</button>'
@@ -3123,7 +3135,7 @@ function _renderMyBkData(d) {
   }
 
   const isPast = myBkTab==='history';
-  let html = tabsHtml;
+  let html = appendMode ? '' : tabsHtml;
 
   bks.forEach(b => {
     const displayDate = b.dateFormatted || formatDateTimeForDisplay(b.date, b.time);
@@ -3159,10 +3171,31 @@ function _renderMyBkData(d) {
     html += '</div></div>';
   });
 
-  container.innerHTML = html;
+  // v6.7-FIX-7: кнопка «Показать ещё» если есть следующая страница
+  if (d.hasMore) {
+    html += '<button id="myBkLoadMore" onclick="myBkLoadMore()" style="width:100%;margin-top:12px;padding:13px;background:transparent;border:1px solid rgba(201,168,76,.2);color:rgba(201,168,76,.7);font-family:\'Cormorant Garamond\',serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer">Показать ещё</button>';
+  }
+
+  if (appendMode) {
+    // Удаляем старую кнопку «Показать ещё» и добавляем новые карточки
+    const oldBtn = ge('myBkLoadMore');
+    if (oldBtn) oldBtn.remove();
+    container.insertAdjacentHTML('beforeend', html);
+  } else {
+    container.innerHTML = html;
+  }
 }
 
 /* FIX-06: requestAnimationFrame вместо setTimeout */
+// v6.7-FIX-7: загрузить следующую страницу истории
+function myBkLoadMore() {
+  const btn = ge('myBkLoadMore');
+  if (btn) { btn.disabled = true; btn.textContent = 'Загрузка...'; }
+  myBkHistoryOffset += 30; // PAGE_SIZE совпадает с бекендом
+  myBkRender();
+}
+window.myBkLoadMore = myBkLoadMore;
+
 function myBkRepeat(masterId) {
   goPage('booking');
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -3463,9 +3496,21 @@ function renderBookingCard(b, nowMin, todayStr) {
   var safeName   = escapeHtml(String(b.name||'')).replace(/'/g,'&#39;');
   var safeMaster = escapeHtml(String(b.master||'')).replace(/'/g,'&#39;');
   var safeDate   = escapeHtml(String(b.date||todayStr||''));
+  var safeTime   = escapeHtml(String(b.time||''));
+  var safeMasterId = escapeHtml(String(b.masterId||''));
   var total      = parseFloat(b.total) || 0;
 
-  var cancelBtn = (safeId && minsLeft >= 0) ? '<button class="adm-booking-cancel" onclick="admQuickCancel(\''+safeId+'\',\''+safeName+'\',this)">✕ Отменить</button>' : '';
+  // v6.7-FIX-4: передаём полный набор полей через data-атрибуты — POST с bookingId+date+time+master
+  var cancelBtn = (safeId && minsLeft >= 0)
+    ? '<button class="adm-booking-cancel"' +
+        ' data-id="'     + safeId     + '"' +
+        ' data-name="'   + safeName   + '"' +
+        ' data-date="'   + safeDate   + '"' +
+        ' data-time="'   + safeTime   + '"' +
+        ' data-master="' + safeMaster + '"' +
+        ' data-masterid="'+ safeMasterId +'"' +
+        ' onclick="admQuickCancel(this)">✕ Отменить</button>'
+    : '';
   var rescBtn   = (safeId && minsLeft >= 0) ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
   var noteBtn   = safeId ? '<button class="adm-note-btn" onclick="admToggleNote(\''+safeId+'\')" title="Заметка">📝</button>' : '';
   var doneBtn   = (safeId && minsLeft < 0 && b.status !== 'completed')
@@ -4995,14 +5040,34 @@ function initMegaWow() {
 /* ────────────────────────────────────────────────────────
    1. КНОПКА ОТМЕНЫ В СВОДКЕ — admQuickCancel
    ──────────────────────────────────────────────────────── */
-function admQuickCancel(bookingId, clientName, btn) {
+function admQuickCancel(btn) {
   haptic('medium');
+  // v6.7-FIX-4: читаем все поля из data-атрибутов кнопки
+  var bookingId  = btn.dataset.id;
+  var clientName = btn.dataset.name;
+  var date       = btn.dataset.date;
+  var time       = btn.dataset.time;
+  var master     = btn.dataset.master;
+  var masterId   = btn.dataset.masterid;
+
   confirmAction('Отменить запись клиента ' + clientName + '?').then(function(confirmed) {
     if (!confirmed) return;
     btn.disabled = true; btn.textContent = 'Отмена...';
     var chatId = getChatId();
-    fetchWithTimeout(CONFIG.GS + '?action=cancelBooking&bookingId=' + encodeURIComponent(bookingId) +
-      '&chatId=' + encodeURIComponent(chatId) + '&reason=admin')
+    // POST с bookingId (приоритетный путь) + date/time/master (резервный)
+    fetchWithTimeout(CONFIG.GS, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({
+        action:    'cancelBooking',
+        bookingId: bookingId,
+        date:      date,
+        time:      time,
+        master:    master,
+        masterId:  masterId,
+        chatId:    chatId
+      })
+    })
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (d.error) { showToast('Ошибка: ' + d.error, 'error'); btn.disabled=false; btn.textContent='Отменить запись'; return; }

@@ -1071,8 +1071,25 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .anl-master-avg{font-size:11px;color:rgba(201,168,76,.6);letter-spacing:.5px}
 .mst-rating-inline{font-size:11px;color:var(--gold);margin-left:6px;font-weight:400}
 </style>
+<style>
+#callPopup { -webkit-overflow-scrolling: touch; }
+#callPopup[style*="flex"] { display:flex !important; }
+</style>
 </head>
 <body>
+<div id="callPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:rgba(0,0,0,0.6);-webkit-transform:translateZ(0);transform:translateZ(0);align-items:flex-end;justify-content:center;padding:0 16px 50px;box-sizing:border-box;flex-direction:column">
+  <div style="width:100%;max-width:400px;margin:0 auto;border-radius:14px;overflow:hidden;background:rgba(28,28,30,0.98);margin-bottom:8px">
+    <div style="padding:14px 20px;text-align:center;border-bottom:0.5px solid rgba(255,255,255,0.15)">
+      <div style="font-size:13px;color:rgba(255,255,255,0.45);font-family:-apple-system,sans-serif;margin-bottom:2px">Барбершоп BARBER STYLE</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.85);font-family:-apple-system,sans-serif">+7 (952) 560-88-98</div>
+    </div>
+    <button onclick="callPopupDial()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:400;cursor:pointer;font-family:-apple-system,sans-serif;text-align:center">Позвонить</button>
+  </div>
+  <div style="width:100%;max-width:400px;margin:0 auto;border-radius:14px;overflow:hidden;background:rgba(28,28,30,0.98)">
+    <button onclick="callPopupClose()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif;text-align:center">Отменить</button>
+  </div>
+</div>
+
 <script>
 (function(){
   function hs(){var e=document.getElementById('splash');if(e){e.style.display='none';}}
@@ -2045,12 +2062,19 @@ function fetchWithTimeout(url, options, timeout) {
 }
 
 function makeCall() {
-  haptic('light');
   var popup = document.getElementById('callPopup');
-  if (popup) {
-    popup.style.display = 'flex';
-    popup.onclick = function(e) { if (e.target === popup) callPopupClose(); };
-  }
+  if (!popup) return;
+  popup.style.cssText = popup.style.cssText.replace('display:none','display:flex');
+  popup.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  popup.onclick = function(e) { if (e.target === popup) callPopupClose(); };
+  try { haptic('light'); } catch(e) {}
+}
+
+function callPopupClose() {
+  var popup = document.getElementById('callPopup');
+  if (popup) popup.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 function callPopupDial() {
@@ -2062,10 +2086,7 @@ function callPopupDial() {
   window.location.href = tel;
 }
 
-function callPopupClose() {
-  var popup = document.getElementById('callPopup');
-  if (popup) popup.style.display = 'none';
-}
+
 
 // Отдельный обработчик для phoneLink — без preventDefault
 // чтобы нативный href="tel:" сработал если tg.openLink недоступен
@@ -3928,7 +3949,7 @@ function loadReviewsPage(page) {
   var container = ge('reviewsListPage');
   if (!container) return;
   if (page === 0) container.innerHTML = '<div class="rev-loading">Загрузка отзывов...</div>';
-  fetch(CONFIG.GS + '?action=getReviews&offset=' + (page * 20) + '&limit=20')
+  fetch(CONFIG.GAS_URL + '?action=getReviews&page=' + page)
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var reviews = d.reviews||[];
@@ -3959,7 +3980,7 @@ function submitReviewPage() {
   if (!name.trim()) { showToast('Введите имя'); return; }
   if (!text.trim()) { showToast('Напишите отзыв'); return; }
   var btn = ge('revSubmitPage'); if (btn) { btn.disabled=true; btn.textContent='Отправка...'; }
-  fetchWithTimeout(CONFIG.GS, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({action:'addReview', rating:rating, name:name.trim(), text:text.trim(), master:master}) })
+  fetch(CONFIG.GAS_URL, { method:'POST', body: JSON.stringify({action:'addReview', rating:rating, name:name.trim(), text:text.trim(), master:master}) })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.ok) {
@@ -5872,25 +5893,5 @@ function admMsgClient(phone, name) {
 window.admMsgClient = admMsgClient;
 
 </script>
-
-<!-- CALL POPUP -->
-<div id="callPopup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);align-items:flex-end;justify-content:center;padding-bottom:40px">
-  <div style="width:calc(100% - 32px);max-width:400px;border-radius:14px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif">
-    <div style="background:rgba(30,30,32,0.95);backdrop-filter:blur(20px);border-radius:14px;overflow:hidden;margin-bottom:8px">
-      <div style="padding:16px 16px 4px;text-align:center">
-        <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:4px">+7 (952) 560-88-98</div>
-      </div>
-      <div style="height:0.5px;background:rgba(255,255,255,0.15);margin:0 16px"></div>
-      <button onclick="callPopupDial()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:400;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;letter-spacing:0;text-transform:none">
-        Позвонить +7 (952) 560-88-98
-      </button>
-    </div>
-    <div style="background:rgba(30,30,32,0.95);backdrop-filter:blur(20px);border-radius:14px;overflow:hidden">
-      <button onclick="callPopupClose()" style="display:block;width:100%;padding:16px;background:transparent;border:none;color:#0a84ff;font-size:20px;font-weight:600;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;letter-spacing:0;text-transform:none">
-        Отменить
-      </button>
-    </div>
-  </div>
-</div>
 </body>
 </html>

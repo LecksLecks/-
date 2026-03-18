@@ -5877,25 +5877,40 @@ function wlSubmit() {
   btn.disabled    = true;
   btn.textContent = 'Отправляем...';
 
-  // Показываем экран успеха сразу — не ждём ответа GAS (он медленный)
-  setTimeout(function() {
+  var wlUrl = CONFIG.GS + '?action=addWaitlist' +
+    '&name='     + encodeURIComponent(name) +
+    '&phone='    + encodeURIComponent(phone) +
+    '&master='   + encodeURIComponent(_wlMaster) +
+    '&masterId=' + encodeURIComponent(S.mid !== null ? S.mid : '') +
+    '&date='     + encodeURIComponent(_wlDate) +
+    '&slot='     + encodeURIComponent(_wlSlot) +
+    '&chatId='   + encodeURIComponent(tgChatId || '');
+
+  // Отправляем синхронно через XMLHttpRequest — надёжнее в Telegram WebView
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', wlUrl, true);
+  xhr.timeout = 15000;
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      document.getElementById('wlForm').style.display    = 'none';
+      document.getElementById('wlSuccess').style.display = 'block';
+      btn.disabled    = false;
+      btn.textContent = 'Перезвоните мне';
+    }
+  };
+  xhr.ontimeout = function() {
     document.getElementById('wlForm').style.display    = 'none';
     document.getElementById('wlSuccess').style.display = 'block';
     btn.disabled    = false;
     btn.textContent = 'Перезвоните мне';
-  }, 800);
-
-  // Отправляем запрос в фоне — данные сохранятся даже если клиент уже видит успех
-  try {
-    fetch(CONFIG.GS + '?action=addWaitlist' +
-      '&name='     + encodeURIComponent(name) +
-      '&phone='    + encodeURIComponent(phone) +
-      '&master='   + encodeURIComponent(_wlMaster) +
-      '&masterId=' + encodeURIComponent(S.mid !== null ? S.mid : '') +
-      '&date='     + encodeURIComponent(_wlDate) +
-      '&slot='     + encodeURIComponent(_wlSlot) +
-      '&chatId='   + encodeURIComponent(tgChatId || ''));
-  } catch(e) {}
+  };
+  xhr.onerror = function() {
+    document.getElementById('wlForm').style.display    = 'none';
+    document.getElementById('wlSuccess').style.display = 'block';
+    btn.disabled    = false;
+    btn.textContent = 'Перезвоните мне';
+  };
+  xhr.send();
 }
 
 </script>

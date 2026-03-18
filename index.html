@@ -5876,22 +5876,26 @@ function wlSubmit() {
   var btn = document.getElementById('wlSubmitBtn');
   btn.disabled    = true;
   btn.textContent = 'Отправляем...';
-  fetchWithTimeout(CONFIG.GS + '?action=addWaitlist' +
-    '&name='     + encodeURIComponent(name) +
-    '&phone='    + encodeURIComponent(phone) +
-    '&master='   + encodeURIComponent(_wlMaster) +
-    '&masterId=' + encodeURIComponent(S.mid !== null ? S.mid : '') +
-    '&date='     + encodeURIComponent(_wlDate) +
-    '&slot='     + encodeURIComponent(_wlSlot) +
-    '&chatId='   + encodeURIComponent(tgChatId || ''))
-    .then(function(r){ return r.json(); })
-    .catch(function(){ return {ok:true}; })
-    .then(function() {
-      document.getElementById('wlForm').style.display    = 'none';
-      document.getElementById('wlSuccess').style.display = 'block';
-      btn.disabled    = false;
-      btn.textContent = 'Перезвоните мне';
-    });
+
+  // Показываем экран успеха сразу — не ждём ответа GAS (он медленный)
+  setTimeout(function() {
+    document.getElementById('wlForm').style.display    = 'none';
+    document.getElementById('wlSuccess').style.display = 'block';
+    btn.disabled    = false;
+    btn.textContent = 'Перезвоните мне';
+  }, 800);
+
+  // Отправляем запрос в фоне — данные сохранятся даже если клиент уже видит успех
+  try {
+    fetch(CONFIG.GS + '?action=addWaitlist' +
+      '&name='     + encodeURIComponent(name) +
+      '&phone='    + encodeURIComponent(phone) +
+      '&master='   + encodeURIComponent(_wlMaster) +
+      '&masterId=' + encodeURIComponent(S.mid !== null ? S.mid : '') +
+      '&date='     + encodeURIComponent(_wlDate) +
+      '&slot='     + encodeURIComponent(_wlSlot) +
+      '&chatId='   + encodeURIComponent(tgChatId || ''));
+  } catch(e) {}
 }
 
 </script>

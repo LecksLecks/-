@@ -2302,11 +2302,11 @@ function loadInitData() {
     return;
   }
 
-  const url = CONFIG.GS + '?action=getInitData&chatId=' + encodeURIComponent(chatId);
+  const url = CONFIG.GS + '?action=getInitData&chatId=' + encodeURIComponent(chatId) + '&initData=' + getInitData();
   fetchWithTimeout(url, {}, 8000)
     .then(r => r.json())
     .then(d => {
-      if (d.error || d.status === 'ok' && !d.role) {
+      if (d.error || (d.status === 'ok' && !d.role)) {
         // Бэкенд не поддерживает getInitData — используем fallback
         loadInitDataFallback();
         return;

@@ -307,20 +307,19 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .queue-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3000;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
 .queue-modal{background:#0d0b07;border:1px solid rgba(201,168,76,.3);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;animation:slideUp .3s ease}
 .queue-icon{width:48px;height:48px;border-radius:50%;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
-.queue-ttl{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--cream);margin-bottom:6px}
-.queue-sub{font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:16px}
-.queue-info-card{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.12);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--gray);line-height:1.7}
+.queue-ttl{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--cream);margin-bottom:6px}
+.queue-sub{font-size:19px;color:var(--gray);line-height:1.5;margin-bottom:16px}
+.queue-info-card{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.12);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:19px;color:var(--gray);line-height:1.7}
 .queue-info-card span{color:var(--cream);font-weight:700}
 .queue-fg{margin-bottom:12px}
-.queue-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;display:block}
-.queue-inp{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:16px;padding:12px;outline:none;border-radius:8px;box-sizing:border-box}
+.queue-lbl{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;display:block}
+.queue-inp{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:24px;padding:12px;outline:none;border-radius:8px;box-sizing:border-box}
 .queue-inp:focus{border-color:rgba(201,168,76,.5)}
 .queue-inp::placeholder{color:rgba(138,125,107,.35)}
 .queue-inp.invalid{border-color:#a04040}
 .queue-btns{display:flex;gap:10px;margin-top:4px}
-.queue-btn-confirm{flex:1;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;border-radius:8px;transition:opacity .15s}
+.queue-btn-confirm{width:100%;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:16px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;border-radius:8px;transition:opacity .15s}
 .queue-btn-confirm:active{opacity:.8}
-.queue-btn-cancel{padding:14px 16px;background:transparent;border:1px solid rgba(201,168,76,.25);color:var(--gold);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;border-radius:8px}
 .queue-success{text-align:center;padding:10px 0 4px}
 .queue-success-ico{font-size:44px;margin-bottom:10px}
 .queue-success-ttl{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--cream);margin-bottom:8px}
@@ -5994,8 +5993,7 @@ function queueOpenModal(slot) {
     '<input id="queuePhone" class="queue-inp" type="tel" placeholder="+7 900 000-00-00" autocomplete="tel">' +
     '</div>' +
     '<div class="queue-btns">' +
-    '<button class="queue-btn-cancel" onclick="queueClose()">Отмена</button>' +
-    '<button class="queue-btn-confirm" onclick="queueSubmit()">Встать в очередь</button>' +
+    '<button class="queue-btn-confirm" onclick="queueSubmit()">Записаться</button>' +
     '</div>' +
     '</div></div>';
 
@@ -6083,12 +6081,12 @@ function queueSubmit() {
       queueShowSuccess();
     } else {
       showToast('Ошибка: ' + (d.error || 'попробуйте позже'), 'error');
-      if (btn) { btn.disabled = false; btn.textContent = 'Встать в очередь'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Записаться'; }
     }
   })
   .catch(function() {
     showToast('Ошибка соединения. Попробуйте позже.', 'error');
-    if (btn) { btn.disabled = false; btn.textContent = 'Встать в очередь'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Записаться'; }
   });
 }
 

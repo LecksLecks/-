@@ -6652,7 +6652,19 @@ function obCheckOnboarding(d) {
   }
   if (_clientProfile && _clientProfile.birthday) {
     var obB = ge('obBirthday');
-    if (obB) obB.value = _clientProfile.birthday;
+    if (obB) {
+      var bval = String(_clientProfile.birthday).replace(/^'/, '').trim();
+      // Если пришло как "Thu Jul 16 2026..." или ISO — парсим в ДД.ММ.ГГГГ
+      if (bval && !/^\d{2}\.\d{2}/.test(bval)) {
+        try {
+          var pd = new Date(bval);
+          if (!isNaN(pd.getTime())) {
+            bval = String(pd.getDate()).padStart(2,'0') + '.' + String(pd.getMonth()+1).padStart(2,'0') + '.' + pd.getFullYear();
+          }
+        } catch(e) { bval = ''; }
+      }
+      obB.value = bval;
+    }
   }
   setTimeout(function(){ obShow(); obValidate(); }, 600);
 }

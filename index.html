@@ -763,9 +763,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   pointer-events:all;transition:opacity .5s ease,transform .5s ease}
 #splash.hiding{animation:splashFadeOut .5s ease forwards;pointer-events:none}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
-.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;
+.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1.25;
   background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards}
+  opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards;text-align:center;width:100%;padding-left:8px}
 .splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px 0}
 .splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards}
 
@@ -1100,7 +1100,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes splashCrown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes splashLine{0%{width:0;opacity:0}100%{width:80px;opacity:1}}
 .splash-crown{font-size:32px;opacity:0;animation:splashCrown .6s ease .2s forwards;margin-bottom:16px}
-.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1;background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards}
+.splash-logo{font-family:'Cinzel',serif;font-size:clamp(36px,12vw,58px);font-weight:700;letter-spacing:8px;line-height:1.25;background:linear-gradient(135deg,#f5efe6,#c9a84c,#e8c97a,#f5efe6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:splashFadeIn .7s cubic-bezier(.34,1.56,.64,1) .3s forwards;text-align:center;width:100%;padding-left:8px}
 .splash-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);width:0;opacity:0;animation:splashLine .6s ease .8s forwards;margin:14px auto;display:block}
 .splash-city{font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(201,168,76,.5);opacity:0;animation:splashCrown .5s ease 1s forwards;text-align:center;width:100%}
 
@@ -3699,14 +3699,12 @@ function admLoadBookings() {
     const byMaster={};
     bk.forEach(b=>{ if(!byMaster[b.master]) byMaster[b.master]=[]; byMaster[b.master].push(b); });
     Object.keys(byMaster).forEach(m=>byMaster[m].sort((a,b)=>a.time<b.time?-1:1));
+    const nowMin = new Date().getHours()*60+new Date().getMinutes();
     let html='';
     Object.keys(byMaster).sort().forEach(mn => {
       html+='<div class="adm-master-group"><div class="adm-master-header">✂️ '+escapeHtml(mn)+' <span class="adm-master-count">('+byMaster[mn].length+' запис.)</span></div>';
       byMaster[mn].forEach(b => {
-        const sb=b.status==='confirmed'?'✅':b.status==='cancelled'?'❌':'⏳';
-        html+='<div class="adm-booking"><div class="adm-booking-time">'+sb+' '+escapeHtml(String(b.time||''))+'</div>' +
-          '<div class="adm-booking-info">'+escapeHtml(String(b.name||''))+'<br>'+escapeHtml(cleanPhone(b.phone))+(b.telegram?' | '+escapeHtml(String(b.telegram)):'')+'<br>'+escapeHtml(String(b.services||''))+(b.total?' | '+escapeHtml(String(b.total)):'')+
-          '</div></div>';
+        html += renderBookingCard(b, nowMin, dateStr);
       });
       html+='</div>';
     });

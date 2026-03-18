@@ -6678,6 +6678,27 @@ window.qbfSelect = qbfSelect;
 var _clientProfile = null;
 var _obSkippedKey = 'bs_ob_skipped';
 
+/* --- Telegram CloudStorage helpers (надёжнее localStorage на Android) --- */
+function _tgCloudSet(key, val) {
+  try {
+    if (tg && tg.CloudStorage && tg.CloudStorage.setItem) {
+      tg.CloudStorage.setItem(key, val);
+    }
+  } catch(e){}
+}
+function _tgCloudGet(key, cb) {
+  try {
+    if (tg && tg.CloudStorage && tg.CloudStorage.getItem) {
+      tg.CloudStorage.getItem(key, function(err, val){
+        cb(err ? null : val);
+      });
+      return true;
+    }
+  } catch(e){}
+  cb(null);
+  return false;
+}
+
 function obShow() {
   var ov = ge('onboardingOverlay');
   if (!ov) return;
@@ -6775,6 +6796,8 @@ function obSubmit() {
     _clientProfile = d.clientProfile || {name: name, phone: phone, birthday: bday, complete: true};
     obPrefillBookingFields();
     try { localStorage.removeItem(_obSkippedKey); localStorage.setItem('bs_ob_done', '1'); } catch(e){}
+    _tgCloudSet('bs_ob_done', '1');
+    _tgCloudSet(_obSkippedKey, '');
     obHide();
     showToast('Профиль сохранён!', 'success', 2500);
   })
@@ -6786,7 +6809,9 @@ function obSubmit() {
 }
 
 function obSkip() {
-  try { localStorage.setItem(_obSkippedKey, String(Date.now())); } catch(e){}
+  var ts = String(Date.now());
+  try { localStorage.setItem(_obSkippedKey, ts); } catch(e){}
+  _tgCloudSet(_obSkippedKey, ts);
   obHide();
 }
 
@@ -6813,12 +6838,42 @@ function obCheckOnboarding(d) {
     return;
   }
 
-  // 2. Пользователь уже скипнул ранее — не показываем
+  // 1b. Профиль уже был сохранён ранее (bs_ob_done) — не показываем,
+  //     даже если бэкенд не вернул complete (сбой сети, кэш и т.д.)
   var chatId = getChatId();
   if (!chatId) return;
-  try {
-    if (localStorage.getItem(_obSkippedKey)) return;
-  } catch(e){}
+
+  var lsDone = false;
+  var lsSkipped = false;
+  try { lsDone    = !!localStorage.getItem('bs_ob_done'); } catch(e){}
+  try { lsSkipped = !!localStorage.getItem(_obSkippedKey); } catch(e){}
+
+  if (lsDone) {
+    obPrefillBookingFields();
+    return;
+  }
+  if (lsSkipped) return;
+
+  // На Android localStorage может сбрасываться — проверяем Telegram CloudStorage
+  _tgCloudGet('bs_ob_done', function(val) {
+    if (val && val !== '') {
+      // CloudStorage помнит — восстанавливаем localStorage и не показываем
+      try { localStorage.setItem('bs_ob_done', '1'); } catch(e){}
+      obPrefillBookingFields();
+      return;
+    }
+    _tgCloudGet(_obSkippedKey, function(val2) {
+      if (val2 && val2 !== '') {
+        try { localStorage.setItem(_obSkippedKey, val2); } catch(e){}
+        return;
+      }
+      // Ничего не найдено — показываем onboarding
+      _obFillPartialAndShow();
+    });
+  });
+}
+
+function _obFillPartialAndShow() {
 
   // 3. Подставляем частичные данные если есть
   if (_clientProfile && _clientProfile.name) {

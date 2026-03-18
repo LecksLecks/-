@@ -19,11 +19,8 @@ html,body{
   font-family:'Cormorant Garamond',serif;
   min-height:100vh;
   overflow-x:hidden;
-  /* FIX-4: фон перенесён на body::before с position:fixed
-     background-attachment:fixed отключает GPU-ускорение на iOS WebView — jank при скролле */
   background-color:#0a0805;
 }
-/* FIX-4: фиксированный фон через псевдоэлемент — не перерисовывается при скролле */
 body::before{
   content:'';
   position:fixed;
@@ -280,7 +277,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cal-d.pst{visibility:hidden}
 .cal-d.avl{cursor:pointer;color:var(--cream)}
 .cal-d.avl::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.7}
-/* FIX-7: полные дни видимы но недоступны — пользователь понимает что день существует */
 .cal-d.full{
   color:rgba(138,125,107,.2);
   cursor:not-allowed;
@@ -1167,8 +1163,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .anl-master-avg{font-size:11px;color:rgba(201,168,76,.6);letter-spacing:.5px}
 .mst-rating-inline{font-size:11px;color:var(--gold);margin-left:6px;font-weight:400}
 
-/* FIX-8: prefers-reduced-motion — отключаем все анимации для пользователей
-   с вестибулярными нарушениями или настройкой «уменьшить движение» */
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after {
     animation-duration: 0.01ms !important;
@@ -1176,11 +1170,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  /* Сплэш показываем сразу без анимации */
   .splash-crown,.splash-logo,.splash-line,.splash-city { opacity:1 !important; filter:none !important; }
-  /* Прогресс-бар записи без плавности */
   .bk-progress-fill { transition:none !important; }
-  /* Частицы при добавлении услуги — скрываем */
   .svc-particle { display:none !important; }
 }
 </style>
@@ -1529,13 +1520,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
         <span class="adm-menu-ico">📅</span>
         <div><span class="adm-menu-nm">Записи</span><span class="adm-menu-desc">Расписание по датам</span></div>
       </button>
+      <button class="adm-menu-item" data-admtab="queuelist">
+        <span class="adm-menu-ico">⏳</span>
+        <div><span class="adm-menu-nm">Очередь</span><span class="adm-menu-desc">Ждут освобождения</span></div>
+      </button>
       <button class="adm-menu-item" data-admtab="slots">
         <span class="adm-menu-ico">🔒</span>
         <div><span class="adm-menu-nm">Слоты</span><span class="adm-menu-desc">Блокировка времени</span></div>
-      </button>
-      <button class="adm-menu-item" data-admtab="dayoffs">
-        <span class="adm-menu-ico">🏖</span>
-        <div><span class="adm-menu-nm">Выходные</span><span class="adm-menu-desc">Дни отдыха мастеров</span></div>
       </button>
       <button class="adm-menu-item" data-admtab="analytics">
         <span class="adm-menu-ico">📊</span>
@@ -1556,10 +1547,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <button class="adm-menu-item" data-admtab="compare">
         <span class="adm-menu-ico">📊</span>
         <div><span class="adm-menu-nm">Сравнение</span><span class="adm-menu-desc">Неделя / месяц</span></div>
-      </button>
-      <button class="adm-menu-item" data-admtab="queuelist">
-        <span class="adm-menu-ico">⏳</span>
-        <div><span class="adm-menu-nm">Очередь</span><span class="adm-menu-desc">Ждут освобождения</span></div>
       </button>
     </div>
   </div>
@@ -1587,16 +1574,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
       <input type="date" class="adm-select" id="admSlotDate">
       <div id="admSlotGrid"></div>
     </div>
-  </div>
-  <div class="adm-panel" id="adm-dayoffs">
-    <div class="adm-section">
-      <div class="adm-section-ttl">Управление выходными днями</div>
-      <select class="adm-select" id="admDayOffMaster">
-        <option value="">Выберите мастера</option>
-      </select>
-      <input type="date" class="adm-select" id="admDayOffDate">
+    <div class="adm-section" style="border-top:1px solid rgba(201,168,76,.12);margin-top:4px">
+      <div class="adm-section-ttl">🏖 Выходной день</div>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5">
+        Мастер и дата берутся из выбора выше. При наличии записей — система предупредит.
+      </p>
       <input type="text" class="adm-select" id="admDayOffReason" placeholder="Причина (необязательно)">
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;margin-top:8px">
         <button class="adm-btn" style="flex:1" id="admAddDayOffBtn">🔴 Установить выходной</button>
         <button class="adm-btn outline" style="flex:1" id="admRemoveDayOffBtn">🟢 Снять выходной</button>
       </div>
@@ -2116,9 +2100,6 @@ function formatPrice(n) {
    ──────────────────────────────────────────────────────────── */
 function ge(id) { return document.getElementById(id); }
 
-/* FIX-6: ref-counted body scroll lock.
-   Несколько модалов могут открываться одновременно — unlock только когда все закрыты.
-   Исключает зависание прокрутки при JS-ошибке внутри открытия модала. */
 var _bodyLockCount = 0;
 function bodyLock() {
   _bodyLockCount++;
@@ -2446,8 +2427,7 @@ function initTabs() {
 
   const today = formatDate_iso(new Date());
   if (admSlotDate)    admSlotDate.value    = today;
-  const admDayOffDate = ge('admDayOffDate');
-  if (admDayOffDate)  admDayOffDate.value  = today;
+  // admDayOffDate убран — дата берётся из admSlotDate
 }
 
 function addClickHandler(id, cb) {
@@ -3082,26 +3062,17 @@ function bkValidate() {
 /* FIX-04: total передаётся числом */
 function bkSubmit() {
   if (isSubmitting) return;
-
   const name   = (ge('bkName').value||'').trim();
   const phone  = (ge('bkPhone').value||'').trim();
   const master = getMaster(S.mid);
   if (!name||!isPhoneValid(phone)||!S.slot||!S.date||!master||S.cart.length===0) return;
-
-  // FIX-5: блокируем кнопку ДО установки флага — нет промежутка для двойного нажатия
   const btn = ge('bkSub');
-  btn.disabled = true;
-  btn.textContent = '';
-  btn.style.display = 'none';
+  btn.disabled = true; btn.textContent = ''; btn.style.display = 'none';
   ge('bkSpinner').classList.add('show');
   isSubmitting = true;
-
-  // FIX-5: единая функция сброса — исключает дублирование кода в каждой ветке
   function bkReset() {
-    isSubmitting = false;
-    btn.disabled = false;
-    btn.textContent = 'Записаться';
-    btn.style.display = '';
+    isSubmitting = false; btn.disabled = false;
+    btn.textContent = 'Записаться'; btn.style.display = '';
     ge('bkSpinner').classList.remove('show');
   }
 
@@ -3123,7 +3094,7 @@ function bkSubmit() {
   fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
     .then(r => r.json())
     .then(d => {
-      // success path — reset handled below after checks
+      // success path
 
       if (d.error==='slot_taken'||d.error==='slot_unavailable') {
         bkReset();
@@ -3145,7 +3116,7 @@ function bkSubmit() {
       }
       if (d.error)                 { bkReset(); showToast('Ошибка: ' + d.error, 'error'); return; }
 
-      // Успех — FIX-5: сбрасываем состояние кнопки
+      // Успех
       isSubmitting = false;
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
       haptic('success');
@@ -3436,8 +3407,7 @@ function admTab(tab, tabEl) {
 
   if (tab==='summary')   admLoadSummary();
   if (tab==='bookings')  { admBkInitDateStrip(); admLoadBookings(); }
-  if (tab==='slots')     admLoadSlots();
-  if (tab==='dayoffs')   admLoadDayOffsList();
+  if (tab==='slots')     { admLoadSlots(); admLoadDayOffsList(); }
   if (tab==='analytics') { anlInitPeriodTabs(); admLoadAnalytics(); }
   if (tab==='broadcast') bcInit();
   if (tab==='clients')   clInit();
@@ -3451,12 +3421,12 @@ function admTab(tab, tabEl) {
 var _admInited = false;
 function admInit() {
   if (!IS_ADMIN) return;
-  const selBk=ge('admBkMaster'), selSl=ge('admSlotMaster'), selDayOff=ge('admDayOffMaster');
+  const selBk=ge('admBkMaster'), selSl=ge('admSlotMaster');
   if (selBk.options.length<=1) {
-    MASTERS.forEach(m => { selBk.add(new Option(m.name,m.id)); selSl.add(new Option(m.name,m.id)); selDayOff.add(new Option(m.name,m.id)); });
+    MASTERS.forEach(m => { selBk.add(new Option(m.name,m.id)); selSl.add(new Option(m.name,m.id)); });
   }
   admBkSelectedDate = formatDate_iso(new Date());
-  admLoadSummary(); admLoadDayOffsList(); admStartPolling();
+  admLoadSummary(); admStartPolling();
   // FIX: вешаем обработчик только один раз
   if (!_admInited) {
     var refreshBtn = ge('admRefreshBtn');
@@ -3483,7 +3453,7 @@ function admPollTick() {
   if (admCurrentTab==='summary')   admLoadSummary();
   if (admCurrentTab==='bookings')  admLoadBookings();
   if (admCurrentTab==='analytics') admLoadAnalytics();
-  if (admCurrentTab==='dayoffs')   admLoadDayOffsList();
+  // dayoffs теперь часть слотов
 }
 
 function admSetLiveState(live) {
@@ -3842,14 +3812,14 @@ function admRemoveDayOffAction(masterId, dateStr) {
 }
 
 function admAddDayOff() {
-  const masterId=ge('admDayOffMaster').value, dateStr=ge('admDayOffDate').value;
-  if (!masterId||!dateStr) { showToast('Выберите мастера и дату','error'); return; }
+  const masterId=ge('admSlotMaster').value, dateStr=ge('admSlotDate').value;
+  if (!masterId||!dateStr) { showToast('Выберите мастера и дату в разделе выше','error'); return; }
   admSetDayOffAction(masterId, dateStr);
 }
 
 function admRemoveDayOff() {
-  const masterId=ge('admDayOffMaster').value, dateStr=ge('admDayOffDate').value;
-  if (!masterId||!dateStr) { showToast('Выберите мастера и дату','error'); return; }
+  const masterId=ge('admSlotMaster').value, dateStr=ge('admSlotDate').value;
+  if (!masterId||!dateStr) { showToast('Выберите мастера и дату в разделе выше','error'); return; }
   admRemoveDayOffAction(masterId, dateStr);
 }
 
@@ -6395,8 +6365,7 @@ function qbfShowModal() {
   } else {
     slots.forEach(function(item) {
       var dateLabel = qbfFormatDate(item.date);
-      var midEncoded = parseInt(item.master.id); // всегда число
-      // FIX-3: date и slot берутся из API — экранируем для HTML-атрибута
+      var midEncoded = parseInt(item.master.id);
       var safeDate = escapeHtml(String(item.date));
       var safeSlot = escapeHtml(String(item.slot));
       html += '<div class="qbf-slot-card" data-mid="' + midEncoded + '" data-date="' + safeDate + '" data-slot="' + safeSlot + '">'
@@ -6412,27 +6381,18 @@ function qbfShowModal() {
   var overlay = document.createElement('div');
   overlay.innerHTML = html;
   var overlayEl = overlay.firstChild;
-
-  // FIX-3: делегированный клик — без inline onclick, без XSS через data-атрибуты
   overlayEl.addEventListener('click', function(e) {
-    // Клик на оверлей — закрыть
     if (e.target && e.target.id === 'qbfOverlay') { qbfClose(); return; }
-    // Клик на крестик
     if (e.target && e.target.classList.contains('qbf-close')) { qbfClose(); return; }
-    // Клик на карточку слота (или внутрь неё)
     var card = e.target.closest('.qbf-slot-card');
     if (card) {
-      var mid  = parseInt(card.dataset.mid);
-      var date = card.dataset.date;
-      var slot = card.dataset.slot;
-      qbfSelect(mid, date, slot);
+      qbfSelect(parseInt(card.dataset.mid), card.dataset.date, card.dataset.slot);
     }
   });
-
   document.body.appendChild(overlayEl);
 }
 
-/* Закрывает модал по клику на оверлей */
+/* Закрывает модал по клику на оверлей (fallback для старых вызовов) */
 function qbfCloseModal(e) {
   if (e && e.target && e.target.id === 'qbfOverlay') qbfClose();
 }
@@ -6451,36 +6411,24 @@ function qbfClose() {
 function qbfSelect(masterId, date, slot) {
   haptic('impact');
   qbfClose();
-
-  // Переходим на страницу бронирования
   goPage('booking');
 
-  // FIX-2: вместо тройного setTimeout — ждём реальной готовности данных.
-  // bkSelMaster устанавливает мастера и запускает loadServerSlots.
-  // После этого дожидаемся рендера через rAF, затем применяем дату/время.
   var dateParts = date.split('-');
   S.cy = parseInt(dateParts[0]);
   S.cm = parseInt(dateParts[1]) - 1;
-
-  // Шаг 1: выбрать мастера (синхронно если данные в кэше, иначе fetch)
-  S.mid = masterId;
-  S.date = '';
-  S.slot = '';
+  S.mid = masterId; S.date = ''; S.slot = '';
 
   var master = getMaster(masterId);
 
   function applyDateAndSlot() {
     bkPickDate(date);
-    // Шаг 3: применяем время после рендера даты
     requestAnimationFrame(function() {
       bkPickTime(slot);
-      // Скроллим к подтверждению
       var bar = document.querySelector('.bk-bar');
       if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'end' });
     });
   }
 
-  // Если данные по мастеру уже в кэше — всё синхронно
   if (master && allMastersData[master.name]) {
     serverSlots   = allMastersData[master.name].slots   || {};
     serverBlocks  = allMastersData[master.name].blocks  || {};
@@ -6488,7 +6436,6 @@ function qbfSelect(masterId, date, slot) {
     bkRefresh(true);
     requestAnimationFrame(function() { applyDateAndSlot(); });
   } else {
-    // Данных нет — ждём fetch, затем применяем
     bkRefresh(true);
     if (master) {
       fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + masterId)
@@ -6501,10 +6448,7 @@ function qbfSelect(masterId, date, slot) {
           calRender(); renderTimeGrid();
           applyDateAndSlot();
         })
-        .catch(function() {
-          // Данные не загрузились — хотя бы применяем дату и слот из известных
-          applyDateAndSlot();
-        });
+        .catch(function() { applyDateAndSlot(); });
     } else {
       requestAnimationFrame(function() { applyDateAndSlot(); });
     }

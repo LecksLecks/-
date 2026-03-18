@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5867,12 +5868,21 @@ function wlPhoneFormat(e) {
   inp.value = formatted;
 }
 
+function wlShowSuccess() {
+  document.getElementById('wlForm').style.display    = 'none';
+  document.getElementById('wlSuccess').style.display = 'block';
+  var btn = document.getElementById('wlSubmitBtn');
+  btn.disabled    = false;
+  btn.textContent = 'Перезвоните мне';
+}
+
 function wlSubmit() {
   var name   = document.getElementById('wlName').value.trim();
   var phone  = document.getElementById('wlPhone').value.trim();
   var digits = phone.replace(/\D/g, '');
   if (!name || name.length < 2) { showToast('Введите ваше имя', 'error'); return; }
   if (digits.length < 11)       { showToast('Введите корректный номер', 'error'); return; }
+
   var btn = document.getElementById('wlSubmitBtn');
   btn.disabled    = true;
   btn.textContent = 'Отправляем...';
@@ -5886,31 +5896,21 @@ function wlSubmit() {
     '&slot='     + encodeURIComponent(_wlSlot) +
     '&chatId='   + encodeURIComponent(tgChatId || '');
 
-  // Отправляем синхронно через XMLHttpRequest — надёжнее в Telegram WebView
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', wlUrl, true);
-  xhr.timeout = 15000;
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4) {
-      document.getElementById('wlForm').style.display    = 'none';
-      document.getElementById('wlSuccess').style.display = 'block';
-      btn.disabled    = false;
-      btn.textContent = 'Перезвоните мне';
-    }
-  };
-  xhr.ontimeout = function() {
-    document.getElementById('wlForm').style.display    = 'none';
-    document.getElementById('wlSuccess').style.display = 'block';
-    btn.disabled    = false;
-    btn.textContent = 'Перезвоните мне';
-  };
-  xhr.onerror = function() {
-    document.getElementById('wlForm').style.display    = 'none';
-    document.getElementById('wlSuccess').style.display = 'block';
-    btn.disabled    = false;
-    btn.textContent = 'Перезвоните мне';
-  };
-  xhr.send();
+  // Показываем успех через 1.5 сек — не ждём ответа GAS
+  var successTimer = setTimeout(wlShowSuccess, 1500);
+
+  // Метод 1: fetch с no-cors — работает в большинстве WebView
+  try {
+    fetch(wlUrl, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
+      .then(function() { clearTimeout(successTimer); wlShowSuccess(); })
+      .catch(function() { clearTimeout(successTimer); wlShowSuccess(); });
+  } catch(e) {}
+
+  // Метод 2: Image ping — резервный, работает везде
+  try {
+    var img = new Image();
+    img.src = wlUrl + '&_t=' + Date.now();
+  } catch(e) {}
 }
 
 </script>

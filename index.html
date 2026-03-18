@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+\\<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -283,28 +282,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes slotIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 .t-btn{border:1px solid rgba(201,168,76,.18);padding:11px 4px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;color:var(--cream);background:transparent;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;animation:slotIn .2s ease both}
 .t-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--black)}
-.t-btn.busy{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--cream);cursor:pointer;opacity:1}
-/* WAITLIST MODAL */
-.wl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.wl-card{background:#1a1612;border:1px solid rgba(201,168,76,.35);border-radius:12px;padding:22px;width:100%;max-width:340px;font-family:'Cormorant Garamond',serif}
-.wl-ico{font-size:30px;text-align:center;margin-bottom:10px}
-.wl-title{color:var(--gold);font-size:17px;font-weight:700;text-align:center;margin-bottom:6px;letter-spacing:.5px}
-.wl-sub{color:rgba(245,239,230,.6);font-size:13px;text-align:center;line-height:1.5;margin-bottom:12px}
-.wl-free{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:8px 12px;text-align:center;margin-bottom:14px}
-.wl-free-lbl{color:rgba(138,125,107,.8);font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
-.wl-free-val{color:var(--gold);font-size:15px;font-weight:700;margin-top:3px}
-.wl-inp{width:100%;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);color:var(--cream);padding:10px 12px;font-size:14px;border-radius:6px;margin-bottom:10px;font-family:'Cormorant Garamond',serif;box-sizing:border-box}
-.wl-inp::placeholder{color:rgba(138,125,107,.5);font-size:13px}
-.wl-inp:focus{outline:none;border-color:rgba(201,168,76,.5)}
-.wl-btn{width:100%;background:rgba(201,168,76,.9);border:none;color:#0d0b07;padding:12px;font-size:14px;font-weight:700;border-radius:6px;cursor:pointer;font-family:'Cormorant Garamond',serif;letter-spacing:.5px}
-.wl-cancel{display:block;text-align:center;color:rgba(138,125,107,.55);font-size:12px;margin-top:10px;cursor:pointer;letter-spacing:.5px}
-.wl-spinner{display:none;text-align:center;padding:10px 0;color:var(--gold);font-size:13px}
-.wl-icon{font-size:30px;text-align:center;margin-bottom:10px}
-.wl-success{text-align:center;padding:10px 0}
-.wl-success-icon{font-size:38px;margin-bottom:12px}
-.wl-success-title{color:#4caf7d;font-size:17px;font-weight:700;letter-spacing:.5px;margin-bottom:6px}
-.wl-success-sub{color:rgba(245,239,230,.6);font-size:13px;line-height:1.5;margin-bottom:12px}
-.wl-success-brand{color:rgba(201,168,76,.5);font-size:12px;letter-spacing:.5px}
+.t-btn.busy{background:rgba(224,80,80,.15);border-color:#e05050;color:#e05050;cursor:not-allowed;text-decoration:line-through;opacity:.7}
 .t-btn.past{display:none}
 
 /* BOOKING - SERVICE SELECTOR */
@@ -2850,10 +2828,10 @@ function renderTimeGrid() {
     btn.textContent = slot;
 
     if (svBusy || svBlock) {
-      // WAITLIST: занятые/заблокированные — выглядят как свободные, открывают попап
+      // FIX-03: занятые — показываем как недоступные (не скрываем)
       btn.className = 't-btn busy';
-      btn.disabled  = false;
-      btn.onclick   = (function(s){ return function(e){ e.preventDefault(); wlOpen(s); }; })(slot);
+      btn.disabled = true;
+      btn.title = svBlock ? 'Заблокировано' : 'Занято';
     } else {
       btn.className = 't-btn' + (S.slot===slot?' sel':'');
       btn.onclick = e => { e.preventDefault(); bkPickTime(slot); };
@@ -5799,147 +5777,6 @@ function admMsgClient(phone, name) {
 }
 window.admMsgClient = admMsgClient;
 
-/* ════════════════════════════════════════════════════════
-   WAITLIST MODAL — «Мастер занят, перезвоним»
-   ════════════════════════════════════════════════════════ */
-
-var _wlSlot = '', _wlMaster = '', _wlDate = '';
-
-function wlGetNextFreeSlot() {
-  if (!S.mid || !S.date) return null;
-  var busy   = (serverSlots[S.date]  || []);
-  var blocks = (serverBlocks[S.date] || []);
-  var today  = formatDate_iso(new Date());
-  var now    = new Date();
-  var nowMin = now.getHours()*60 + now.getMinutes();
-  for (var i = 0; i < SLOTS.length; i++) {
-    var sl = SLOTS[i];
-    if (busy.indexOf(sl) >= 0 || blocks.indexOf(sl) >= 0) continue;
-    if (S.date === today) {
-      var slHr = parseInt(sl.split(':')[0]);
-      if (slHr*60 <= nowMin + CONFIG.TIME_BUFFER_MINUTES) continue;
-    }
-    return sl;
-  }
-  return null;
-}
-
-function wlOpen(slot) {
-  _wlSlot   = slot;
-  _wlMaster = S.mid !== null ? (getMaster(S.mid) || {}).name || '' : '';
-  _wlDate   = S.date;
-  var nextFree = wlGetNextFreeSlot();
-  var overlay  = document.getElementById('wlOverlay');
-  if (!overlay) return;
-  var freeBlock = document.getElementById('wlFreeBlock');
-  var freeVal   = document.getElementById('wlFreeVal');
-  if (nextFree) {
-    freeBlock.style.display = 'block';
-    var p = _wlDate.split('-');
-    var dateStr = parseInt(p[2]) + ' ' + MN[parseInt(p[1])-1];
-    freeVal.textContent = dateStr + ' в ' + nextFree;
-  } else {
-    freeBlock.style.display = 'none';
-  }
-  document.getElementById('wlForm').style.display    = 'block';
-  document.getElementById('wlSuccess').style.display = 'none';
-  document.getElementById('wlName').value  = '';
-  document.getElementById('wlPhone').value = '';
-  overlay.style.display = 'flex';
-  haptic('medium');
-}
-
-function wlClose() {
-  var overlay = document.getElementById('wlOverlay');
-  if (overlay) overlay.style.display = 'none';
-}
-
-function wlPhoneFormat(e) {
-  var inp    = e.target;
-  var digits = inp.value.replace(/\D/g, '');
-  if (digits.length > 0 && digits[0] !== '7') digits = '7' + digits;
-  digits = digits.slice(0, 11);
-  var formatted = '';
-  if (digits.length > 0)  formatted = '+7';
-  if (digits.length > 1)  formatted += ' (' + digits.slice(1, 4);
-  if (digits.length >= 4) formatted += ') ' + digits.slice(4, 7);
-  if (digits.length >= 7) formatted += '-' + digits.slice(7, 9);
-  if (digits.length >= 9) formatted += '-' + digits.slice(9, 11);
-  inp.value = formatted;
-}
-
-function wlShowSuccess() {
-  document.getElementById('wlForm').style.display    = 'none';
-  document.getElementById('wlSuccess').style.display = 'block';
-  var btn = document.getElementById('wlSubmitBtn');
-  btn.disabled    = false;
-  btn.textContent = 'Перезвоните мне';
-}
-
-function wlSubmit() {
-  var name   = document.getElementById('wlName').value.trim();
-  var phone  = document.getElementById('wlPhone').value.trim();
-  var digits = phone.replace(/\D/g, '');
-  if (!name || name.length < 2) { showToast('Введите ваше имя', 'error'); return; }
-  if (digits.length < 11)       { showToast('Введите корректный номер', 'error'); return; }
-
-  var btn = document.getElementById('wlSubmitBtn');
-  btn.disabled    = true;
-  btn.textContent = 'Отправляем...';
-
-  var wlUrl = CONFIG.GS + '?action=addWaitlist' +
-    '&name='     + encodeURIComponent(name) +
-    '&phone='    + encodeURIComponent(phone) +
-    '&master='   + encodeURIComponent(_wlMaster) +
-    '&masterId=' + encodeURIComponent(S.mid !== null ? S.mid : '') +
-    '&date='     + encodeURIComponent(_wlDate) +
-    '&slot='     + encodeURIComponent(_wlSlot) +
-    '&chatId='   + encodeURIComponent(tgChatId || '');
-
-  // Показываем успех через 1.5 сек — не ждём ответа GAS
-  var successTimer = setTimeout(wlShowSuccess, 1500);
-
-  // Метод 1: fetch с no-cors — работает в большинстве WebView
-  try {
-    fetch(wlUrl, { method: 'GET', mode: 'no-cors', cache: 'no-cache' })
-      .then(function() { clearTimeout(successTimer); wlShowSuccess(); })
-      .catch(function() { clearTimeout(successTimer); wlShowSuccess(); });
-  } catch(e) {}
-
-  // Метод 2: Image ping — резервный, работает везде
-  try {
-    var img = new Image();
-    img.src = wlUrl + '&_t=' + Date.now();
-  } catch(e) {}
-}
-
 </script>
-
-<!-- WAITLIST MODAL -->
-<div id="wlOverlay" class="wl-overlay" style="display:none" onclick="if(event.target===this)wlClose()">
-  <div class="wl-card">
-    <div id="wlForm">
-      <div class="wl-icon">✂️</div>
-      <div class="wl-title">Мастер занят</div>
-      <div class="wl-sub">Это время уже забронировано. Оставьте номер — перезвоним как только мастер освободится!</div>
-      <div class="wl-free" id="wlFreeBlock">
-        <div class="wl-free-lbl">Ближайшее свободное время</div>
-        <div class="wl-free-val" id="wlFreeVal">—</div>
-      </div>
-      <input id="wlName"  class="wl-inp" type="text" placeholder="Ваше имя" autocomplete="name"/>
-      <input id="wlPhone" class="wl-inp" type="tel"  placeholder="+7 (___) ___-__-__" oninput="wlPhoneFormat(event)" autocomplete="tel"/>
-      <button id="wlSubmitBtn" class="wl-btn" onclick="wlSubmit()">Перезвоните мне</button>
-      <span class="wl-cancel" onclick="wlClose()">Выбрать другое время</span>
-    </div>
-    <div id="wlSuccess" class="wl-success" style="display:none">
-      <div class="wl-success-icon">✅</div>
-      <div class="wl-success-title">Отлично!</div>
-      <div class="wl-success-sub">Спасибо! Как мастер освободится — мы вам перезвоним!</div>
-      <div class="wl-success-brand">BARBER STYLE</div>
-      <button class="wl-btn" style="margin-top:18px" onclick="wlClose()">Закрыть</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>

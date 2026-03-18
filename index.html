@@ -1582,6 +1582,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
     <div class="adm-section">
       <div class="adm-section-ttl">Выручка</div>
+      <div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 8px;background:rgba(201,168,76,.08);border-radius:6px;border-left:2px solid var(--gold)">
+        💡 Учитываются только визиты со статусом <b>«✓ Выполнено»</b>. Чтобы выручка появилась — отметьте запись выполненной в разделе Записи.
+      </div>
       <div id="admRevenue"><div class="adm-loading">Загрузка...</div></div>
     </div>
     <div class="adm-section">
@@ -3572,7 +3575,7 @@ function renderBookingCard(b, nowMin, todayStr) {
     : '';
   var rescBtn   = (safeId && minsLeft >= 0) ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
   var noteBtn   = safeId ? '<button class="adm-note-btn" onclick="admToggleNote(\''+safeId+'\')" title="Заметка">📝</button>' : '';
-  var doneBtn   = (safeId && minsLeft < 0 && b.status !== 'completed')
+  var doneBtn   = (safeId && b.status !== 'completed' && b.status !== 'cancelled')
     ? '<button class="adm-booking-done" onclick="admMarkDone(\''+safeId+'\',this)">✓ Выполнено</button>' : '';
   var doneMark  = (b.status === 'completed') ? '<div class="adm-done-mark">✓ Визит подтверждён</div>' : '';
 
@@ -5274,7 +5277,7 @@ function admMarkDone(bookingId, btn) {
         if (actionsEl) actionsEl.innerHTML = '<div class="adm-done-mark">✓ Визит подтверждён</div>';
       }
       haptic('success');
-      showToast('✅ Визит отмечен как выполненный', 'success');
+      showToast('✅ Визит завершён — выручка учтена в аналитике', 'success');
     })
     .catch(function(){
       showToast('Ошибка соединения', 'error');

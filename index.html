@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -717,7 +716,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cl-hist-master{font-size:14px;color:var(--cream);margin-bottom:2px}
 .cl-hist-svc{font-size:13px;color:var(--gray);margin-bottom:2px}
 .cl-empty{text-align:center;color:var(--gray);font-style:italic;padding:30px 0;font-size:16px}
-.cl-note{margin-top:10px;padding:10px 12px;background:rgba(201,168,76,0.05);border:0.5px solid rgba(201,168,76,0.15);border-radius:8px;border-left:3px solid rgba(201,168,76,0.4)}
+.cl-note{margin-top:10px;padding:10px 12px;background:rgba(201,168,76,0.05);border:0.5px solid rgba(201,168,76,0.15);border-radius:8px;border-left:3px solid rgba(201,168,76,0.4);cursor:pointer;transition:background .15s,border-color .15s}
+.cl-note:active{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.35)}
 .cl-note-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .cl-note-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(201,168,76,0.45)}
 .cl-note-edit-btn{font-size:10px;color:rgba(201,168,76,0.45);cursor:pointer;padding:2px 8px;border:0.5px solid rgba(201,168,76,0.15);border-radius:4px;background:transparent;font-family:'Cormorant Garamond',serif}
@@ -4943,24 +4943,47 @@ function clHighlight(text, query) {
 function clRenderNoteBlock(cardKey, c) {
   var noteId = cardKey + '-note';
   var note = c.note || '';
-  // Используем data-атрибуты вместо inline параметров в onclick — это надёжнее с телефонами (+7 (952)...)
   var phoneDigits = (cleanPhone(c.phone || '')).replace(/\D/g, '');
   var cid = c.chatId || '';
 
   if (note) {
-    return '<div class="cl-note" id="' + noteId + '" data-phone="' + escapeHtml(phoneDigits) + '" data-cid="' + escapeHtml(cid) + '">' +
+    return '<div class="cl-note" id="' + noteId + '" data-phone="' + phoneDigits + '" data-cid="' + cid + '" data-action="note-edit" data-note-id="' + noteId + '" style="cursor:pointer">' +
       '<div class="cl-note-hdr">' +
         '<div class="cl-note-lbl">Заметка</div>' +
-        '<button class="cl-note-edit-btn" onclick="event.stopPropagation();clNoteStartEdit(\'' + noteId + '\')">✎ изменить</button>' +
+        '<div class="cl-note-edit-btn">✎ изменить</div>' +
       '</div>' +
       '<div class="cl-note-text">' + escapeHtml(note) + '</div>' +
     '</div>';
   } else {
-    return '<div class="cl-note-empty" id="' + noteId + '" data-phone="' + escapeHtml(phoneDigits) + '" data-cid="' + escapeHtml(cid) + '" onclick="event.stopPropagation();clNoteStartEdit(\'' + noteId + '\')">' +
+    return '<div class="cl-note-empty" id="' + noteId + '" data-phone="' + phoneDigits + '" data-cid="' + cid + '" data-action="note-edit" data-note-id="' + noteId + '">' +
       '<div class="cl-note-add">+ Добавить заметку о клиенте</div>' +
     '</div>';
   }
 }
+
+// Делегирование — один обработчик ловит все действия с заметками
+// Используем и click и touchend для надёжности в Telegram WebApp iOS
+function _clNoteHandler(e) {
+  // Ищем элемент с data-action — поднимаемся по дереву
+  var target = e.target;
+  while (target && target !== document) {
+    if (target.getAttribute && target.getAttribute('data-action')) break;
+    target = target.parentElement;
+  }
+  if (!target || target === document) return;
+
+  var action = target.getAttribute('data-action');
+  var noteId = target.getAttribute('data-note-id');
+  if (!action || !noteId) return;
+
+  e.stopPropagation();
+  e.preventDefault();
+
+  if (action === 'note-edit')   { clNoteStartEdit(noteId); return; }
+  if (action === 'note-cancel') { clNoteCancel(noteId); return; }
+  if (action === 'note-save')   { clNoteSave(noteId); return; }
+}
+document.addEventListener('click', _clNoteHandler, true);
 
 function clNoteStartEdit(noteId) {
   var el = ge(noteId);
@@ -4970,23 +4993,24 @@ function clNoteStartEdit(noteId) {
   var phone = el.getAttribute('data-phone') || '';
   var clientChatId = el.getAttribute('data-cid') || '';
 
-  // Извлекаем текущий текст заметки
   var textEl = el.querySelector('.cl-note-text');
   var currentText = textEl ? textEl.textContent : '';
 
   el.className = 'cl-note-editing';
   el.setAttribute('data-phone', phone);
   el.setAttribute('data-cid', clientChatId);
+  el.removeAttribute('data-action');
+  el.removeAttribute('data-note-id');
   el.innerHTML =
     '<div class="cl-note-lbl" style="margin-bottom:6px">Заметка</div>' +
     '<textarea class="cl-note-ta" id="' + noteId + '-ta" placeholder="Предпочтения, особенности, пожелания клиента...">' + escapeHtml(currentText) + '</textarea>' +
     '<div class="cl-note-btns">' +
-      '<button class="cl-note-btn-cancel" onclick="event.stopPropagation();clNoteCancel(\'' + noteId + '\')">Отмена</button>' +
-      '<button class="cl-note-btn-save" onclick="event.stopPropagation();clNoteSave(\'' + noteId + '\')">Сохранить</button>' +
+      '<button class="cl-note-btn-cancel" data-action="note-cancel" data-note-id="' + noteId + '">Отмена</button>' +
+      '<button class="cl-note-btn-save" data-action="note-save" data-note-id="' + noteId + '">Сохранить</button>' +
     '</div>';
 
   var ta = ge(noteId + '-ta');
-  if (ta) { setTimeout(function(){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 100); }
+  if (ta) { setTimeout(function(){ ta.focus(); }, 150); }
 }
 
 function clNoteCancel(noteId) {
@@ -5004,7 +5028,6 @@ function clNoteSave(noteId) {
   var text = ta.value.trim();
   haptic('medium');
 
-  // Показываем индикатор сохранения
   var btns = el.querySelector('.cl-note-btns');
   if (btns) btns.innerHTML = '<span style="font-size:11px;color:rgba(201,168,76,.5)">Сохранение...</span>';
 
@@ -5026,7 +5049,6 @@ function clNoteSave(noteId) {
       }
       showToast('✅ Заметка сохранена', 'success');
 
-      // Обновляем заметку в локальном кэше
       _clAllClients.forEach(function(c) {
         var cPhone = cleanPhone(c.phone || '').replace(/\D/g, '');
         var cCid   = c.chatId || '';
@@ -5035,7 +5057,6 @@ function clNoteSave(noteId) {
         }
       });
 
-      // Перерендериваем блок заметки на месте
       var cardKey = noteId.replace('-note', '');
       var clientData = { note: text, phone: phone, chatId: clientChatId };
       var tmp = document.createElement('div');

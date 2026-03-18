@@ -6039,11 +6039,17 @@ function queueOpenModal(slot) {
     return parseInt(p[2]) + ' ' + MN_Q[parseInt(p[1])-1];
   })() : '—';
 
-  // Имя из Telegram-профиля если есть
-  var tgName = '';
-  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+  // Имя и телефон: приоритет — сохранённый профиль, fallback — Telegram
+  var prefillName = '';
+  var prefillPhone = '';
+  if (_clientProfile && _clientProfile.name) {
+    prefillName = _clientProfile.name;
+  } else if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
     var u = tg.initDataUnsafe.user;
-    tgName = [u.first_name, u.last_name].filter(Boolean).join(' ');
+    prefillName = [u.first_name, u.last_name].filter(Boolean).join(' ');
+  }
+  if (_clientProfile && _clientProfile.phone) {
+    prefillPhone = _clientProfile.phone;
   }
 
   var html =
@@ -6058,11 +6064,11 @@ function queueOpenModal(slot) {
     '</div>' +
     '<div class="queue-fg">' +
     '<label class="queue-lbl">Ваше имя</label>' +
-    '<input id="queueName" class="queue-inp" type="text" placeholder="Как вас зовут?" value="' + escapeHtml(tgName) + '" autocomplete="name">' +
+    '<input id="queueName" class="queue-inp" type="text" placeholder="Как вас зовут?" value="' + escapeHtml(prefillName) + '" autocomplete="name">' +
     '</div>' +
     '<div class="queue-fg">' +
     '<label class="queue-lbl">Номер телефона</label>' +
-    '<input id="queuePhone" class="queue-inp" type="tel" placeholder="+7 900 000-00-00" autocomplete="tel">' +
+    '<input id="queuePhone" class="queue-inp" type="tel" placeholder="+7 900 000-00-00" value="' + escapeHtml(prefillPhone) + '" autocomplete="tel">' +
     '</div>' +
     '<div class="queue-btns">' +
     '<button class="queue-btn-confirm" onclick="queueSubmit()">Записаться</button>' +
@@ -6073,10 +6079,12 @@ function queueOpenModal(slot) {
   el.innerHTML = html;
   document.body.appendChild(el.firstChild);
 
-  // Фокус на поле телефона если имя уже заполнено
+  // Фокус на первое пустое поле
   setTimeout(function() {
-    var inp = document.getElementById(tgName ? 'queuePhone' : 'queueName');
-    if (inp) inp.focus();
+    var nameInp = document.getElementById('queueName');
+    var phoneInp = document.getElementById('queuePhone');
+    if (nameInp && !nameInp.value) { nameInp.focus(); }
+    else if (phoneInp && !phoneInp.value) { phoneInp.focus(); }
   }, 300);
 }
 

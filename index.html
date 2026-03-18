@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
-<!-- ВАЖНО: замените значение gs-url на ваш реальный GAS endpoint после деплоя -->
-<meta name="gs-url" content="https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec">
+<!-- gs-url задаётся в CONFIG.GS ниже в скрипте -->
 <title>BARBER STYLE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -165,16 +164,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .h-orn{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .h-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.4),transparent)}
 .h-phi{font-family:'Playfair Display',serif;font-size:18px;color:rgba(201,168,76,.6);font-style:italic}
-.h-t1{font-family:'Playfair Display',serif;font-size:clamp(18px,5.5vw,26px);font-style:italic;font-weight:700;background:linear-gradient(135deg,#f5efe6 0%,#c9a84c 50%,#f5efe6 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.4;margin-bottom:10px;opacity:0;filter:blur(20px);animation:fogReveal 2s cubic-bezier(.25,.1,.25,1) 1.3s forwards}
+.h-t1{font-family:'Playfair Display',serif;font-size:clamp(18px,5.5vw,26px);font-style:italic;font-weight:700;background:linear-gradient(135deg,#f5efe6 0%,#c9a84c 50%,#f5efe6 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.4;margin-bottom:10px;opacity:0;animation:fogReveal 2s cubic-bezier(.25,.1,.25,1) 1.3s forwards}
 .h-orn2{display:flex;align-items:center;gap:12px;margin-top:14px}
-@keyframes shimmer{to{background-position:200% center}}
 
 .home-btns{display:flex;gap:12px;padding:20px 24px}
 .btn-g{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;border-radius:10px}
 .btn-g::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .15s}
 .btn-g:active::after{background:rgba(255,255,255,.15)}
 .btn-g:active{transform:scale(.99)}
-.btn-o{flex:1;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:10px}
+.btn-o{flex:1;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:10px;font-family:'Cormorant Garamond',serif;transition:all .2s;position:relative;overflow:hidden}
+.btn-o:active{background:rgba(201,168,76,.1);transform:scale(.99)}
 .btn-quick-free{width:100%;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.45);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:10px;font-family:'Cormorant Garamond',serif;transition:all .2s;position:relative;overflow:hidden}
 .btn-quick-free:active{background:rgba(201,168,76,.1);transform:scale(.99)}
 .btn-quick-free.loading{opacity:.6;pointer-events:none}
@@ -842,8 +841,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 #bgParticles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 @keyframes bgFloat{0%{opacity:0;transform:translateY(0) scale(0)}10%{opacity:1}90%{opacity:.3}100%{opacity:0;transform:translateY(-100vh) scale(.5)}}
 
-/* П.3 СЧЁТЧИК АНАЛИТИКИ */
-
 /* П.4 МОРФИНГ КНОПКИ */
 @keyframes btnMorph{0%{transform:scale(1)}40%{transform:scale(.95)}70%{transform:scale(1.03)}100%{transform:scale(1)}}
 @keyframes btnSuccess{0%{background:var(--gold);color:var(--black)}100%{background:#4caf7d;color:#fff}}
@@ -902,14 +899,14 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .btn-g{
   background:linear-gradient(270deg,#c9a84c,#e8c97a,#f5d77a,#c9a84c,#a8892e,#c9a84c);
   background-size:400% 400%;
-  animation:liquidFlow 4s ease infinite;
+  background-position:0% 50%;
   overflow:hidden;
   position:relative;
+  transition:background-position .4s ease;
 }
+.btn-g:hover,.btn-g:focus-within{animation:liquidFlow 4s ease infinite}
 .btn-g:active{animation:liquidPress .3s ease,liquidFlow 4s ease infinite}
 .btn-g-ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.4);pointer-events:none;animation:liquidRipple .6s ease forwards}
-
-/* П.4 TYPEWRITER */
 
 /* П.5 ЗОЛОТОЕ КОНФЕТТИ */
 @keyframes confettiFall{
@@ -1089,9 +1086,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* ТУМАН — слоган */
 @keyframes fogReveal{
-  0%  { opacity:0; filter:blur(24px); }
-  35% { opacity:.4; filter:blur(10px); }
-  100%{ opacity:1; filter:blur(0px); }
+  0%  { opacity:0; transform:translateY(14px); }
+  60% { opacity:.8; transform:translateY(-2px); }
+  100%{ opacity:1; transform:translateY(0); }
 }
 
 
@@ -1915,8 +1912,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
    ================================================================================ */
 
 const CONFIG = {
-  GS: (document.querySelector('meta[name="gs-url"]') || {}).content ||
-      "https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec",
+  GS: "https://script.google.com/macros/s/AKfycbz1EM-ZComEw3LTr63g1_Ckg_lVM9WLMGsH7lWcBWDmB5nimcazlaI7k9LgRNTNwjhq/exec",
   TIME_BUFFER_MINUTES: 30,
   FETCH_TIMEOUT_MS: 15000,
   REVIEWS_PER_PAGE: 20,
@@ -2021,21 +2017,12 @@ function confirmAction(msg) {
 /* ────────────────────────────────────────────────────────────
    ДАННЫЕ
    ──────────────────────────────────────────────────────────── */
-let MASTERS = [
-  {id:0,name:"Саркис",spec:"Стрижки и фейды",photo:""},
-  {id:1,name:"Лиза",spec:"Мужские стрижки",photo:""},
-  {id:2,name:"Нарек",spec:"Современные техники",photo:""},
-  {id:3,name:"Миша",spec:"Оформление бороды",photo:""},
-  {id:4,name:"Рустам",spec:"Фейды",photo:""},
-  {id:5,name:"Милена",spec:"Уходовые процедуры",photo:""},
-  {id:6,name:"Никита",spec:"Классические стрижки",photo:""}
-];
-
-let PRICES = {
-  "head":[["Насадка (триммер) 1–2",500],["Удлинённая стрижка",1300],["Стрижка",1000],["Укладка",300],["Шейвер",600],["Рисунок",400],["Тонировка",1000],["Королевское бритьё + скрабирование",1000],["Окантовка",200],["Тонировка бровей",100]],
-  "face":[["Шейвер",600],["Насадка (триммер)",300],["Тонировка",900],["Королевское бритьё + скрабирование",1000],["Оформление бороды",800],["Чёрная маска",400],["Скраб",300]],
-  "wax":[["Коррекция бровей",300],["Уши или нос",200],["Кончик носа",100],["Между бровями",100],["Виски в районе бровей",200],["Щёки",400],["Шея",500],["Кадык",500]]
-};
+/* ─────────────────────────────────────────────────────────────
+   ДАННЫЕ — инициализируются пустыми, заполняются из getInitData
+   Хардкод убран: единственный источник правды — Google Sheets.
+   ──────────────────────────────────────────────────────────── */
+let MASTERS = [];  // заполняется в applyInitData()
+let PRICES  = {};  // заполняется в applyInitData()
 
 let MASTER_RATINGS = {};
 const CAT_LABELS = {"head":"✂ Голова","face":"🪒 Лицо","wax":"🕯 Воск"};
@@ -2103,11 +2090,11 @@ function ge(id) { return document.getElementById(id); }
 var _bodyLockCount = 0;
 function bodyLock() {
   _bodyLockCount++;
-  bodyLock();
+  if (_bodyLockCount === 1) document.body.style.overflow = 'hidden';
 }
 function bodyUnlock() {
   _bodyLockCount = Math.max(0, _bodyLockCount - 1);
-  if (_bodyLockCount === 0) bodyUnlock();
+  if (_bodyLockCount === 0) document.body.style.overflow = '';
 }
 
 var _escapeHtmlCache = Object.create(null);
@@ -3321,6 +3308,7 @@ function myBkCancel(masterId, date, time, masterName) {
         .then(d => {
           if (d.status==='ok') {
             _myBkCache = {data:null, ts:0, tab:''};
+            _allMastersDataTs = 0; // сброс кэша слотов — QBF покажет актуальные данные
             const card = ge('mybk-' + date + '-' + time.replace(':',''));
             if (card) card.style.display='none';
             showToast('✅ Запись отменена', 'success');
@@ -5215,8 +5203,13 @@ function initFingerTrail() {
   let trailTimeout;
   let lastX = 0, lastY = 0;
   let trailCount = 0;
+  let _trailLastTs = 0; // throttle timestamp
 
   document.addEventListener('touchmove', function(e) {
+    const now = Date.now();
+    if (now - _trailLastTs < 30) return; // throttle: не чаще 1 раза в 30ms
+    _trailLastTs = now;
+
     const t = e.touches[0];
     const x = t.clientX, y = t.clientY;
     const dx = x - lastX, dy = y - lastY;

@@ -110,16 +110,14 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .tab.active{
   color:var(--gold);
 }
-.tab-ico{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:14px;
-  padding:4px 12px;
-  transition:background .2s ease;
-}
-.tab.active .tab-ico{
-  background:rgba(201,168,76,.14);
+.tab.active::before{
+  content:'';
+  position:absolute;
+  top:0;left:50%;
+  transform:translateX(-50%);
+  width:24px;height:2px;
+  background:var(--gold);
+  border-radius:0 0 2px 2px;
 }
 
 .tab svg{
@@ -164,30 +162,14 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes shimmer{to{background-position:200% center}}
 
 .home-btns{display:flex;gap:12px;padding:20px 24px}
-.btn-g{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;border-radius:10px}
+.btn-g{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .btn-g::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .15s}
 .btn-g:active::after{background:rgba(255,255,255,.15)}
 .btn-g:active{transform:scale(.99)}
-.btn-o{flex:1;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:10px}
-.btn-quick-free{width:100%;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.45);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:10px;font-family:'Cormorant Garamond',serif;transition:all .2s;position:relative;overflow:hidden}
-.btn-quick-free:active{background:rgba(201,168,76,.1);transform:scale(.99)}
-.btn-quick-free.loading{opacity:.6;pointer-events:none}
-.qbf-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
-.qbf-modal{background:var(--card);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;animation:slideUp .3s ease}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.qbf-modal-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px}
-.qbf-modal-sub{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:20px}
-.qbf-slot-card{border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .2s;background:rgba(201,168,76,.03)}
-.qbf-slot-card:active{background:rgba(201,168,76,.1);border-color:var(--gold)}
-.qbf-slot-card:hover{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.06)}
-.qbf-slot-master{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);font-weight:600}
-.qbf-slot-time{font-size:20px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;margin:2px 0}
-.qbf-slot-date{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.qbf-empty{text-align:center;padding:30px 0;color:var(--muted);font-size:14px}
-.qbf-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:4px 10px}
+.btn-o{flex:1;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer}
 
 .home-divider{display:flex;align-items:center;gap:12px;padding:0 24px;margin:4px 0}.home-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),transparent)}.home-divider-ico{font-size:10px;color:rgba(201,168,76,.4)}
-.info-block{margin:0 24px 20px;border:1px solid rgba(201,168,76,.12);background:rgba(7,5,3,.3);border-radius:12px;overflow:hidden}
+.info-block{margin:0 24px 20px;border:1px solid rgba(201,168,76,.12);background:rgba(7,5,3,.3)}
 .info-row:last-child{border-bottom:none}
 .info-ico{font-size:18px;width:20px;flex-shrink:0;margin-top:3px}
 .info-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:3px}
@@ -210,7 +192,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* MASTERS */
 .m-list{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.m-item{border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer;transition:border-color .25s,transform .15s;display:flex;flex-direction:column;position:relative;border-radius:12px}
+.m-item{border:1px solid rgba(201,168,76,.15);background:rgba(13,11,7,.7);overflow:hidden;cursor:pointer;transition:border-color .25s,transform .15s;display:flex;flex-direction:column;position:relative}
 .m-item:active{border-color:var(--gold);transform:scale(.97)}
 .m-thumb{width:100%;aspect-ratio:3/4;overflow:hidden;flex-shrink:0;position:relative}
 .m-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform .4s ease}
@@ -225,7 +207,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* PRICE */
 .ptabs{display:flex;padding:14px 16px 0;gap:8px}
-.ptab{flex:1;padding:12px 4px;text-align:center;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:10px}
+.ptab{flex:1;padding:12px 4px;text-align:center;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px;display:flex;flex-direction:column;align-items:center;gap:4px}
 .ptab-ico{font-size:20px;display:block}
 .ptab.active{background:rgba(201,168,76,.08);border-color:var(--gold);color:var(--gold)}
 .ppanel{display:none;padding:10px 16px 0}
@@ -240,7 +222,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .ms-sel{padding:14px 16px}
 .ms-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:10px}
 .ms-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.ms-btn{display:flex;align-items:center;gap:10px;border:1px solid rgba(201,168,76,.14);padding:9px;background:transparent;cursor:pointer;text-align:left;transition:all .2s;-webkit-user-select:none;user-select:none;touch-action:manipulation;border-radius:10px}
+.ms-btn{display:flex;align-items:center;gap:10px;border:1px solid rgba(201,168,76,.14);padding:9px;background:transparent;cursor:pointer;text-align:left;transition:all .2s;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .ms-btn.sel{border-color:var(--gold);background:rgba(201,168,76,.06)}
 .ms-mini{width:34px;height:42px;overflow:hidden;flex-shrink:0}
 .ms-mini img{width:100%;height:100%;object-fit:cover;object-position:top center}
@@ -266,7 +248,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cal-wrow{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:2px}
 .cal-wl{text-align:center;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(138,125,107,.45);padding:2px 0}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
-.cal-d{width:100%;padding:10px 0;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid transparent;position:relative;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.cal-d{width:100%;padding:6px 0;display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid transparent;position:relative;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .cal-d.emp{visibility:hidden}
 .cal-d.pst{visibility:hidden}
 .cal-d.avl{cursor:pointer;color:var(--cream)}
@@ -300,7 +282,28 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 @keyframes slotIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 .t-btn{border:1px solid rgba(201,168,76,.18);padding:11px 4px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;color:var(--cream);background:transparent;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;animation:slotIn .2s ease both}
 .t-btn.sel{background:var(--gold);border-color:var(--gold);color:var(--black)}
-.t-btn.busy{background:rgba(224,80,80,.15);border-color:#e05050;color:#e05050;cursor:not-allowed;text-decoration:line-through;opacity:.7}
+.t-btn.busy{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--cream);cursor:pointer;opacity:1}
+/* WAITLIST MODAL */
+.wl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.wl-card{background:#1a1612;border:1px solid rgba(201,168,76,.35);border-radius:12px;padding:22px;width:100%;max-width:340px;font-family:'Cormorant Garamond',serif}
+.wl-ico{font-size:30px;text-align:center;margin-bottom:10px}
+.wl-title{color:var(--gold);font-size:17px;font-weight:700;text-align:center;margin-bottom:6px;letter-spacing:.5px}
+.wl-sub{color:rgba(245,239,230,.6);font-size:13px;text-align:center;line-height:1.5;margin-bottom:12px}
+.wl-free{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:8px 12px;text-align:center;margin-bottom:14px}
+.wl-free-lbl{color:rgba(138,125,107,.8);font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+.wl-free-val{color:var(--gold);font-size:15px;font-weight:700;margin-top:3px}
+.wl-inp{width:100%;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);color:var(--cream);padding:10px 12px;font-size:14px;border-radius:6px;margin-bottom:10px;font-family:'Cormorant Garamond',serif;box-sizing:border-box}
+.wl-inp::placeholder{color:rgba(138,125,107,.5);font-size:13px}
+.wl-inp:focus{outline:none;border-color:rgba(201,168,76,.5)}
+.wl-btn{width:100%;background:rgba(201,168,76,.9);border:none;color:#0d0b07;padding:12px;font-size:14px;font-weight:700;border-radius:6px;cursor:pointer;font-family:'Cormorant Garamond',serif;letter-spacing:.5px}
+.wl-cancel{display:block;text-align:center;color:rgba(138,125,107,.55);font-size:12px;margin-top:10px;cursor:pointer;letter-spacing:.5px}
+.wl-spinner{display:none;text-align:center;padding:10px 0;color:var(--gold);font-size:13px}
+.wl-icon{font-size:30px;text-align:center;margin-bottom:10px}
+.wl-success{text-align:center;padding:10px 0}
+.wl-success-icon{font-size:38px;margin-bottom:12px}
+.wl-success-title{color:#4caf7d;font-size:17px;font-weight:700;letter-spacing:.5px;margin-bottom:6px}
+.wl-success-sub{color:rgba(245,239,230,.6);font-size:13px;line-height:1.5;margin-bottom:12px}
+.wl-success-brand{color:rgba(201,168,76,.5);font-size:12px;letter-spacing:.5px}
 .t-btn.past{display:none}
 
 /* BOOKING - SERVICE SELECTOR */
@@ -384,7 +387,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-summary-times span{font-size:11px;padding:2px 6px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--gold)}
 .adm-date-strip{display:flex;gap:4px;overflow-x:auto;padding:4px 0 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:4px}
 .adm-date-strip::-webkit-scrollbar{display:none}
-.adm-date-chip{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-family:'Cormorant Garamond',serif;cursor:pointer;transition:all .15s;min-width:48px;border-radius:10px}
+.adm-date-chip{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border:1px solid rgba(201,168,76,.18);background:transparent;color:var(--gray);font-family:'Cormorant Garamond',serif;cursor:pointer;transition:all .15s;min-width:48px;border-radius:4px}
 .adm-date-chip:active{background:rgba(201,168,76,.15)}
 .adm-date-chip.today{border-color:rgba(201,168,76,.45);color:var(--cream)}
 .adm-date-chip.active{background:var(--gold);border-color:var(--gold);color:var(--black)}
@@ -392,7 +395,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-date-chip:not(.has-bookings) .adm-chip-dot{width:5px;height:5px;border-radius:50%;background:transparent;margin-top:2px}
 .adm-chip-day{font-size:9px;letter-spacing:1px;text-transform:uppercase}
 .adm-chip-num{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;line-height:1}
-.adm-refresh-btn{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:6px 14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .2s;white-space:nowrap;border-radius:8px}
+.adm-refresh-btn{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:6px 14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .2s;white-space:nowrap}
 .adm-refresh-btn:active{background:rgba(201,168,76,.1)}
 .adm-refresh-btn:disabled{opacity:.4;cursor:not-allowed}
 .adm-live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:livePulse 2s ease-in-out infinite}
@@ -408,17 +411,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .reviews-hdr{text-align:center;margin-bottom:20px;padding:0 24px}
 .reviews-list{padding:0 24px;margin-bottom:20px;max-height:320px;overflow-y:auto}
 .rev-loading{text-align:center;color:var(--gray);font-style:italic;padding:20px 0}
-.rev-masters-rating{padding:16px;margin-bottom:4px}
-.rev-masters-title{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.5);margin-bottom:12px}
-.rev-mrating-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.rev-mrating-row:last-child{margin-bottom:0}
-.rev-mrating-name{font-size:13px;color:var(--cream);min-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rev-mrating-bar-bg{flex:1;height:5px;background:rgba(201,168,76,.1);border-radius:3px;overflow:hidden}
-.rev-mrating-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c9a84c,#f0d080);transition:width .6s ease}
-.rev-mrating-score{font-size:13px;color:var(--gold);font-weight:700;min-width:28px;text-align:right}
-.rev-mrating-count{font-size:10px;color:rgba(201,168,76,.35);min-width:36px;text-align:right}
-.rev-section-divider{height:1px;background:rgba(201,168,76,.08);margin:4px 0 20px}
-.rev-card{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);padding:14px;margin-bottom:10px;border-radius:12px}
+.rev-card{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);padding:14px;margin-bottom:10px}
 .rev-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .rev-card-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream)}
 .rev-card-rating{color:var(--gold);font-size:14px;letter-spacing:1px}
@@ -429,20 +422,20 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .rev-stars{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
 .rev-star{font-size:32px;color:rgba(201,168,76,.25);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;user-select:none}
 .rev-star:hover,.rev-star.active{color:var(--gold);transform:scale(1.15)}
-.rev-inp{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:12px;outline:none;margin-bottom:10px;border-radius:10px;box-sizing:border-box}
+.rev-inp{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:12px;outline:none;margin-bottom:10px;border-radius:0;box-sizing:border-box}
 .rev-inp:focus{border-color:rgba(201,168,76,.5)}
 .rev-inp::placeholder{color:rgba(138,125,107,.35)}
-.rev-txt{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:12px;outline:none;margin-bottom:14px;min-height:90px;resize:vertical;border-radius:10px;box-sizing:border-box;display:block}
+.rev-txt{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:12px;outline:none;margin-bottom:14px;min-height:90px;resize:vertical;border-radius:0;box-sizing:border-box;display:block}
 .rev-txt:focus{border-color:rgba(201,168,76,.5)}
 .rev-txt::placeholder{color:rgba(138,125,107,.35)}
 .rev-master-sel{-webkit-appearance:none;appearance:none;cursor:pointer}
 .rev-master-sel option{background:var(--black);color:var(--cream)}
-.rev-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .2s;font-family:'Cormorant Garamond',serif;border-radius:10px}
+.rev-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;transition:background .2s;font-family:'Cormorant Garamond',serif}
 .rev-btn:active{background:var(--gold-l)}
 .rev-btn:disabled{background:rgba(201,168,76,.3);cursor:not-allowed;color:rgba(10,8,5,.5)}
 .rev-card-master-row{margin-bottom:6px}
-.rev-card-master{font-size:11px;letter-spacing:1px;color:var(--gold);background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:2px 8px;display:inline-block;border-radius:6px}
-.rev-verified{font-size:10px;letter-spacing:.5px;color:var(--green);background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.25);padding:2px 8px;display:inline-flex;align-items:center;gap:4px;margin-left:6px;border-radius:6px}
+.rev-card-master{font-size:11px;letter-spacing:1px;color:var(--gold);background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:2px 8px;display:inline-block}
+.rev-verified{font-size:10px;letter-spacing:.5px;color:var(--green);background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.25);padding:2px 8px;display:inline-flex;align-items:center;gap:4px;margin-left:6px}
 .rev-card.verified{border-color:rgba(76,175,125,.25);border-left:3px solid var(--green)}
 .rev-empty{text-align:center;color:var(--gray);font-style:italic;padding:20px 0}
 .rev-more-btn{width:100%;background:transparent;border:1px dashed rgba(201,168,76,.3);color:var(--gold);padding:10px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif;margin-top:10px}
@@ -452,16 +445,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-section-ttl{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:12px}
 .adm-lbl{color:var(--gray);font-size:10px;letter-spacing:2px;text-transform:uppercase}
 .adm-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)}
-.adm-select{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px;outline:none;margin-bottom:10px;-webkit-appearance:none;border-radius:10px}
+.adm-select{width:100%;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:10px;outline:none;margin-bottom:10px;-webkit-appearance:none}
 .adm-select option{background:var(--black);color:var(--cream)}
-.adm-btn{background:var(--gold);color:var(--black);border:none;padding:10px 16px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;margin:4px 4px 4px 0;font-family:'Cormorant Garamond',serif;border-radius:8px}
+.adm-btn{background:var(--gold);color:var(--black);border:none;padding:10px 16px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;margin:4px 4px 4px 0;font-family:'Cormorant Garamond',serif}
 .adm-btn.outline{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--gold)}
 .adm-btn.danger{background:rgba(224,80,80,.9);border-color:rgba(224,80,80,1);color:#fff}
 .adm-btn.success{background:rgba(76,175,125,.9);border-color:rgba(76,175,125,1);color:#fff}
 .adm-btn:disabled{opacity:.4;cursor:not-allowed}
 .adm-btn:active{opacity:.8}
 .adm-slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
-.adm-slot{position:relative;padding:12px 8px;text-align:center;font-size:14px;font-weight:600;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);cursor:pointer;transition:all .2s;font-family:'Cormorant Garamond',serif;border-radius:8px}
+.adm-slot{position:relative;padding:12px 8px;text-align:center;font-size:14px;font-weight:600;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);cursor:pointer;transition:all .2s;font-family:'Cormorant Garamond',serif}
 .adm-slot:hover{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.4)}
 .adm-slot.blocked{background:rgba(160,64,64,.2);border-color:rgba(160,64,64,.5);color:rgba(160,64,64,.9);text-decoration:line-through}
 .adm-slot.booked{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
@@ -476,7 +469,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-booking-time{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);margin-bottom:4px}
 .adm-booking-info{font-size:13px;color:var(--cream);line-height:1.6}
 .adm-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
-.adm-stat{padding:14px;border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02);text-align:center;border-radius:10px}
+.adm-stat{padding:14px;border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02);text-align:center}
 .adm-stat .adm-val{font-size:24px}
 .adm-top-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,168,76,.06);font-size:13px}
 .adm-top-nm{color:var(--cream)}
@@ -485,7 +478,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-panel.active{display:block}
 
 /* СЭНДВИЧ-КНОПКА */
-.adm-burger-btn{display:flex;align-items:center;gap:10px;width:100%;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);padding:11px 14px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:background .15s;-webkit-tap-highlight-color:transparent;border-radius:10px}
+.adm-burger-btn{display:flex;align-items:center;gap:10px;width:100%;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);padding:11px 14px;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:background .15s;-webkit-tap-highlight-color:transparent}
 .adm-burger-btn:active{background:rgba(201,168,76,.12)}
 .adm-burger-ico{display:flex;flex-direction:column;gap:4px;flex-shrink:0;width:18px}
 .adm-burger-ico span{display:block;height:1.5px;background:var(--gold);transition:all .25s;transform-origin:center}
@@ -513,13 +506,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .adm-menu-desc{font-size:11px;color:var(--gray);display:block;margin-top:1px;letter-spacing:.3px}
 .adm-menu-item > div{display:flex;flex-direction:column}
 .adm-loading{text-align:center;color:var(--gray);font-style:italic;padding:20px 0;font-size:14px}
-.adm-master-group{margin-bottom:16px;border:1px solid rgba(201,168,76,.15);border-radius:12px;overflow:hidden}
+.adm-master-group{margin-bottom:16px;border:1px solid rgba(201,168,76,.15);border-radius:4px;overflow:hidden}
 .adm-master-header{background:rgba(201,168,76,.1);padding:10px 14px;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold);border-bottom:1px solid rgba(201,168,76,.1)}
 .adm-master-count{font-size:12px;color:var(--gray);font-weight:400;font-family:'Cormorant Garamond',serif}
 
 /* СПИСОК ВЫХОДНЫХ */
 .adm-dayoffs-list{margin-top:12px}
-.adm-dayoff-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid rgba(201,168,76,.1);margin-bottom:8px;background:rgba(201,168,76,.02);border-radius:10px}
+.adm-dayoff-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid rgba(201,168,76,.1);margin-bottom:8px;background:rgba(201,168,76,.02)}
 .adm-dayoff-info{flex:1}
 .adm-dayoff-master{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--cream)}
 .adm-dayoff-date{font-size:13px;color:var(--gold);margin-top:2px}
@@ -528,28 +521,28 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* МОДАЛЬНОЕ ОКНО */
 .adm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
 .adm-modal.show{display:flex}
-.adm-modal-content{background:var(--dark);border:1px solid rgba(201,168,76,.3);padding:24px;max-width:400px;width:100%;border-radius:16px;max-height:80vh;overflow-y:auto}
+.adm-modal-content{background:var(--dark);border:1px solid rgba(201,168,76,.3);padding:24px;max-width:400px;width:100%;border-radius:8px;max-height:80vh;overflow-y:auto}
 .adm-modal-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);margin-bottom:16px}
 .adm-modal-text{font-size:14px;color:var(--cream);margin-bottom:20px;line-height:1.6}
-.adm-modal-list{margin:12px 0;padding:12px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.1);max-height:150px;overflow-y:auto;border-radius:8px}
+.adm-modal-list{margin:12px 0;padding:12px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.1);max-height:150px;overflow-y:auto}
 .adm-modal-list-item{padding:6px 0;font-size:13px;border-bottom:1px solid rgba(201,168,76,.05)}
 .adm-modal-btns{display:flex;gap:10px;margin-top:16px}
-.adm-modal-btn{flex:1;padding:12px;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;border-radius:10px}
+.adm-modal-btn{flex:1;padding:12px;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif}
 .adm-modal-btn.cancel{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--gold)}
 .adm-modal-btn.confirm{background:rgba(224,80,80,.9);border:none;color:#fff}
 
 /* MY BOOKINGS */
-.my-tabs{display:flex;gap:0;margin:0 16px 12px;border:1px solid rgba(201,168,76,.2);border-radius:12px;overflow:hidden}
+.my-tabs{display:flex;gap:0;margin:0 16px 12px;border:1px solid rgba(201,168,76,.2);border-radius:4px;overflow:hidden}
 .my-tab{flex:1;padding:10px 8px;background:transparent;border:none;color:var(--gray);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .2s}
 .my-tab.active{background:rgba(201,168,76,.12);color:var(--gold)}
 .my-tab:first-child{border-right:1px solid rgba(201,168,76,.2)}
 .my-card-past{opacity:.72;border-color:rgba(201,168,76,.08)}
 .my-card-past .my-card-time{font-size:17px;color:var(--gray)}
 .my-card-past .my-card-master{color:var(--gray)}
-.my-btn-repeat{flex:1;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.35);color:var(--gold);padding:11px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;border-radius:8px}
+.my-btn-repeat{flex:1;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.35);color:var(--gold);padding:11px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s}
 .my-btn-repeat:active{background:rgba(201,168,76,.22)}
 .my-empty{text-align:center;color:var(--gray);font-style:italic;padding:40px 24px;font-size:15px}
-.my-card{margin:0 16px 12px;border:1px solid rgba(201,168,76,.15);background:rgba(201,168,76,.02);padding:14px 16px;border-left:3px solid var(--gold);border-radius:12px}
+.my-card{margin:0 16px 12px;border:1px solid rgba(201,168,76,.15);background:rgba(201,168,76,.02);padding:14px 16px;border-left:3px solid var(--gold)}
 .my-card-past{border-left-color:rgba(138,125,107,.3)!important}
 .my-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .my-card-master{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cream)}
@@ -558,23 +551,23 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .my-card-info span{color:var(--cream)}
 .my-card-total{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold);margin-top:6px}
 .my-card-btns{display:flex;gap:8px;margin-top:12px}
-.my-btn-cancel{flex:1;background:rgba(160,64,64,.15);border:1px solid rgba(160,64,40,.4);color:#e06060;padding:11px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;border-radius:8px}
+.my-btn-cancel{flex:1;background:rgba(160,64,64,.15);border:1px solid rgba(160,64,40,.4);color:#e06060;padding:11px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s}
 .my-btn-cancel:active{background:rgba(160,64,64,.3)}
-.my-btn-resched{flex:1;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:11px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s;border-radius:8px}
+.my-btn-resched{flex:1;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:11px 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;transition:all .15s}
 .my-btn-resched:active{background:rgba(201,168,76,.15)}
 .my-no-tg{text-align:center;color:var(--gray);font-size:14px;padding:40px 24px}
 
-.cal-empty-msg{text-align:center;padding:20px 16px;color:var(--gray);font-style:italic;font-size:14px;background:rgba(201,168,76,.02);border:1px dashed rgba(201,168,76,.15);margin:0 16px 14px;border-radius:10px}
+.cal-empty-msg{text-align:center;padding:20px 16px;color:var(--gray);font-style:italic;font-size:14px;background:rgba(201,168,76,.02);border:1px dashed rgba(201,168,76,.15);margin:0 16px 14px}
 
 /* ИНДИКАТОР РОЛИ */
-.role-badge{display:inline-block;padding:3px 8px;font-size:9px;letter-spacing:1px;text-transform:uppercase;border-radius:6px;margin-left:8px}
+.role-badge{display:inline-block;padding:3px 8px;font-size:9px;letter-spacing:1px;text-transform:uppercase;border-radius:3px;margin-left:8px}
 .role-badge.admin{background:rgba(224,80,80,.2);color:#e05050}
 .role-badge.master{background:rgba(201,168,76,.2);color:var(--gold)}
 
 
 /* SKELETON LOADING */
 @keyframes shimmerSkel{0%{background-position:-200px 0}100%{background-position:200px 0}}
-.skeleton{background:linear-gradient(90deg,rgba(201,168,76,.06) 25%,rgba(201,168,76,.12) 50%,rgba(201,168,76,.06) 75%);background-size:400px 100%;animation:shimmerSkel 1.4s ease infinite;border-radius:6px;display:block}
+.skeleton{background:linear-gradient(90deg,rgba(201,168,76,.06) 25%,rgba(201,168,76,.12) 50%,rgba(201,168,76,.06) 75%);background-size:400px 100%;animation:shimmerSkel 1.4s ease infinite;border-radius:3px;display:block}
 .skel-line{height:14px;margin-bottom:8px;width:100%}
 .skel-line.w60{width:60%}
 .skel-line.w40{width:40%}
@@ -586,7 +579,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* РАССЫЛКА */
 .bc-filter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
-.bc-filter{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);padding:9px 6px;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:10px}
+.bc-filter{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);padding:9px 6px;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px}
 .bc-filter.active{background:rgba(201,168,76,.1);border-color:var(--gold);color:var(--gold)}
 .bc-filter:active{transform:scale(.96)}
 .bc-filter-hint{font-size:9px;letter-spacing:.5px;opacity:.7;font-weight:400}
@@ -594,16 +587,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .bc-count strong{color:var(--gold)}
 .bc-hint{font-size:12px;color:var(--gray);margin-bottom:8px}
 .bc-hint code{background:rgba(201,168,76,.1);color:var(--gold);padding:1px 5px;border-radius:3px;font-size:11px}
-.bc-textarea{width:100%;min-height:120px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:12px;outline:none;resize:vertical;border-radius:10px;box-sizing:border-box;line-height:1.5}
+.bc-textarea{width:100%;min-height:120px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.18);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:15px;padding:12px;outline:none;resize:vertical;border-radius:0;box-sizing:border-box;line-height:1.5}
 .bc-textarea:focus{border-color:rgba(201,168,76,.5)}
 .bc-textarea::placeholder{color:rgba(138,125,107,.35)}
 .bc-counter{font-size:10px;color:var(--gray);text-align:right;margin-top:4px;letter-spacing:.5px}
-.bc-preview{background:rgba(13,11,7,.6);border:1px solid rgba(201,168,76,.12);border-left:3px solid rgba(201,168,76,.5);padding:12px 14px;font-size:14px;color:var(--cream);line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:50px;font-style:italic;border-radius:10px}
+.bc-preview{background:rgba(13,11,7,.6);border:1px solid rgba(201,168,76,.12);border-left:3px solid rgba(201,168,76,.5);padding:12px 14px;font-size:14px;color:var(--cream);line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:50px;font-style:italic}
 .bc-templates-ttl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
 .bc-templates{display:flex;gap:8px;flex-wrap:wrap}
 .bc-tpl{background:transparent;border:1px dashed rgba(201,168,76,.3);color:var(--gold);padding:7px 12px;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.5px;cursor:pointer;transition:all .15s}
 .bc-tpl:active{background:rgba(201,168,76,.1)}
-.bc-result{margin-top:12px;padding:12px 14px;font-size:14px;border-radius:10px;line-height:1.5}
+.bc-result{margin-top:12px;padding:12px 14px;font-size:14px;border-radius:4px;line-height:1.5}
 .bc-result.success{background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);color:#4caf7d}
 .bc-result.error{background:rgba(224,80,80,.1);border:1px solid rgba(224,80,80,.3);color:#e05050}
 .bc-history-item{padding:10px 0;border-bottom:1px solid rgba(201,168,76,.07);font-size:13px}
@@ -718,9 +711,9 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .mp-close{position:absolute;top:16px;left:16px;width:36px;height:36px;border-radius:50%;background:rgba(10,8,5,.7);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1}
 .mp-body{padding:16px 20px}
 .mp-section-ttl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:10px;margin-top:20px}
-.mp-book-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:20px;font-family:'Cormorant Garamond',serif;transition:all .2s;border-radius:10px}
+.mp-book-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:20px;font-family:'Cormorant Garamond',serif;transition:all .2s}
 .mp-book-btn:active{transform:scale(.99);background:var(--gold-l)}
-.mp-share-btn-full{width:100%;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:13px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:10px;font-family:'Cormorant Garamond',serif;transition:all .2s;border-radius:10px}
+.mp-share-btn-full{width:100%;background:transparent;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:13px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;margin-top:10px;font-family:'Cormorant Garamond',serif;transition:all .2s}
 .mp-share-btn-full:active{background:rgba(201,168,76,.1);border-color:var(--gold)}
 .mp-placeholder{width:100%;aspect-ratio:3/4;max-height:65vh;background:linear-gradient(180deg,rgba(201,168,76,.08),rgba(201,168,76,.03));display:flex;align-items:center;justify-content:center;font-size:64px;opacity:.2}
 
@@ -1101,6 +1094,36 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 </style>
 </head>
 <body>
+<script>
+(function(){
+  function hs(){var e=document.getElementById('splash');if(e){e.style.display='none';}}
+  setTimeout(hs,1500);
+  setTimeout(hs,2500);
+  window.addEventListener('load',function(){setTimeout(hs,300);});
+})();
+</script>
+
+<!-- МОДАЛКА ПЕРЕНОСА ЗАПИСИ -->
+<div id="rescheduleModal">
+  <div class="resc-box">
+    <div class="resc-ttl">Перенос записи</div>
+    <div id="rescClientInfo" style="font-size:13px;color:var(--gray);margin-bottom:12px;padding:8px;border:1px solid rgba(201,168,76,.1)"></div>
+    <div class="resc-row">
+      <div class="resc-lbl">Новая дата</div>
+      <input type="date" class="resc-inp" id="rescDate">
+    </div>
+    <div class="resc-row">
+      <div class="resc-lbl">Новое время</div>
+      <select class="resc-inp" id="rescSlot"><option value="">Выберите дату</option></select>
+    </div>
+    <div class="resc-btns">
+      <button class="resc-btn-cancel" onclick="rescClose()">Отмена</button>
+      <button class="resc-btn-ok" id="rescConfirmBtn" onclick="rescConfirm()" disabled>Перенести</button>
+    </div>
+  </div>
+</div>
+
+
 <!-- СТРАНИЦА ПРОФИЛЯ МАСТЕРА -->
 <div id="masterProfile">
   <div class="mp-hero" id="mpHero">
@@ -1150,10 +1173,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
   </div>
   <div class="home-online"><span class="home-online-dot"></span><span class="home-online-txt">Сегодня свободно: <strong id="homeSlotCount">...</strong> слотов</span></div>
   <div class="home-btns" style="padding:20px 24px">
-    <button class="btn-g" id="btnToBooking">✦ Записаться онлайн ✦</button>
-  </div>
-  <div style="padding:0 24px 20px">
-    <button class="btn-quick-free" id="btnQuickFree" onclick="quickBookFree()">⚡ Записаться к свободному</button>
+    <button class="btn-g" id="btnToBooking">✦ Записаться</button>
   </div>
   <div class="home-divider"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
   <div class="info-block">
@@ -1167,7 +1187,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     </div>
     <div class="info-row">
       <div class="info-ico">📞</div>
-      <div><div class="info-lbl">Телефон</div><div class="info-val"><a href="tel:+79525608898" id="phoneLinkInfo">+7 (952) 560-88-98</a></div></div>
+      <div><div class="info-lbl">Телефон</div><div class="info-val"><a href="tel:+79525608898" id="phoneLink">+7 (952) 560-88-98</a></div></div>
     </div>
   </div>
   <div class="soc">
@@ -1272,7 +1292,31 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
   </div>
   <div class="home-divider" style="margin:8px 0 4px"><span class="home-divider-line"></span><span class="home-divider-ico">✦</span><span class="home-divider-line"></span></div>
-
+  <div class="reviews-section">
+    <div class="reviews-hdr">
+      <div class="sec-lbl">✦ Что говорят клиенты</div>
+      <h2 class="sec-ttl">Отзы<em>вы</em></h2>
+    </div>
+    <div class="reviews-list" id="reviewsList">
+      <div class="rev-loading">Загрузка отзывов...</div>
+    </div>
+    <div class="reviews-form">
+      <div class="rev-form-ttl">Оставить отзыв</div>
+      <div class="rev-stars" id="revStars">
+        <span class="rev-star" data-rating="1">★</span>
+        <span class="rev-star" data-rating="2">★</span>
+        <span class="rev-star" data-rating="3">★</span>
+        <span class="rev-star" data-rating="4">★</span>
+        <span class="rev-star" data-rating="5">★</span>
+      </div>
+      <select class="rev-inp rev-master-sel" id="revMaster">
+        <option value="">Мастер (необязательно)</option>
+      </select>
+      <input type="text" class="rev-inp" id="revName" placeholder="Ваше имя">
+      <textarea class="rev-txt" id="revText" placeholder="Напишите ваш отзыв..."></textarea>
+      <button class="rev-btn" id="revSubmit">Отправить отзыв</button>
+    </div>
+  </div>
 </div>
 
 <!-- PAGE: MASTERS -->
@@ -1376,37 +1420,6 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 </div>
 
 <!-- PAGE: ADMIN -->
-<div class="page" id="page-reviews">
-  <div class="page-hdr"><h1 class="page-ttl">Отзы<em>вы</em></h1></div>
-  <div style="padding:0 16px 16px">
-    <div class="rev-masters-rating" id="revMastersRating">
-      <div class="rev-masters-title">Рейтинг мастеров</div>
-      <div id="revMastersRatingList"></div>
-    </div>
-    <div class="rev-section-divider"></div>
-    <div class="reviews-form" style="margin-top:0">
-      <div class="rev-form-ttl">Оставить отзыв</div>
-      <div class="rev-stars" id="revStarsPage">
-        <span class="rev-star" data-rating="1">★</span>
-        <span class="rev-star" data-rating="2">★</span>
-        <span class="rev-star" data-rating="3">★</span>
-        <span class="rev-star" data-rating="4">★</span>
-        <span class="rev-star" data-rating="5">★</span>
-      </div>
-      <select class="rev-inp rev-master-sel" id="revMasterPage">
-        <option value="">Мастер (необязательно)</option>
-      </select>
-      <input type="text" class="rev-inp" id="revNamePage" placeholder="Ваше имя">
-      <textarea class="rev-txt" id="revTextPage" placeholder="Напишите ваш отзыв..."></textarea>
-      <button class="rev-btn" id="revSubmitPage">Отправить отзыв</button>
-    </div>
-    <div class="rev-section-divider" style="margin:20px 0 16px"></div>
-    <div class="reviews-list" id="reviewsListPage">
-      <div class="rev-loading">Загрузка отзывов...</div>
-    </div>
-  </div>
-</div>
-
 <div class="page" id="page-admin">
   <div class="sec-hdr">
     <div class="sec-lbl">✦ Управление</div>
@@ -1788,28 +1801,24 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 <!-- BOTTOM NAV -->
 <nav class="tabs" id="mainTabs">
   <button class="tab active" id="tab-home" data-page="home">
-    <span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Главная
   </button>
   <button class="tab" id="tab-masters" data-page="masters">
-    <span class="tab-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
     Мастера
   </button>
   <button class="tab" id="tab-booking" data-page="booking">
-    <span class="tab-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Запись
   </button>
   <button class="tab" id="tab-mybookings" data-page="mybookings">
-    <span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></span>
+    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
     Мои
-  </button>
-  <button class="tab" id="tab-reviews" data-page="reviews">
-    <span class="tab-ico"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-    Отзывы
   </button>
   <button class="tab" id="tab-admin" data-page="admin" style="display:none">
     <span class="adm-tab-badge" id="admTabBadge" style="display:none"></span>
-    <span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+    <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
     Админ
   </button>
 </nav>
@@ -2050,8 +2059,14 @@ function fetchWithTimeout(url, options, timeout) {
   ]);
 }
 
-
-
+function makeCall() {
+  haptic('light');
+  var tel = 'tel:+79525608898';
+  if (tg && tg.openLink) {
+    try { tg.openLink(tel, { try_instant_view: false }); return; } catch(e) {}
+  }
+  try { window.location.href = tel; } catch(e) {}
+}
 
 // Отдельный обработчик для phoneLink — без preventDefault
 // чтобы нативный href="tel:" сработал если tg.openLink недоступен
@@ -2135,6 +2150,7 @@ function initApp() {
   if (bkPhone) bkPhone.addEventListener('input', onPhoneInput);
 
   initTabs();
+  initReviews();
 
   // Пробуем отрисовать из кэша сразу — до ответа сервера
   const cached = loadInitCache();
@@ -2313,10 +2329,13 @@ function initTabs() {
 
   addClickHandler('btnToBooking', () => goPage('booking'));
   // phoneLink: нативный href="tel:" — не вешаем addClickHandler (он блокирует e.preventDefault)
+  addClickHandler('succPhoneLink', makeCall);
+  addClickHandler('callFab', makeCall);
   addClickHandler('btnBkReset', bkReset);
   addClickHandler('calPrevBtn', calPrev);
   addClickHandler('calNextBtn', calNext);
   addClickHandler('bkSub', bkSubmit);
+  addClickHandler('revSubmit', submitReview);
   addClickHandler('admAddDayOffBtn', admAddDayOff);
   addClickHandler('admRemoveDayOffBtn', admRemoveDayOff);
 
@@ -2363,7 +2382,6 @@ function goPage(id) {
   }
   if (id === 'booking')    bkInit();
   if (id === 'mybookings') myBkInit();
-  if (id === 'reviews')    revPageInit();
   if (id === 'admin')      admInit();
   if (id !== 'admin')      admStopPolling();
   // Бейдж: останавливаем таймер когда в админке (незачем проверять), возобновляем при выходе
@@ -2831,10 +2849,10 @@ function renderTimeGrid() {
     btn.textContent = slot;
 
     if (svBusy || svBlock) {
-      // FIX-03: занятые — показываем как недоступные (не скрываем)
+      // WAITLIST: занятые/заблокированные — выглядят как свободные, открывают попап
       btn.className = 't-btn busy';
-      btn.disabled = true;
-      btn.title = svBlock ? 'Заблокировано' : 'Занято';
+      btn.disabled  = false;
+      btn.onclick   = (function(s){ return function(e){ e.preventDefault(); wlOpen(s); }; })(slot);
     } else {
       btn.className = 't-btn' + (S.slot===slot?' sel':'');
       btn.onclick = e => { e.preventDefault(); bkPickTime(slot); };
@@ -3399,8 +3417,8 @@ function admLoadSummary() {
   container.innerHTML = '<div class="adm-loading">Загрузка сводки...</div>';
 
   Promise.all([
-    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : '')).then(function(r){return r.json();}),
-    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId) + '&period=day' + (getInitData() ? '&initData=' + getInitData() : '')).then(function(r){return r.json();})
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId)).then(function(r){return r.json();}),
+    fetchWithTimeout(CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId) + '&period=day').then(function(r){return r.json();})
   ])
   .then(function(results) {
     var bkData = results[0], anData = results[1];
@@ -3592,7 +3610,7 @@ function admLoadBookings() {
   const titleEl=ge('admBkTitle');
   if (titleEl) titleEl.textContent = dateStr===formatDate_iso(new Date()) ? 'Записи на сегодня — '+formatDate_display(dateStr) : 'Записи — '+formatDate_display(dateStr);
   const chatId=getChatId();
-  let url=CONFIG.GS+'?action=getBookings&date='+dateStr+'&chatId='+encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : '');
+  let url=CONFIG.GS+'?action=getBookings&date='+dateStr+'&chatId='+encodeURIComponent(chatId);
   if (masterId) url+='&masterId='+masterId;
   fetchWithTimeout(url).then(r=>r.json()).then(d => {
     if (d.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
@@ -3674,7 +3692,7 @@ function admSetDayOffAction(masterId, dateStr) {
     .then(function(confirmed) {
       if (!confirmed) return;
       const chatId=getChatId();
-      fetchWithTimeout(CONFIG.GS+'?action=dayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId + (getInitData() ? '&initData=' + getInitData() : ''))
+      fetchWithTimeout(CONFIG.GS+'?action=dayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
         .then(r=>r.json())
         .then(d => {
           if (d.success||d.status==='ok') { showToast('✅ Выходной день установлен','success'); admLoadSlots(); admLoadDayOffsList(); }
@@ -3688,7 +3706,7 @@ function admSetDayOffAction(masterId, dateStr) {
 
 function admForceSetDayOff(masterId, dateStr) {
   const chatId=getChatId(), master=getMaster(masterId);
-  fetchWithTimeout(CONFIG.GS+'?action=forceDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS+'?action=forceDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
     .then(r=>r.json())
     .then(d => {
       if (d.success||d.status==='ok') { showToast('✅ Выходной установлен. Отменено записей: '+(d.cancelledClients?d.cancelledClients.length:0),'success'); admLoadSlots(); admLoadDayOffsList(); }
@@ -3704,7 +3722,7 @@ function admRemoveDayOffAction(masterId, dateStr) {
     .then(function(confirmed) {
       if (!confirmed) return;
       const chatId=getChatId();
-      fetchWithTimeout(CONFIG.GS+'?action=removeDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId + (getInitData() ? '&initData=' + getInitData() : ''))
+      fetchWithTimeout(CONFIG.GS+'?action=removeDayOff&masterId='+masterId+'&master='+encodeURIComponent(master.name)+'&date='+dateStr+'&chatId='+chatId)
         .then(r=>r.json())
         .then(d => {
           if (d.success||d.status==='ok') { showToast('✅ Выходной день снят','success'); admLoadSlots(); admLoadDayOffsList(); }
@@ -3729,7 +3747,7 @@ function admRemoveDayOff() {
 function admLoadDayOffsList() {
   const container=ge('admDayOffsList'), chatId=getChatId();
   container.innerHTML='<div class="adm-loading">Загрузка...</div>';
-  fetchWithTimeout(CONFIG.GS+'?action=getAllDayOffs&chatId='+encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS+'?action=getAllDayOffs&chatId='+encodeURIComponent(chatId))
     .then(r=>r.json())
     .then(d => {
       if (d.error==='Unauthorized') { container.innerHTML='<div class="adm-loading">❌ Нет прав доступа</div>'; return; }
@@ -3789,7 +3807,7 @@ function admLoadAnalytics() {
   var dateTo   = (toEl   && toEl.value)   ? toEl.value   : today;
   if (dateTo < dateFrom) dateTo = dateFrom;
 
-  var url = CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : '')
+  var url = CONFIG.GS + '?action=getAnalytics&chatId=' + encodeURIComponent(chatId)
     + '&period=custom'
     + '&dateFrom=' + encodeURIComponent(dateFrom)
     + '&dateTo='   + encodeURIComponent(dateTo);
@@ -3883,115 +3901,6 @@ function setReviewRating(rating) {
   document.querySelectorAll('.rev-star').forEach(star =>
     star.classList.toggle('active', parseInt(star.getAttribute('data-rating')) <= rating)
   );
-}
-
-
-function renderMastersRating() {
-  var list = ge('revMastersRatingList');
-  if (!list) return;
-  var masters = MASTERS.slice(); // копия чтобы не мутировать
-  // Сортируем: сначала с отзывами по убыванию рейтинга, потом без
-  masters.sort(function(a, b) {
-    var ra = MASTER_RATINGS[a.name];
-    var rb = MASTER_RATINGS[b.name];
-    var hasA = ra && ra.count > 0;
-    var hasB = rb && rb.count > 0;
-    if (hasA && !hasB) return -1;
-    if (!hasA && hasB) return 1;
-    if (hasA && hasB) return rb.avg - ra.avg;
-    return 0;
-  });
-  // Максимальный рейтинг для нормировки шкалы
-  var maxRating = 5;
-  list.innerHTML = masters.map(function(m) {
-    var r = MASTER_RATINGS[m.name];
-    var hasRating = r && r.count > 0;
-    var score = hasRating ? r.avg.toFixed(1) : '—';
-    var fillPct = hasRating ? Math.round((r.avg / maxRating) * 100) : 0;
-    var countTxt = hasRating ? r.count + ' отз.' : 'нет';
-    var opacity = hasRating ? '1' : '0.35';
-    return '<div class="rev-mrating-row" style="opacity:' + opacity + '">'
-      + '<div class="rev-mrating-name">' + escapeHtml(m.name) + '</div>'
-      + '<div class="rev-mrating-bar-bg"><div class="rev-mrating-bar-fill" style="width:' + fillPct + '%"></div></div>'
-      + '<div class="rev-mrating-score">' + score + '</div>'
-      + '<div class="rev-mrating-count">' + countTxt + '</div>'
-      + '</div>';
-  }).join('');
-}
-
-function revPageInit() {
-  renderMastersRating();
-  var sel = ge('revMasterPage');
-  if (sel && sel.options.length <= 1) {
-    MASTERS.forEach(function(m) { var o = document.createElement('option'); o.value = m.name; o.textContent = m.name; sel.appendChild(o); });
-  }
-  document.querySelectorAll('#revStarsPage .rev-star').forEach(function(star) {
-    star.addEventListener('click', function() {
-      window._revPageRating = parseInt(this.getAttribute('data-rating'));
-      document.querySelectorAll('#revStarsPage .rev-star').forEach(function(s) {
-        s.classList.toggle('active', parseInt(s.getAttribute('data-rating')) <= window._revPageRating);
-      });
-    });
-  });
-  var btn = ge('revSubmitPage');
-  if (btn && !btn._bound) {
-    btn._bound = true;
-    btn.addEventListener('click', submitReviewPage);
-  }
-  loadReviewsPage(0);
-}
-
-function loadReviewsPage(page) {
-  page = page||0;
-  var container = ge('reviewsListPage');
-  if (!container) return;
-  if (page === 0) container.innerHTML = '<div class="rev-loading">Загрузка отзывов...</div>';
-  fetchWithTimeout(CONFIG.GS + '?action=getReviews&offset=' + (page * CONFIG.REVIEWS_PER_PAGE) + '&limit=' + CONFIG.REVIEWS_PER_PAGE)
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      var reviews = d.reviews||[];
-      if (reviews.length === 0 && page === 0) { container.innerHTML = '<div class="rev-empty">Отзывов пока нет. Будьте первым!</div>'; return; }
-      var html = reviews.map(function(rev) {
-        var stars = Array.from({length:5}, function(_,i) { return '<span style="color:'+(i<rev.rating?'var(--gold)':'rgba(201,168,76,.2)')+';font-size:16px">★</span>'; }).join('');
-        var mb = rev.master ? '<span class="rev-card-master">✂️ '+escapeHtml(rev.master)+'</span>' : '';
-        var vb = rev.verified ? '<span class="rev-verified">✓ Проверенный визит</span>' : '';
-        var vcls = rev.verified ? ' rev-card-verified' : '';
-        return '<div class="rev-card'+vcls+'"><div class="rev-card-hdr"><span class="rev-card-name">'+escapeHtml(rev.name)+'</span><span class="rev-card-rating">'+stars+'</span></div><div class="rev-card-master-row">'+mb+vb+'</div><div class="rev-card-text">'+escapeHtml(rev.text)+'</div><div class="rev-card-date">'+escapeHtml(String(rev.date||''))+'</div></div>';
-      }).join('');
-      if (page === 0) container.innerHTML = html; else container.insertAdjacentHTML('beforeend', html);
-      var old = ge('revMoreBtnPage'); if (old) old.remove();
-      if (d.hasMore) {
-        var btn2 = document.createElement('button'); btn2.id = 'revMoreBtnPage'; btn2.className = 'rev-more-btn'; btn2.textContent = 'Показать ещё';
-        btn2.onclick = function() { loadReviewsPage(page+1); }; container.after(btn2);
-      }
-    })
-    .catch(function() { if (page===0) container.innerHTML = '<div class="rev-empty">Ошибка загрузки отзывов</div>'; });
-}
-
-function submitReviewPage() {
-  var rating = window._revPageRating||0;
-  var name = (ge('revNamePage')||{}).value||'';
-  var text = (ge('revTextPage')||{}).value||'';
-  var master = (ge('revMasterPage')||{}).value||'';
-  if (!rating) { showToast('Поставьте оценку'); return; }
-  if (!name.trim()) { showToast('Введите имя'); return; }
-  if (!text.trim()) { showToast('Напишите отзыв'); return; }
-  var btn = ge('revSubmitPage'); if (btn) { btn.disabled=true; btn.textContent='Отправка...'; }
-  fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({action:'addReview', rating:rating, name:name.trim(), text:text.trim(), master:master}) })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.ok) {
-        showToast('Спасибо за отзыв!');
-        if (ge('revNamePage')) ge('revNamePage').value='';
-        if (ge('revTextPage')) ge('revTextPage').value='';
-        if (ge('revMasterPage')) ge('revMasterPage').value='';
-        window._revPageRating = 0;
-        document.querySelectorAll('#revStarsPage .rev-star').forEach(function(s) { s.classList.remove('active'); });
-        loadReviewsPage(0);
-      } else { showToast('Ошибка: ' + (d.error||'попробуйте ещё раз')); }
-    })
-    .catch(function() { showToast('Ошибка отправки'); })
-    .finally(function() { if (btn) { btn.disabled=false; btn.textContent='Отправить отзыв'; } });
 }
 
 function loadReviews(page) {
@@ -4231,7 +4140,7 @@ function bcLoadAudience() {
 
   // Иначе загружаем с сервера
   const chatId = getChatId();
-  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId))
     .then(r => r.json())
     .then(d => {
       if (d.error) { ge('bcAudienceCount').innerHTML = 'Ошибка загрузки'; return; }
@@ -4452,7 +4361,7 @@ function clLoad(force) {
   const sumEl = ge('clSummary');
   if (sumEl) sumEl.innerHTML = '';
 
-  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=getClientsLTV&chatId=' + encodeURIComponent(chatId))
     .then(r => r.json())
     .then(d => {
       if (d.error === 'Unauthorized') {
@@ -4850,7 +4759,7 @@ function clLoadHistory(cardKey, client) {
   const q = cleanPhone(client.phone||'').replace(/\D/g,'') || encodeURIComponent(client.name||'');
   if (!q) { bkEl.innerHTML = '<div style="color:var(--gray);font-size:12px;padding:4px 0">Нет данных</div>'; return; }
 
-  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(cleanPhone(client.phone||'') || client.name||'') + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(cleanPhone(client.phone||'') || client.name||'') + '&chatId=' + encodeURIComponent(chatId))
     .then(r => r.json())
     .then(d => {
       if (!d.clients || !d.clients.length) {
@@ -5199,7 +5108,7 @@ function admMarkDone(bookingId, btn) {
   haptic('medium');
   if (btn) { btn.disabled = true; btn.textContent = '...'; }
 
-  fetchWithTimeout(CONFIG.GS + '?action=markBookingDone&bookingId=' + encodeURIComponent(bookingId) + '&chatId=' + encodeURIComponent(getChatId()) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=markBookingDone&bookingId=' + encodeURIComponent(bookingId) + '&chatId=' + encodeURIComponent(getChatId()))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error) {
@@ -5420,7 +5329,7 @@ function srchRun() {
   if (!q) { if(result) result.innerHTML='<div style="color:var(--gray);font-size:13px;padding:8px 0">Введите имя или телефон</div>'; return; }
   if (result) result.innerHTML = '<div class="adm-loading">Поиск...</div>';
   haptic('light');
-  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(q) + '&chatId=' + encodeURIComponent(getChatId()) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=searchClient&q=' + encodeURIComponent(q) + '&chatId=' + encodeURIComponent(getChatId()))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (!d.clients || !d.clients.length) { result.innerHTML='<div style="color:var(--gray);font-size:13px;padding:8px 0">Не найдено</div>'; return; }
@@ -5553,7 +5462,7 @@ function compareLoad() {
   ['cmpWeek','cmpMonth','cmpDays','cmpMasters'].forEach(function(id){
     var e=document.getElementById(id); if(e) e.innerHTML='<div class="adm-loading">Загрузка...</div>';
   });
-  fetchWithTimeout(CONFIG.GS + '?action=getCompareStats&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=getCompareStats&chatId=' + encodeURIComponent(chatId))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error==='Unauthorized') { showToast('Нет прав','error'); return; }
@@ -5713,7 +5622,7 @@ function rescConfirm() {
 
   fetchWithTimeout(CONFIG.GS + '?action=rescheduleBooking&bookingId=' + encodeURIComponent(_rescBookingId) +
     '&newDate=' + encodeURIComponent(date) + '&newSlot=' + encodeURIComponent(slot) +
-    '&chatId=' + encodeURIComponent(getChatId()) + (getInitData() ? '&initData=' + getInitData() : ''))
+    '&chatId=' + encodeURIComponent(getChatId()))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error) {
@@ -5744,7 +5653,7 @@ function summaryAutoStart() {
   _summaryAutoTimer = setInterval(function() {
     var chatId = getChatId();
     var todayStr = formatDate_iso(new Date());
-    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+    fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
       .then(function(r){ return r.json(); })
       .then(function(d){
         var bookings = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; });
@@ -5820,7 +5729,7 @@ function admBadgeCheck() {
 
   var chatId = getChatId();
   var todayStr = formatDate_iso(new Date());
-  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
     .then(function(r){ return r.json(); })
     .then(function(d){
       var count = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; }).length;
@@ -5854,7 +5763,7 @@ function admBadgeClear(knownCount) {
   // Данных нет (вызов не из admLoadSummary) — делаем запрос сами
   var chatId = getChatId();
   var todayStr = formatDate_iso(new Date());
-  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS + '?action=getBookings&date=' + todayStr + '&chatId=' + encodeURIComponent(chatId))
     .then(function(r){ return r.json(); })
     .then(function(d){
       _admLastSeenCount = (d.bookings || []).filter(function(b){ return b.status === 'confirmed'; }).length;
@@ -5889,188 +5798,129 @@ function admMsgClient(phone, name) {
 }
 window.admMsgClient = admMsgClient;
 
+/* ════════════════════════════════════════════════════════
+   WAITLIST MODAL — «Мастер занят, перезвоним»
+   ════════════════════════════════════════════════════════ */
+
+var _wlSlot = '', _wlMaster = '', _wlDate = '';
+
+function wlGetNextFreeSlot() {
+  if (!S.mid || !S.date) return null;
+  var busy   = (serverSlots[S.date]  || []);
+  var blocks = (serverBlocks[S.date] || []);
+  var today  = formatDate_iso(new Date());
+  var now    = new Date();
+  var nowMin = now.getHours()*60 + now.getMinutes();
+  for (var i = 0; i < SLOTS.length; i++) {
+    var sl = SLOTS[i];
+    if (busy.indexOf(sl) >= 0 || blocks.indexOf(sl) >= 0) continue;
+    if (S.date === today) {
+      var slHr = parseInt(sl.split(':')[0]);
+      if (slHr*60 <= nowMin + CONFIG.TIME_BUFFER_MINUTES) continue;
+    }
+    return sl;
+  }
+  return null;
+}
+
+function wlOpen(slot) {
+  _wlSlot   = slot;
+  _wlMaster = S.mid !== null ? (getMaster(S.mid) || {}).name || '' : '';
+  _wlDate   = S.date;
+  var nextFree = wlGetNextFreeSlot();
+  var overlay  = document.getElementById('wlOverlay');
+  if (!overlay) return;
+  var freeBlock = document.getElementById('wlFreeBlock');
+  var freeVal   = document.getElementById('wlFreeVal');
+  if (nextFree) {
+    freeBlock.style.display = 'block';
+    var p = _wlDate.split('-');
+    var dateStr = parseInt(p[2]) + ' ' + MN[parseInt(p[1])-1];
+    freeVal.textContent = dateStr + ' в ' + nextFree;
+  } else {
+    freeBlock.style.display = 'none';
+  }
+  document.getElementById('wlForm').style.display    = 'block';
+  document.getElementById('wlSuccess').style.display = 'none';
+  document.getElementById('wlName').value  = '';
+  document.getElementById('wlPhone').value = '';
+  overlay.style.display = 'flex';
+  haptic('medium');
+}
+
+function wlClose() {
+  var overlay = document.getElementById('wlOverlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function wlPhoneFormat(e) {
+  var inp    = e.target;
+  var digits = inp.value.replace(/\D/g, '');
+  if (digits.length > 0 && digits[0] !== '7') digits = '7' + digits;
+  digits = digits.slice(0, 11);
+  var formatted = '';
+  if (digits.length > 0)  formatted = '+7';
+  if (digits.length > 1)  formatted += ' (' + digits.slice(1, 4);
+  if (digits.length >= 4) formatted += ') ' + digits.slice(4, 7);
+  if (digits.length >= 7) formatted += '-' + digits.slice(7, 9);
+  if (digits.length >= 9) formatted += '-' + digits.slice(9, 11);
+  inp.value = formatted;
+}
+
+function wlSubmit() {
+  var name   = document.getElementById('wlName').value.trim();
+  var phone  = document.getElementById('wlPhone').value.trim();
+  var digits = phone.replace(/\D/g, '');
+  if (!name || name.length < 2) { showToast('Введите ваше имя', 'error'); return; }
+  if (digits.length < 11)       { showToast('Введите корректный номер', 'error'); return; }
+  var btn = document.getElementById('wlSubmitBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Отправляем...';
+  fetchWithTimeout(CONFIG.GS + '?action=addWaitlist' +
+    '&name='     + encodeURIComponent(name) +
+    '&phone='    + encodeURIComponent(phone) +
+    '&master='   + encodeURIComponent(_wlMaster) +
+    '&masterId=' + encodeURIComponent(S.mid !== null ? S.mid : '') +
+    '&date='     + encodeURIComponent(_wlDate) +
+    '&slot='     + encodeURIComponent(_wlSlot) +
+    '&chatId='   + encodeURIComponent(tgChatId || ''))
+    .then(function(r){ return r.json(); })
+    .catch(function(){ return {ok:true}; })
+    .then(function() {
+      document.getElementById('wlForm').style.display    = 'none';
+      document.getElementById('wlSuccess').style.display = 'block';
+      btn.disabled    = false;
+      btn.textContent = 'Перезвоните мне';
+    });
+}
+
 </script>
+
+<!-- WAITLIST MODAL -->
+<div id="wlOverlay" class="wl-overlay" style="display:none" onclick="if(event.target===this)wlClose()">
+  <div class="wl-card">
+    <div id="wlForm">
+      <div class="wl-icon">✂️</div>
+      <div class="wl-title">Мастер занят</div>
+      <div class="wl-sub">Это время уже забронировано. Оставьте номер — перезвоним как только мастер освободится!</div>
+      <div class="wl-free" id="wlFreeBlock">
+        <div class="wl-free-lbl">Ближайшее свободное время</div>
+        <div class="wl-free-val" id="wlFreeVal">—</div>
+      </div>
+      <input id="wlName"  class="wl-inp" type="text" placeholder="Ваше имя" autocomplete="name"/>
+      <input id="wlPhone" class="wl-inp" type="tel"  placeholder="+7 (___) ___-__-__" oninput="wlPhoneFormat(event)" autocomplete="tel"/>
+      <button id="wlSubmitBtn" class="wl-btn" onclick="wlSubmit()">Перезвоните мне</button>
+      <span class="wl-cancel" onclick="wlClose()">Выбрать другое время</span>
+    </div>
+    <div id="wlSuccess" class="wl-success" style="display:none">
+      <div class="wl-success-icon">✅</div>
+      <div class="wl-success-title">Отлично!</div>
+      <div class="wl-success-sub">Спасибо! Как мастер освободится — мы вам перезвоним!</div>
+      <div class="wl-success-brand">BARBER STYLE</div>
+      <button class="wl-btn" style="margin-top:18px" onclick="wlClose()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
-<script>
-/* ════════════════════════════════════════════════════════════
-   QUICK BOOK FREE — «Записаться к свободному»
-   Ищет ближайшие свободные слоты по всем мастерам
-   ════════════════════════════════════════════════════════════ */
-
-function quickBookFree() {
-  haptic('select');
-  var btn = document.getElementById('btnQuickFree');
-  if (btn) btn.classList.add('loading');
-
-  // Если данные ещё не загружены — загружаем, потом показываем
-  if (Object.keys(allMastersData).length === 0) {
-    fetchWithTimeout(CONFIG.GS + '?action=getAllMastersSlots')
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.masters) {
-          allMastersData = d.masters;
-          _allMastersDataTs = Date.now();
-        }
-        if (btn) btn.classList.remove('loading');
-        qbfShowModal();
-      })
-      .catch(function() {
-        if (btn) btn.classList.remove('loading');
-        qbfShowModal();
-      });
-  } else {
-    if (btn) btn.classList.remove('loading');
-    qbfShowModal();
-  }
-}
-
-/* Собирает список: до 3 ближайших слотов у каждого мастера,
-   сортирует всё по дате+времени, берёт первые 10 */
-function qbfGetFreeSlots() {
-  var now     = new Date();
-  var todayStr = formatDate_iso(now);
-  var nowMin  = now.getHours() * 60 + now.getMinutes();
-  var buffer  = CONFIG.TIME_BUFFER_MINUTES || 30;
-  var results = [];
-
-  // Ищем в диапазоне сегодня + 30 дней
-  for (var dayOffset = 0; dayOffset <= 30; dayOffset++) {
-    var d = new Date();
-    d.setDate(d.getDate() + dayOffset);
-    d.setHours(0,0,0,0);
-    var ds = formatDate_iso(d);
-
-    MASTERS.forEach(function(m) {
-      var data = allMastersData[m.name];
-      if (!data) return;
-      if (data.dayoffs && data.dayoffs.indexOf(ds) >= 0) return;
-
-      var busy    = (data.slots  || {})[ds] || [];
-      var blocked = (data.blocks || {})[ds] || [];
-
-      var masterFree = [];
-      SLOTS.forEach(function(slot) {
-        if (ds === todayStr) {
-          var slMin = parseInt(slot.split(':')[0]) * 60 + parseInt(slot.split(':')[1]);
-          if (slMin <= nowMin + buffer) return;
-        }
-        if (busy.indexOf(slot) < 0 && blocked.indexOf(slot) < 0) {
-          masterFree.push(slot);
-        }
-      });
-
-      // Берём первые 2 слота у каждого мастера на каждый день
-      masterFree.slice(0, 2).forEach(function(slot) {
-        results.push({ master: m, date: ds, slot: slot, dateObj: d });
-      });
-    });
-
-    // Если уже накопили 15+ — дальше не идём (оптимизация)
-    if (results.length >= 15) break;
-  }
-
-  // Сортируем: сначала по дате, потом по времени
-  results.sort(function(a, b) {
-    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-    return a.slot < b.slot ? -1 : 1;
-  });
-
-  return results.slice(0, 10);
-}
-
-/* Форматирует дату для отображения */
-function qbfFormatDate(ds) {
-  var today = formatDate_iso(new Date());
-  var tomorrow = formatDate_iso(new Date(Date.now() + 86400000));
-  if (ds === today) return 'Сегодня';
-  if (ds === tomorrow) return 'Завтра';
-  var parts = ds.split('-');
-  var days = ['вс','пн','вт','ср','чт','пт','сб'];
-  var dt = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-  var dow = days[dt.getDay()];
-  var months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-  return dow + ', ' + parseInt(parts[2]) + ' ' + months[parseInt(parts[1])-1];
-}
-
-/* Показывает модальное окно со свободными слотами */
-function qbfShowModal() {
-  var slots = qbfGetFreeSlots();
-
-  var html = '<div class="qbf-modal-overlay" id="qbfOverlay" onclick="qbfCloseModal(event)">'
-    + '<div class="qbf-modal" style="position:relative">'
-    + '<button class="qbf-close" onclick="qbfClose()">✕</button>'
-    + '<div class="qbf-modal-title">⚡ Свободные окна</div>'
-    + '<div class="qbf-modal-sub">Ближайшее доступное время</div>';
-
-  if (slots.length === 0) {
-    html += '<div class="qbf-empty">😔 Нет свободных слотов<br>на ближайшие 30 дней</div>';
-  } else {
-    slots.forEach(function(item) {
-      var dateLabel = qbfFormatDate(item.date);
-      var midEncoded = item.master.id;
-      html += '<div class="qbf-slot-card" onclick="qbfSelect(' + midEncoded + ',\'' + item.date + '\',\'' + item.slot + '\')">'
-        + '<div class="qbf-slot-master">' + escapeHtml(item.master.name) + '</div>'
-        + '<div class="qbf-slot-time">' + item.slot + '</div>'
-        + '<div class="qbf-slot-date">' + dateLabel + '</div>'
-        + '</div>';
-    });
-  }
-
-  html += '</div></div>';
-
-  var overlay = document.createElement('div');
-  overlay.innerHTML = html;
-  document.body.appendChild(overlay.firstChild);
-}
-
-/* Закрывает модал по клику на оверлей */
-function qbfCloseModal(e) {
-  if (e && e.target && e.target.id === 'qbfOverlay') qbfClose();
-}
-
-function qbfClose() {
-  var el = document.getElementById('qbfOverlay');
-  if (el) {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity .2s';
-    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 200);
-  }
-}
-
-/* Выбор слота — закрываем модал, идём на страницу бронирования,
-   предвыбираем мастера, дату и время */
-function qbfSelect(masterId, date, slot) {
-  haptic('impact');
-  qbfClose();
-
-  // Переходим на страницу бронирования
-  goPage('booking');
-
-  // Небольшая задержка чтобы страница успела инициализироваться
-  setTimeout(function() {
-    // Выбираем мастера (загружает его расписание)
-    bkSelMaster(masterId);
-
-    setTimeout(function() {
-      // Устанавливаем дату и время через официальные функции
-      var dateParts = date.split('-');
-      S.cy = parseInt(dateParts[0]);
-      S.cm = parseInt(dateParts[1]) - 1;
-      bkPickDate(date);
-
-      setTimeout(function() {
-        bkPickTime(slot);
-        // Скроллим к подтверждению
-        var bar = document.querySelector('.bk-bar');
-        if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 150);
-    }, 200);
-  }, 300);
-}
-
-window.quickBookFree = quickBookFree;
-window.qbfClose = qbfClose;
-window.qbfCloseModal = qbfCloseModal;
-window.qbfSelect = qbfSelect;
-</script>

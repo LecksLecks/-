@@ -4943,40 +4943,46 @@ function clHighlight(text, query) {
 function clRenderNoteBlock(cardKey, c) {
   var noteId = cardKey + '-note';
   var note = c.note || '';
-  var safePhone = escapeHtml(cleanPhone(c.phone || ''));
-  var safeCid   = escapeHtml(c.chatId || '');
+  // Используем data-атрибуты вместо inline параметров в onclick — это надёжнее с телефонами (+7 (952)...)
+  var phoneDigits = (cleanPhone(c.phone || '')).replace(/\D/g, '');
+  var cid = c.chatId || '';
 
   if (note) {
-    return '<div class="cl-note" id="' + noteId + '">' +
+    return '<div class="cl-note" id="' + noteId + '" data-phone="' + escapeHtml(phoneDigits) + '" data-cid="' + escapeHtml(cid) + '">' +
       '<div class="cl-note-hdr">' +
         '<div class="cl-note-lbl">Заметка</div>' +
-        '<button class="cl-note-edit-btn" onclick="clNoteStartEdit(\'' + noteId + '\',\'' + safePhone + '\',\'' + safeCid + '\')">✎ изменить</button>' +
+        '<button class="cl-note-edit-btn" onclick="event.stopPropagation();clNoteStartEdit(\'' + noteId + '\')">✎ изменить</button>' +
       '</div>' +
       '<div class="cl-note-text">' + escapeHtml(note) + '</div>' +
     '</div>';
   } else {
-    return '<div class="cl-note-empty" id="' + noteId + '" onclick="clNoteStartEdit(\'' + noteId + '\',\'' + safePhone + '\',\'' + safeCid + '\')">' +
+    return '<div class="cl-note-empty" id="' + noteId + '" data-phone="' + escapeHtml(phoneDigits) + '" data-cid="' + escapeHtml(cid) + '" onclick="event.stopPropagation();clNoteStartEdit(\'' + noteId + '\')">' +
       '<div class="cl-note-add">+ Добавить заметку о клиенте</div>' +
     '</div>';
   }
 }
 
-function clNoteStartEdit(noteId, phone, clientChatId) {
+function clNoteStartEdit(noteId) {
   var el = ge(noteId);
   if (!el) return;
   haptic('light');
+
+  var phone = el.getAttribute('data-phone') || '';
+  var clientChatId = el.getAttribute('data-cid') || '';
 
   // Извлекаем текущий текст заметки
   var textEl = el.querySelector('.cl-note-text');
   var currentText = textEl ? textEl.textContent : '';
 
   el.className = 'cl-note-editing';
+  el.setAttribute('data-phone', phone);
+  el.setAttribute('data-cid', clientChatId);
   el.innerHTML =
     '<div class="cl-note-lbl" style="margin-bottom:6px">Заметка</div>' +
     '<textarea class="cl-note-ta" id="' + noteId + '-ta" placeholder="Предпочтения, особенности, пожелания клиента...">' + escapeHtml(currentText) + '</textarea>' +
     '<div class="cl-note-btns">' +
-      '<button class="cl-note-btn-cancel" onclick="clNoteCancel(\'' + noteId + '\')">Отмена</button>' +
-      '<button class="cl-note-btn-save" onclick="clNoteSave(\'' + noteId + '\',\'' + escapeHtml(phone) + '\',\'' + escapeHtml(clientChatId) + '\')">Сохранить</button>' +
+      '<button class="cl-note-btn-cancel" onclick="event.stopPropagation();clNoteCancel(\'' + noteId + '\')">Отмена</button>' +
+      '<button class="cl-note-btn-save" onclick="event.stopPropagation();clNoteSave(\'' + noteId + '\')">Сохранить</button>' +
     '</div>';
 
   var ta = ge(noteId + '-ta');
@@ -4985,24 +4991,27 @@ function clNoteStartEdit(noteId, phone, clientChatId) {
 
 function clNoteCancel(noteId) {
   haptic('light');
-  // Перезагружаем клиентов чтобы восстановить исходное состояние
   clLoad(true);
 }
 
-function clNoteSave(noteId, phone, clientChatId) {
+function clNoteSave(noteId) {
+  var el = ge(noteId);
   var ta = ge(noteId + '-ta');
-  if (!ta) return;
+  if (!ta || !el) return;
+
+  var phone = el.getAttribute('data-phone') || '';
+  var clientChatId = el.getAttribute('data-cid') || '';
   var text = ta.value.trim();
   haptic('medium');
 
   // Показываем индикатор сохранения
-  var btns = ta.parentElement.querySelector('.cl-note-btns');
+  var btns = el.querySelector('.cl-note-btns');
   if (btns) btns.innerHTML = '<span style="font-size:11px;color:rgba(201,168,76,.5)">Сохранение...</span>';
 
   var chatId = getChatId();
   var url = CONFIG.GS + '?action=saveClientNote' +
-    '&clientPhone=' + encodeURIComponent(phone || '') +
-    '&clientChatId=' + encodeURIComponent(clientChatId || '') +
+    '&clientPhone=' + encodeURIComponent(phone) +
+    '&clientChatId=' + encodeURIComponent(clientChatId) +
     '&note=' + encodeURIComponent(text) +
     '&chatId=' + encodeURIComponent(chatId) +
     (getInitData() ? '&initData=' + getInitData() : '');
@@ -5017,26 +5026,22 @@ function clNoteSave(noteId, phone, clientChatId) {
       }
       showToast('✅ Заметка сохранена', 'success');
 
-      // Обновляем заметку в локальном кэше клиентов
-      var phoneDigits = (phone || '').replace(/\D/g, '');
+      // Обновляем заметку в локальном кэше
       _clAllClients.forEach(function(c) {
         var cPhone = cleanPhone(c.phone || '').replace(/\D/g, '');
         var cCid   = c.chatId || '';
-        if ((clientChatId && cCid === clientChatId) || (phoneDigits && cPhone && cPhone === phoneDigits)) {
+        if ((clientChatId && cCid === clientChatId) || (phone && cPhone && cPhone === phone)) {
           c.note = text;
         }
       });
 
       // Перерендериваем блок заметки на месте
-      var el = ge(noteId);
-      if (el) {
-        var c = { note: text, phone: phone, chatId: clientChatId };
-        var tmp = document.createElement('div');
-        tmp.innerHTML = clRenderNoteBlock(noteId.replace('-note',''), c);
-        var newEl = tmp.firstChild;
-        newEl.id = noteId;
-        el.parentNode.replaceChild(newEl, el);
-      }
+      var cardKey = noteId.replace('-note', '');
+      var clientData = { note: text, phone: phone, chatId: clientChatId };
+      var tmp = document.createElement('div');
+      tmp.innerHTML = clRenderNoteBlock(cardKey, clientData);
+      var newEl = tmp.firstChild;
+      if (el.parentNode) el.parentNode.replaceChild(newEl, el);
     })
     .catch(function() {
       showToast('Ошибка сохранения', 'error');

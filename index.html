@@ -19,7 +19,17 @@ html,body{
   font-family:'Cormorant Garamond',serif;
   min-height:100vh;
   overflow-x:hidden;
+  /* FIX-4: фон перенесён на body::before с position:fixed
+     background-attachment:fixed отключает GPU-ускорение на iOS WebView — jank при скролле */
   background-color:#0a0805;
+}
+/* FIX-4: фиксированный фон через псевдоэлемент — не перерисовывается при скролле */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
   background-image:
     repeating-linear-gradient(
       0deg,
@@ -49,7 +59,6 @@ html,body{
       #0a0805 60%,
       #070503 100%
     );
-  background-attachment:fixed;
 }
 a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:rgba(201,168,76,.15)}
 button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(201,168,76,.15);cursor:pointer}
@@ -271,7 +280,22 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cal-d.pst{visibility:hidden}
 .cal-d.avl{cursor:pointer;color:var(--cream)}
 .cal-d.avl::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.7}
-.cal-d.full{visibility:hidden}
+/* FIX-7: полные дни видимы но недоступны — пользователь понимает что день существует */
+.cal-d.full{
+  color:rgba(138,125,107,.2);
+  cursor:not-allowed;
+  pointer-events:none;
+  position:relative;
+}
+.cal-d.full::after{
+  content:'·';
+  position:absolute;
+  bottom:2px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:10px;
+  color:rgba(138,125,107,.2);
+}
 /* ВЫХОДНОЙ ДЕНЬ — КРАСНЫЙ ЦВЕТ */
 .cal-d.dayoff{
   background:rgba(224,80,80,.15);
@@ -1142,6 +1166,23 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .anl-master-cnt{font-size:11px;color:var(--gray);letter-spacing:.5px}
 .anl-master-avg{font-size:11px;color:rgba(201,168,76,.6);letter-spacing:.5px}
 .mst-rating-inline{font-size:11px;color:var(--gold);margin-left:6px;font-weight:400}
+
+/* FIX-8: prefers-reduced-motion — отключаем все анимации для пользователей
+   с вестибулярными нарушениями или настройкой «уменьшить движение» */
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Сплэш показываем сразу без анимации */
+  .splash-crown,.splash-logo,.splash-line,.splash-city { opacity:1 !important; filter:none !important; }
+  /* Прогресс-бар записи без плавности */
+  .bk-progress-fill { transition:none !important; }
+  /* Частицы при добавлении услуги — скрываем */
+  .svc-particle { display:none !important; }
+}
 </style>
 </head>
 <body>
@@ -2075,6 +2116,19 @@ function formatPrice(n) {
    ──────────────────────────────────────────────────────────── */
 function ge(id) { return document.getElementById(id); }
 
+/* FIX-6: ref-counted body scroll lock.
+   Несколько модалов могут открываться одновременно — unlock только когда все закрыты.
+   Исключает зависание прокрутки при JS-ошибке внутри открытия модала. */
+var _bodyLockCount = 0;
+function bodyLock() {
+  _bodyLockCount++;
+  bodyLock();
+}
+function bodyUnlock() {
+  _bodyLockCount = Math.max(0, _bodyLockCount - 1);
+  if (_bodyLockCount === 0) bodyUnlock();
+}
+
 var _escapeHtmlCache = Object.create(null);
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
@@ -2490,13 +2544,13 @@ function masterProfileOpen(mid) {
   };
 
   ge('masterProfile').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  bodyLock();
 }
 
 function masterProfileClose() {
   haptic('light');
   ge('masterProfile').classList.remove('open');
-  document.body.style.overflow = '';
+  bodyUnlock();
 }
 window.masterProfileClose = masterProfileClose;
 
@@ -2547,14 +2601,14 @@ function masterShare(mid) {
 
   ge('shareSheetOverlay').classList.add('open');
   ge('shareSheet').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  bodyLock();
 }
 window.masterShare = masterShare;
 
 function shareSheetClose() {
   ge('shareSheetOverlay').classList.remove('open');
   ge('shareSheet').classList.remove('open');
-  document.body.style.overflow = '';
+  bodyUnlock();
 }
 window.shareSheetClose = shareSheetClose;
 
@@ -3028,15 +3082,28 @@ function bkValidate() {
 /* FIX-04: total передаётся числом */
 function bkSubmit() {
   if (isSubmitting) return;
-  isSubmitting = true;
+
   const name   = (ge('bkName').value||'').trim();
   const phone  = (ge('bkPhone').value||'').trim();
   const master = getMaster(S.mid);
-  if (!name||!isPhoneValid(phone)||!S.slot||!S.date||!master||S.cart.length===0) { isSubmitting=false; return; }
+  if (!name||!isPhoneValid(phone)||!S.slot||!S.date||!master||S.cart.length===0) return;
 
-  const btn = ge('bkSub'); btn.disabled=true; btn.textContent='';
-  btn.style.display='none';
-  ge('bkSpinner').classList.add('show');;
+  // FIX-5: блокируем кнопку ДО установки флага — нет промежутка для двойного нажатия
+  const btn = ge('bkSub');
+  btn.disabled = true;
+  btn.textContent = '';
+  btn.style.display = 'none';
+  ge('bkSpinner').classList.add('show');
+  isSubmitting = true;
+
+  // FIX-5: единая функция сброса — исключает дублирование кода в каждой ветке
+  function bkReset() {
+    isSubmitting = false;
+    btn.disabled = false;
+    btn.textContent = 'Записаться';
+    btn.style.display = '';
+    ge('bkSpinner').classList.remove('show');
+  }
 
   const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   const tgUsername = tgUser && tgUser.username ? '@'+tgUser.username : '';
@@ -3056,28 +3123,30 @@ function bkSubmit() {
   fetchWithTimeout(CONFIG.GS, {method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
     .then(r => r.json())
     .then(d => {
-      btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
+      // success path — reset handled below after checks
 
       if (d.error==='slot_taken'||d.error==='slot_unavailable') {
-        btn.style.display=''; ge('bkSpinner').classList.remove('show'); btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
+        bkReset();
         showToast('⚠️ ' + (d.message||'Это время уже занято. Выберите другое.'), 'error', 4000);
         loadAllMastersData(); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
       if (d.error==='dayoff') {
+        bkReset();
         showToast('⚠️ ' + (d.message||'Выбранный день — выходной для мастера'), 'error', 4000);
         loadAllMastersData(); S.date=''; S.slot=''; calRender(); clearTime(); updateBar(); bkValidate(); return;
       }
       if (d.status==='double_booking') {
-        btn.style.display=''; ge('bkSpinner').classList.remove('show'); isSubmitting=false;
+        bkReset();
         showToast('⚠️ У вас уже есть запись на это время!', 'error'); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
       if (d.status==='rate_limit') {
-        btn.style.display=''; ge('bkSpinner').classList.remove('show'); btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false;
+        bkReset();
         showToast('⚠️ ' + d.error, 'error'); return;
       }
-      if (d.error)                 { btn.style.display=''; ge('bkSpinner').classList.remove('show'); btn.disabled=false; btn.textContent='Записаться'; isSubmitting=false; showToast('Ошибка: ' + d.error, 'error'); return; }
+      if (d.error)                 { bkReset(); showToast('Ошибка: ' + d.error, 'error'); return; }
 
-      // Успех
+      // Успех — FIX-5: сбрасываем состояние кнопки
+      isSubmitting = false;
       _myBkCache = {data:null, ts:0, tab:''}; // FIX-08: сброс кэша
       haptic('success');
       morphBookBtn();
@@ -3110,9 +3179,7 @@ function bkSubmit() {
     })
     .catch(e => {
       console.error('bkSubmit:', e);
-      btn.disabled=false; btn.textContent='Записаться';
-      btn.style.display=''; ge('bkSpinner').classList.remove('show');
-      isSubmitting=false;
+      bkReset();
       showToast('Ошибка соединения. Проверьте интернет и попробуйте ещё раз.', 'error');
     });
 }
@@ -4957,12 +5024,12 @@ function worksOpen(idx) {
   _worksIdx = idx;
   worksShowCurrent();
   ge('worksLightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  bodyLock();
 }
 
 function worksClose() {
   ge('worksLightbox').classList.remove('open');
-  document.body.style.overflow = '';
+  bodyUnlock();
 }
 
 function worksShowCurrent() {
@@ -5710,14 +5777,14 @@ function rescOpen(bookingId, clientName, master, currentDate) {
 
   var modal = document.getElementById('rescheduleModal');
   if (modal) modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  bodyLock();
 }
 window.rescOpen = rescOpen;
 
 function rescClose() {
   var modal = document.getElementById('rescheduleModal');
   if (modal) modal.classList.remove('open');
-  document.body.style.overflow = '';
+  bodyUnlock();
   _rescBookingId = null;
 }
 window.rescClose = rescClose;
@@ -6211,8 +6278,7 @@ window.admQueueLoad   = admQueueLoad;
 window.admQueueNotify = admQueueNotify;
 
 </script>
-</body>
-</html>
+
 <script>
 /* ════════════════════════════════════════════════════════════
    QUICK BOOK FREE — «Записаться к свободному»
@@ -6329,11 +6395,14 @@ function qbfShowModal() {
   } else {
     slots.forEach(function(item) {
       var dateLabel = qbfFormatDate(item.date);
-      var midEncoded = item.master.id;
-      html += '<div class="qbf-slot-card" onclick="qbfSelect(' + midEncoded + ',\'' + item.date + '\',\'' + item.slot + '\')">'
+      var midEncoded = parseInt(item.master.id); // всегда число
+      // FIX-3: date и slot берутся из API — экранируем для HTML-атрибута
+      var safeDate = escapeHtml(String(item.date));
+      var safeSlot = escapeHtml(String(item.slot));
+      html += '<div class="qbf-slot-card" data-mid="' + midEncoded + '" data-date="' + safeDate + '" data-slot="' + safeSlot + '">'
         + '<div class="qbf-slot-master">' + escapeHtml(item.master.name) + '</div>'
-        + '<div class="qbf-slot-time">' + item.slot + '</div>'
-        + '<div class="qbf-slot-date">' + dateLabel + '</div>'
+        + '<div class="qbf-slot-time">' + escapeHtml(String(item.slot)) + '</div>'
+        + '<div class="qbf-slot-date">' + escapeHtml(dateLabel) + '</div>'
         + '</div>';
     });
   }
@@ -6342,7 +6411,25 @@ function qbfShowModal() {
 
   var overlay = document.createElement('div');
   overlay.innerHTML = html;
-  document.body.appendChild(overlay.firstChild);
+  var overlayEl = overlay.firstChild;
+
+  // FIX-3: делегированный клик — без inline onclick, без XSS через data-атрибуты
+  overlayEl.addEventListener('click', function(e) {
+    // Клик на оверлей — закрыть
+    if (e.target && e.target.id === 'qbfOverlay') { qbfClose(); return; }
+    // Клик на крестик
+    if (e.target && e.target.classList.contains('qbf-close')) { qbfClose(); return; }
+    // Клик на карточку слота (или внутрь неё)
+    var card = e.target.closest('.qbf-slot-card');
+    if (card) {
+      var mid  = parseInt(card.dataset.mid);
+      var date = card.dataset.date;
+      var slot = card.dataset.slot;
+      qbfSelect(mid, date, slot);
+    }
+  });
+
+  document.body.appendChild(overlayEl);
 }
 
 /* Закрывает модал по клику на оверлей */
@@ -6368,26 +6455,60 @@ function qbfSelect(masterId, date, slot) {
   // Переходим на страницу бронирования
   goPage('booking');
 
-  // Небольшая задержка чтобы страница успела инициализироваться
-  setTimeout(function() {
-    // Выбираем мастера (загружает его расписание)
-    bkSelMaster(masterId);
+  // FIX-2: вместо тройного setTimeout — ждём реальной готовности данных.
+  // bkSelMaster устанавливает мастера и запускает loadServerSlots.
+  // После этого дожидаемся рендера через rAF, затем применяем дату/время.
+  var dateParts = date.split('-');
+  S.cy = parseInt(dateParts[0]);
+  S.cm = parseInt(dateParts[1]) - 1;
 
-    setTimeout(function() {
-      // Устанавливаем дату и время через официальные функции
-      var dateParts = date.split('-');
-      S.cy = parseInt(dateParts[0]);
-      S.cm = parseInt(dateParts[1]) - 1;
-      bkPickDate(date);
+  // Шаг 1: выбрать мастера (синхронно если данные в кэше, иначе fetch)
+  S.mid = masterId;
+  S.date = '';
+  S.slot = '';
 
-      setTimeout(function() {
-        bkPickTime(slot);
-        // Скроллим к подтверждению
-        var bar = document.querySelector('.bk-bar');
-        if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 150);
-    }, 200);
-  }, 300);
+  var master = getMaster(masterId);
+
+  function applyDateAndSlot() {
+    bkPickDate(date);
+    // Шаг 3: применяем время после рендера даты
+    requestAnimationFrame(function() {
+      bkPickTime(slot);
+      // Скроллим к подтверждению
+      var bar = document.querySelector('.bk-bar');
+      if (bar) bar.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    });
+  }
+
+  // Если данные по мастеру уже в кэше — всё синхронно
+  if (master && allMastersData[master.name]) {
+    serverSlots   = allMastersData[master.name].slots   || {};
+    serverBlocks  = allMastersData[master.name].blocks  || {};
+    serverDayoffs = allMastersData[master.name].dayoffs || [];
+    bkRefresh(true);
+    requestAnimationFrame(function() { applyDateAndSlot(); });
+  } else {
+    // Данных нет — ждём fetch, затем применяем
+    bkRefresh(true);
+    if (master) {
+      fetchWithTimeout(CONFIG.GS + '?action=getMasterSchedule&masterId=' + masterId)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          serverSlots   = d.booked  || d.slots   || {};
+          serverBlocks  = d.blocked || d.blocks  || {};
+          serverDayoffs = d.dayoffs || [];
+          allMastersData[master.name] = { slots: serverSlots, blocks: serverBlocks, dayoffs: serverDayoffs };
+          calRender(); renderTimeGrid();
+          applyDateAndSlot();
+        })
+        .catch(function() {
+          // Данные не загрузились — хотя бы применяем дату и слот из известных
+          applyDateAndSlot();
+        });
+    } else {
+      requestAnimationFrame(function() { applyDateAndSlot(); });
+    }
+  }
 }
 
 window.quickBookFree = quickBookFree;
@@ -6395,3 +6516,5 @@ window.qbfClose = qbfClose;
 window.qbfCloseModal = qbfCloseModal;
 window.qbfSelect = qbfSelect;
 </script>
+</body>
+</html>

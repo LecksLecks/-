@@ -717,6 +717,23 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .cl-hist-master{font-size:14px;color:var(--cream);margin-bottom:2px}
 .cl-hist-svc{font-size:13px;color:var(--gray);margin-bottom:2px}
 .cl-empty{text-align:center;color:var(--gray);font-style:italic;padding:30px 0;font-size:16px}
+.cl-note{margin-top:10px;padding:10px 12px;background:rgba(201,168,76,0.05);border:0.5px solid rgba(201,168,76,0.15);border-radius:8px;border-left:3px solid rgba(201,168,76,0.4)}
+.cl-note-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.cl-note-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(201,168,76,0.45)}
+.cl-note-edit-btn{font-size:10px;color:rgba(201,168,76,0.45);cursor:pointer;padding:2px 8px;border:0.5px solid rgba(201,168,76,0.15);border-radius:4px;background:transparent;font-family:'Cormorant Garamond',serif}
+.cl-note-edit-btn:active{background:rgba(201,168,76,0.1)}
+.cl-note-text{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5}
+.cl-note-empty{margin-top:10px;padding:10px 12px;border:0.5px dashed rgba(201,168,76,0.2);border-radius:8px;text-align:center;cursor:pointer}
+.cl-note-empty:active{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.04)}
+.cl-note-add{font-size:12px;color:rgba(201,168,76,0.35)}
+.cl-note-editing{margin-top:10px;padding:10px 12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);border-radius:8px;border-left:3px solid rgba(201,168,76,0.6)}
+.cl-note-ta{width:100%;min-height:60px;padding:8px 10px;background:rgba(0,0,0,0.3);border:0.5px solid rgba(201,168,76,0.25);border-radius:6px;font-size:13px;color:rgba(255,255,255,0.8);line-height:1.5;font-family:'Cormorant Garamond',serif;resize:vertical}
+.cl-note-ta:focus{outline:none;border-color:rgba(201,168,76,0.5)}
+.cl-note-btns{display:flex;gap:8px;margin-top:8px;justify-content:flex-end}
+.cl-note-btn-cancel{font-size:11px;color:rgba(138,125,107,.5);cursor:pointer;padding:5px 14px;border:0.5px solid rgba(138,125,107,.2);border-radius:6px;text-transform:uppercase;letter-spacing:1px;background:transparent;font-family:'Cormorant Garamond',serif}
+.cl-note-btn-save{font-size:11px;color:#0d0b07;cursor:pointer;padding:5px 14px;background:rgba(201,168,76,0.85);border-radius:6px;text-transform:uppercase;letter-spacing:1px;font-weight:600;border:none;font-family:'Cormorant Garamond',serif}
+.cl-note-btn-save:active{background:rgba(201,168,76,1)}
+.cl-note-btn-cancel:active{background:rgba(138,125,107,.1)}
 
 /* НАШИ РАБОТЫ */
 .works-section{padding:20px 16px 8px}
@@ -4633,7 +4650,7 @@ function clExportCSV() {
   if (!_clAllClients.length) { showToast('Нет данных для экспорта', 'error'); return; }
   haptic('medium');
 
-  var headers = ['Имя','Телефон','Telegram','Визитов','Ср. чек','Потрачено','Категория','Последний визит'];
+  var headers = ['Имя','Телефон','Telegram','Визитов','Ср. чек','Потрачено','Категория','Последний визит','Заметка'];
   var rows = _clAllClients.map(function(c) {
     var phone = cleanPhone(c.phone || '');
     var lastVisit = c.lastVisit ? formatDate(c.lastVisit, 'short') : '';
@@ -4645,7 +4662,8 @@ function clExportCSV() {
       c.avgCheck || 0,
       c.totalSpent || 0,
       c.category || 'новый',
-      lastVisit
+      lastVisit,
+      c.note || ''
     ].map(function(v) {
       var s = String(v);
       // Экранируем значения с запятой или кавычками
@@ -4787,6 +4805,9 @@ function clRender() {
       '</div>' +
       '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>';
 
+    // Блок заметки о клиенте — всегда виден
+    html += clRenderNoteBlock(cardKey, c);
+
     // Раскрывающаяся история записей
     html += '<div class="cl-history" id="' + cardKey + '-hist" style="display:' + (isOpen ? 'block' : 'none') + '">';
     html += '<div class="cl-hist-ttl">История записей</div>';
@@ -4882,6 +4903,7 @@ function clRenderMore(btn) {
         '<div class="cl-stat"><div class="cl-stat-val">' + formatPrice(c.totalSpent||0) + '</div><div class="cl-stat-lbl">Потрачено</div></div>' +
       '</div>' +
       '<div class="cl-last">Последний визит: <span style="color:rgba(201,168,76,.8)">' + escapeHtml(lastVisitStr) + '</span>' + lostBadge + '</div>' +
+      clRenderNoteBlock(cardKey, c) +
       '<div class="cl-history" id="' + cardKey + '-hist" style="display:none">' +
         '<div class="cl-hist-ttl">История записей</div>' +
         '<div id="' + cardKey + '-bk" class="cl-hist-list"><div class="adm-loading" style="padding:8px 0;font-size:12px">Загрузка истории...</div></div>' +
@@ -4913,6 +4935,119 @@ function clHighlight(text, query) {
   const re = new RegExp('(' + escapedQ.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
   return escaped.replace(re, '<mark style="background:rgba(201,168,76,.3);color:var(--cream);border-radius:2px;padding:0 1px">$1</mark>');
 }
+
+// ══════════════════════════════════════════════════════════════
+// ЗАМЕТКА О КЛИЕНТЕ — рендер, редактирование, сохранение
+// ══════════════════════════════════════════════════════════════
+
+function clRenderNoteBlock(cardKey, c) {
+  var noteId = cardKey + '-note';
+  var note = c.note || '';
+  var safePhone = escapeHtml(cleanPhone(c.phone || ''));
+  var safeCid   = escapeHtml(c.chatId || '');
+
+  if (note) {
+    return '<div class="cl-note" id="' + noteId + '">' +
+      '<div class="cl-note-hdr">' +
+        '<div class="cl-note-lbl">Заметка</div>' +
+        '<button class="cl-note-edit-btn" onclick="clNoteStartEdit(\'' + noteId + '\',\'' + safePhone + '\',\'' + safeCid + '\')">✎ изменить</button>' +
+      '</div>' +
+      '<div class="cl-note-text">' + escapeHtml(note) + '</div>' +
+    '</div>';
+  } else {
+    return '<div class="cl-note-empty" id="' + noteId + '" onclick="clNoteStartEdit(\'' + noteId + '\',\'' + safePhone + '\',\'' + safeCid + '\')">' +
+      '<div class="cl-note-add">+ Добавить заметку о клиенте</div>' +
+    '</div>';
+  }
+}
+
+function clNoteStartEdit(noteId, phone, clientChatId) {
+  var el = ge(noteId);
+  if (!el) return;
+  haptic('light');
+
+  // Извлекаем текущий текст заметки
+  var textEl = el.querySelector('.cl-note-text');
+  var currentText = textEl ? textEl.textContent : '';
+
+  el.className = 'cl-note-editing';
+  el.innerHTML =
+    '<div class="cl-note-lbl" style="margin-bottom:6px">Заметка</div>' +
+    '<textarea class="cl-note-ta" id="' + noteId + '-ta" placeholder="Предпочтения, особенности, пожелания клиента...">' + escapeHtml(currentText) + '</textarea>' +
+    '<div class="cl-note-btns">' +
+      '<button class="cl-note-btn-cancel" onclick="clNoteCancel(\'' + noteId + '\')">Отмена</button>' +
+      '<button class="cl-note-btn-save" onclick="clNoteSave(\'' + noteId + '\',\'' + escapeHtml(phone) + '\',\'' + escapeHtml(clientChatId) + '\')">Сохранить</button>' +
+    '</div>';
+
+  var ta = ge(noteId + '-ta');
+  if (ta) { setTimeout(function(){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 100); }
+}
+
+function clNoteCancel(noteId) {
+  haptic('light');
+  // Перезагружаем клиентов чтобы восстановить исходное состояние
+  clLoad(true);
+}
+
+function clNoteSave(noteId, phone, clientChatId) {
+  var ta = ge(noteId + '-ta');
+  if (!ta) return;
+  var text = ta.value.trim();
+  haptic('medium');
+
+  // Показываем индикатор сохранения
+  var btns = ta.parentElement.querySelector('.cl-note-btns');
+  if (btns) btns.innerHTML = '<span style="font-size:11px;color:rgba(201,168,76,.5)">Сохранение...</span>';
+
+  var chatId = getChatId();
+  var url = CONFIG.GS + '?action=saveClientNote' +
+    '&clientPhone=' + encodeURIComponent(phone || '') +
+    '&clientChatId=' + encodeURIComponent(clientChatId || '') +
+    '&note=' + encodeURIComponent(text) +
+    '&chatId=' + encodeURIComponent(chatId) +
+    (getInitData() ? '&initData=' + getInitData() : '');
+
+  fetchWithTimeout(url)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) {
+        showToast('Ошибка: ' + d.error, 'error');
+        clLoad(true);
+        return;
+      }
+      showToast('✅ Заметка сохранена', 'success');
+
+      // Обновляем заметку в локальном кэше клиентов
+      var phoneDigits = (phone || '').replace(/\D/g, '');
+      _clAllClients.forEach(function(c) {
+        var cPhone = cleanPhone(c.phone || '').replace(/\D/g, '');
+        var cCid   = c.chatId || '';
+        if ((clientChatId && cCid === clientChatId) || (phoneDigits && cPhone && cPhone === phoneDigits)) {
+          c.note = text;
+        }
+      });
+
+      // Перерендериваем блок заметки на месте
+      var el = ge(noteId);
+      if (el) {
+        var c = { note: text, phone: phone, chatId: clientChatId };
+        var tmp = document.createElement('div');
+        tmp.innerHTML = clRenderNoteBlock(noteId.replace('-note',''), c);
+        var newEl = tmp.firstChild;
+        newEl.id = noteId;
+        el.parentNode.replaceChild(newEl, el);
+      }
+    })
+    .catch(function() {
+      showToast('Ошибка сохранения', 'error');
+      clLoad(true);
+    });
+}
+
+window.clRenderNoteBlock = clRenderNoteBlock;
+window.clNoteStartEdit   = clNoteStartEdit;
+window.clNoteCancel      = clNoteCancel;
+window.clNoteSave        = clNoteSave;
 
 // Раскрыть/свернуть карточку клиента и загрузить историю
 function clToggleCard(cardKey) {

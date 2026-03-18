@@ -6594,7 +6594,7 @@ function obSubmit() {
     }
     _clientProfile = d.clientProfile || {name: name, phone: phone, birthday: bday, complete: true};
     obPrefillBookingFields();
-    try { localStorage.removeItem(_obSkippedKey); } catch(e){}
+    try { localStorage.removeItem(_obSkippedKey); localStorage.setItem('bs_ob_done', '1'); } catch(e){}
     obHide();
     showToast('Профиль сохранён!', 'success', 2500);
   })
@@ -6626,22 +6626,21 @@ function obPrefillBookingFields() {
 
 function obCheckOnboarding(d) {
   _clientProfile = d.clientProfile || null;
+
+  // 1. Профиль заполнен (имя + телефон) — не показываем, подставляем данные
   if (_clientProfile && _clientProfile.complete) {
     obPrefillBookingFields();
     return;
   }
-  if (_clientProfile && _clientProfile.name) {
-    obPrefillBookingFields();
-  }
+
+  // 2. Пользователь уже скипнул ранее — не показываем
   var chatId = getChatId();
   if (!chatId) return;
   try {
-    var skipped = localStorage.getItem(_obSkippedKey);
-    if (skipped) {
-      var skippedTs = parseInt(skipped);
-      if (Date.now() - skippedTs < 24 * 60 * 60 * 1000) return;
-    }
+    if (localStorage.getItem(_obSkippedKey)) return;
   } catch(e){}
+
+  // 3. Подставляем частичные данные если есть
   if (_clientProfile && _clientProfile.name) {
     var obN = ge('obName');
     if (obN) obN.value = _clientProfile.name;
@@ -6654,7 +6653,6 @@ function obCheckOnboarding(d) {
     var obB = ge('obBirthday');
     if (obB) {
       var bval = String(_clientProfile.birthday).replace(/^'/, '').trim();
-      // Если пришло как "Thu Jul 16 2026..." или ISO — парсим в ДД.ММ.ГГГГ
       if (bval && !/^\d{2}\.\d{2}/.test(bval)) {
         try {
           var pd = new Date(bval);
@@ -6666,6 +6664,8 @@ function obCheckOnboarding(d) {
       obB.value = bval;
     }
   }
+
+  // 4. Показываем onboarding
   setTimeout(function(){ obShow(); obValidate(); }, 600);
 }
 </script>

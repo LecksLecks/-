@@ -4524,7 +4524,7 @@ function bcLoadHistory() {
    ──────────────────────────────────────────────────────────── */
 
 let _clAllClients = [];
-let _clSort = 'last';
+let _clSort = 'added';
 let _clSearch = '';
 let _clDateFilter = ''; // фильтр по дате записи
 let _clLoaded = false;
@@ -4721,6 +4721,7 @@ function clRender() {
 
   // Сортировка — новые клиенты сверху по умолчанию
   clients = clients.slice().sort((a,b) => {
+    if (_clSort==='added')  return (b._order||0)-(a._order||0);
     if (_clSort==='newest') return (b.firstVisit||'') > (a.firstVisit||'') ? -1 : (b.firstVisit||'') < (a.firstVisit||'') ? 1 : 0;
     if (_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
     if (_clSort==='spent')  return (b.totalSpent||0)-(a.totalSpent||0);
@@ -4942,6 +4943,7 @@ function clToggleCard(cardKey) {
                (qDigits.length>=3 && phone.includes(qDigits)) || tg.includes(q);
       });
       clients = clients.slice().sort((a,b)=>{
+        if(_clSort==='added') return (b._order||0)-(a._order||0);
         if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?-1:(b.firstVisit||'')<(a.firstVisit||'')?1:0;
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);
@@ -4951,6 +4953,7 @@ function clToggleCard(cardKey) {
       });
     } else {
       clients = clients.slice().sort((a,b)=>{
+        if(_clSort==='added') return (b._order||0)-(a._order||0);
         if(_clSort==='newest') return (b.firstVisit||'')>(a.firstVisit||'')?-1:(b.firstVisit||'')<(a.firstVisit||'')?1:0;
         if(_clSort==='visits') return (b.totalBookings||0)-(a.totalBookings||0);
         if(_clSort==='spent') return (b.totalSpent||0)-(a.totalSpent||0);

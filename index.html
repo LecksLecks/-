@@ -608,6 +608,27 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .skel-circle{width:44px;height:44px;border-radius:50%;flex-shrink:0}
 .skel-block{height:60px;margin-bottom:8px;border-radius:3px}
 
+/* ПАНЕЛЬ ОЧЕРЕДИ */
+.ql-slot-group{margin-bottom:16px;border:1px solid rgba(201,168,76,.15);border-radius:12px;overflow:hidden}
+.ql-slot-header{background:rgba(201,168,76,.08);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(201,168,76,.1)}
+.ql-slot-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gold)}
+.ql-slot-count{font-size:11px;color:var(--gray)}
+.ql-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(201,168,76,.05);background:rgba(201,168,76,.02)}
+.ql-item:last-child{border-bottom:none}
+.ql-item-pos{font-size:20px;font-weight:700;color:rgba(201,168,76,.4);min-width:24px;margin-right:10px}
+.ql-item-info{flex:1}
+.ql-item-name{font-size:14px;color:var(--cream);font-weight:700;font-family:'Playfair Display',serif}
+.ql-item-contacts{font-size:12px;color:var(--gray);margin-top:2px}
+.ql-item-status{font-size:10px;letter-spacing:.5px;padding:2px 8px;border-radius:6px;margin-left:8px}
+.ql-item-status.waiting{background:rgba(201,168,76,.12);color:var(--gold)}
+.ql-item-status.notified{background:rgba(76,175,125,.12);color:var(--green)}
+.ql-item-status.declined{background:rgba(224,80,80,.1);color:#e05050}
+.ql-notify-btn{background:var(--gold);color:var(--black);border:none;padding:7px 14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:8px;font-family:'Cormorant Garamond',serif;white-space:nowrap;flex-shrink:0}
+.ql-notify-btn:active{opacity:.8}
+.ql-notify-btn:disabled{opacity:.4;cursor:not-allowed}
+.ql-empty{text-align:center;padding:30px 0;color:var(--gray);font-style:italic;font-size:14px}
+.ql-refresh-btn{background:transparent;border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:8px 18px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;cursor:pointer;border-radius:8px;font-family:'Cormorant Garamond',serif;margin-bottom:14px}
+
 /* РАССЫЛКА */
 .bc-filter-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
 .bc-filter{background:transparent;border:1px solid rgba(201,168,76,.18);color:var(--gray);padding:9px 6px;font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:10px}
@@ -1496,6 +1517,10 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
         <span class="adm-menu-ico">📊</span>
         <div><span class="adm-menu-nm">Сравнение</span><span class="adm-menu-desc">Неделя / месяц</span></div>
       </button>
+      <button class="adm-menu-item" data-admtab="queuelist">
+        <span class="adm-menu-ico">⏳</span>
+        <div><span class="adm-menu-nm">Очередь</span><span class="adm-menu-desc">Ждут освобождения</span></div>
+      </button>
     </div>
   </div>
   <div class="adm-panel active" id="adm-summary">
@@ -1680,6 +1705,13 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="adm-section">
       <div class="adm-section-ttl">По мастерам (месяц)</div>
       <div id="cmpMasters"><div class="adm-loading">Загрузка...</div></div>
+    </div>
+  </div>
+
+  <div class="adm-panel" id="adm-queuelist">
+    <div class="adm-section">
+      <div class="adm-section-ttl">Очередь ожидания</div>
+      <div id="queueListContent"><div class="adm-loading">Загрузка...</div></div>
     </div>
   </div>
 
@@ -3323,7 +3355,8 @@ function admTab(tab, tabEl) {
     summary:'Сводка', bookings:'Записи', slots:'Слоты',
     dayoffs:'Выходные', analytics:'Аналитика',
     broadcast:'📢 Рассылка', clients:'👥 Клиенты',
-    manual:'✏️ Ручная запись', compare:'📊 Сравнение'
+    manual:'✏️ Ручная запись', compare:'📊 Сравнение',
+    queuelist:'⏳ Очередь'
   };
   const lbl = ge('admBurgerLbl');
   if (lbl) lbl.textContent = labels[tab] || tab;
@@ -3345,6 +3378,7 @@ function admTab(tab, tabEl) {
   if (tab==='clients')   clInit();
   if (tab==='manual')    manualBkInit();
   if (tab==='compare')   compareInit();
+  if (tab==='queuelist') admQueueInit();
   // Фокус на поиск при открытии клиентов
   if (tab==='clients') { var srch=ge('srchInp'); if(srch) setTimeout(function(){srch.focus();},300); }
 }
@@ -6082,6 +6116,102 @@ window.queueOpenModal  = queueOpenModal;
 window.queueClose      = queueClose;
 window.queueCloseOnOverlay = queueCloseOnOverlay;
 window.queueSubmit     = queueSubmit;
+
+/* ════════════════════════════════════════════════════════════
+   АДМИН-ПАНЕЛЬ: ОЧЕРЕДЬ ОЖИДАНИЯ
+   ════════════════════════════════════════════════════════════ */
+
+function admQueueInit() { admQueueLoad(); }
+
+function admQueueLoad() {
+  var container = ge('queueListContent');
+  if (!container) return;
+  container.innerHTML = '<div class="adm-loading">Загрузка очереди...</div>';
+  var chatId = getChatId();
+  fetchWithTimeout(CONFIG.GS + '?action=getQueue&chatId=' + encodeURIComponent(chatId) + (getInitData() ? '&initData=' + getInitData() : ''))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) { container.innerHTML = '<div class="adm-loading">Ошибка: ' + escapeHtml(d.error) + '</div>'; return; }
+      admQueueRender(d.queue || [], container);
+    })
+    .catch(function() { container.innerHTML = '<div class="adm-loading">Ошибка загрузки.</div>'; });
+}
+
+function admQueueRender(items, container) {
+  var html = '<button class="ql-refresh-btn" onclick="admQueueLoad()">↻ Обновить</button>';
+  if (!items.length) { html += '<div class="ql-empty">Очередь пуста</div>'; container.innerHTML = html; return; }
+
+  var groups = {}, groupOrder = [];
+  items.forEach(function(item) {
+    var key = item.master + '|' + item.date + '|' + item.slot;
+    if (!groups[key]) { groups[key] = []; groupOrder.push(key); }
+    groups[key].push(item);
+  });
+
+  var MN_Q = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  groupOrder.forEach(function(key) {
+    var parts = key.split('|');
+    var masterName = parts[0], date = parts[1], slot = parts[2];
+    var group = groups[key];
+    var dp = date ? date.split('-') : ['','01','01'];
+    var dateLabel = parseInt(dp[2]) + ' ' + (MN_Q[parseInt(dp[1])-1] || '');
+
+    html += '<div class="ql-slot-group"><div class="ql-slot-header">';
+    html += '<div class="ql-slot-title">✂️ ' + escapeHtml(masterName) + ' · ' + escapeHtml(slot) + ', ' + dateLabel + '</div>';
+    html += '<div class="ql-slot-count">' + group.length + ' чел.</div></div>';
+
+    group.forEach(function(item, idx) {
+      var statusLabel = item.status === 'notified' ? 'уведомлён' : item.status === 'declined' ? 'отказался' : 'ждёт';
+      var statusCls   = item.status === 'notified' ? 'notified'  : item.status === 'declined' ? 'declined'  : 'waiting';
+      html += '<div class="ql-item">';
+      html += '<div class="ql-item-pos">' + (idx + 1) + '</div>';
+      html += '<div class="ql-item-info"><div class="ql-item-name">' + escapeHtml(item.name) + '</div>';
+      html += '<div class="ql-item-contacts">' + escapeHtml(item.phone) + (item.telegram ? ' · ' + escapeHtml(item.telegram) : '') + '</div></div>';
+      html += '<span class="ql-item-status ' + statusCls + '">' + statusLabel + '</span>';
+      html += '</div>';
+    });
+
+    var firstWaiting = null;
+    for (var w = 0; w < group.length; w++) { if (group[w].status === 'waiting') { firstWaiting = group[w]; break; } }
+    if (firstWaiting) {
+      html += '<div style="padding:10px 14px;border-top:1px solid rgba(201,168,76,.07)">';
+      html += '<button class="ql-notify-btn" onclick="admQueueNotify(\'' + escapeHtml(String(firstWaiting.rowIndex)) + '\')">Уведомить ' + escapeHtml(firstWaiting.name) + '</button>';
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function admQueueNotify(rowIndex) {
+  haptic('impact');
+  var btn = event && event.target ? event.target : null;
+  if (btn) { btn.disabled = true; btn.textContent = 'Отправляем...'; }
+  var chatId = getChatId();
+  fetchWithTimeout(CONFIG.GS, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'notifyQueueFirst', rowIndex: parseInt(rowIndex), chatId: chatId, initData: getInitData() || '' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.status === 'ok') {
+      showToast('✅ Уведомление отправлено', 'success');
+      setTimeout(admQueueLoad, 800);
+    } else {
+      showToast('Ошибка: ' + (d.error || 'попробуйте снова'), 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Уведомить'; }
+    }
+  })
+  .catch(function() {
+    showToast('Ошибка соединения', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Уведомить'; }
+  });
+}
+
+window.admQueueInit   = admQueueInit;
+window.admQueueLoad   = admQueueLoad;
+window.admQueueNotify = admQueueNotify;
 
 </script>
 </body>

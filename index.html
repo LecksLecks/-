@@ -2484,6 +2484,7 @@ document.addEventListener('DOMContentLoaded', function(){
     console.error('initApp:', e);
     var s=document.getElementById('splash');
     if(s) s.style.display='none';
+    if(typeof splashHide === 'function') splashHide();
   }
 });
 
@@ -2782,7 +2783,12 @@ window.shareCopyLink = shareCopyLink;
 
 function renderMasters() {
   const g = ge('mastersList');
+  if (!g) return;
   g.innerHTML = '';
+  if (!MASTERS || MASTERS.length === 0) {
+    g.innerHTML = '<div style="text-align:center;color:var(--gray);padding:20px;font-size:14px">Загрузка мастеров...</div>';
+    return;
+  }
   MASTERS.forEach(m => {
     const d = document.createElement('div');
     d.className = 'm-item';
@@ -2899,7 +2905,9 @@ function bkSelMaster(mid) {
 
 function renderMsGrid() {
   const g = ge('msGrid');
+  if (!g) return;
   g.innerHTML = '';
+  if (!MASTERS || MASTERS.length === 0) return;
   MASTERS.forEach(m => {
     const b = document.createElement('button');
     b.className = 'ms-btn' + (S.mid === m.id ? ' sel' : '');

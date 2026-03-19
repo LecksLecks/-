@@ -349,6 +349,21 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .queue-success-sub{font-size:15px;color:var(--gray);line-height:1.7;margin-bottom:16px}
 .queue-btn-close{width:100%;background:transparent;border:1px solid rgba(201,168,76,0.54);color:var(--gold);padding:13px;font-size:13px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;border-radius:8px}
 
+/* v12: БАННЕР СТАТУСА ОЧЕРЕДИ ДЛЯ КЛИЕНТА */
+.queue-banner{margin:0 16px 16px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.35);border-radius:12px;padding:14px 16px}
+.queue-banner-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.queue-banner-ico{font-size:22px}
+.queue-banner-ttl{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cream)}
+.queue-banner-item{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.queue-banner-item:last-child{margin-bottom:0}
+.queue-banner-master{font-size:14px;color:var(--cream);font-weight:700;margin-bottom:4px}
+.queue-banner-slot{font-size:13px;color:var(--gray);margin-bottom:6px}
+.queue-banner-pos{display:inline-flex;align-items:center;gap:6px;font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.queue-banner-pos-num{background:var(--gold);color:var(--black);font-weight:900;font-size:16px;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.queue-banner-status-notified{color:#f0c040;font-size:12px;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.queue-banner-pulse{width:8px;height:8px;border-radius:50%;background:#f0c040;animation:qbPulse 1.2s infinite}
+@keyframes qbPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
 /* BOOKING - SERVICE SELECTOR */
 .svc-wrap{padding:0 16px 14px}
 .svc-cat{margin-bottom:12px}
@@ -1780,6 +1795,8 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
     <div class="sec-lbl">✦ Ваши записи</div>
     <h2 class="sec-ttl">Мои <em>записи</em></h2>
   </div>
+  <!-- v12: баннер очереди — показывается если клиент стоит в очереди -->
+  <div id="myQueueBanner" style="display:none"></div>
   <div id="myBkContent"><div class="adm-loading">Загрузка...</div></div>
 </div>
 
@@ -2506,7 +2523,7 @@ function goPage(id) {
     }));
   }
   if (id === 'booking')    bkInit();
-  if (id === 'mybookings') myBkInit();
+  if (id === 'mybookings') { myBkInit(); loadMyQueueStatus(); }
   if (id === 'reviews')    revPageInit();
   if (id === 'admin')      admInit();
   if (id !== 'admin')      admStopPolling();
@@ -6391,6 +6408,8 @@ function queueShowSuccess() {
     '<button class="queue-btn-close" onclick="queueClose()">Закрыть</button>' +
     '</div>';
   haptic('success');
+  // v12: обновляем баннер очереди на странице "Мои записи"
+  setTimeout(loadMyQueueStatus, 800);
 }
 
 window.queueOpenModal  = queueOpenModal;
@@ -6493,6 +6512,42 @@ function admQueueNotify(rowIndex) {
 window.admQueueInit   = admQueueInit;
 window.admQueueLoad   = admQueueLoad;
 window.admQueueNotify = admQueueNotify;
+
+/* ── v12: СТАТУС ОЧЕРЕДИ ДЛЯ КЛИЕНТА ────────────────────────────────── */
+function loadMyQueueStatus() {
+  var banner = document.getElementById('myQueueBanner');
+  if (!banner) return;
+  var chatId = getChatId();
+  if (!chatId) { banner.style.display = 'none'; return; }
+
+  var url = CONFIG.GS + '?action=getMyQueueStatus&chatId=' + encodeURIComponent(chatId);
+  var initData = getInitData();
+  if (initData) url += '&initData=' + initData;
+
+  fetchWithTimeout(url)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var items = d.items || [];
+      if (!items.length) { banner.style.display = 'none'; return; }
+      banner.style.display = 'block';
+      var html = '<div class="queue-banner">';
+      html += '<div class="queue-banner-hdr"><span class="queue-banner-ico">⏳</span><span class="queue-banner-ttl">Вы в очереди ожидания</span></div>';
+      items.forEach(function(item) {
+        html += '<div class="queue-banner-item">';
+        html += '<div class="queue-banner-master">✂️ Мастер ' + escapeHtml(item.master) + '</div>';
+        html += '<div class="queue-banner-slot">🕐 ' + escapeHtml(item.slot) + ', ' + escapeHtml(item.dateLabel) + '</div>';
+        if (item.status === 'notified') {
+          html += '<div class="queue-banner-status-notified"><span class="queue-banner-pulse"></span>Мастер свободен — проверьте сообщения бота!</div>';
+        } else {
+          html += '<div class="queue-banner-pos"><span class="queue-banner-pos-num">' + item.position + '</span><span style="color:var(--gray)">место в очереди из ' + item.totalWaiting + '</span></div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+      banner.innerHTML = html;
+    })
+    .catch(function() { banner.style.display = 'none'; });
+}
 
 </script>
 

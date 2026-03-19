@@ -6636,7 +6636,9 @@ function admQueueRender(items, container) {
       html += '<div class="ql-item">';
       html += '<div class="ql-item-pos">' + (idx + 1) + '</div>';
       html += '<div class="ql-item-info"><div class="ql-item-name">' + escapeHtml(item.name) + '</div>';
-      html += '<div class="ql-item-contacts">' + escapeHtml(item.phone) + (item.telegram ? ' · ' + escapeHtml(item.telegram) : '') + '</div></div>';
+      html += '<div class="ql-item-contacts">' + escapeHtml(item.phone) + (item.telegram ? ' · ' + escapeHtml(item.telegram) : '') + '</div>';
+      if (item.services) html += '<div class="ql-item-contacts" style="color:var(--gold);font-size:11px;margin-top:2px">💈 ' + escapeHtml(item.services) + '</div>';
+      html += '</div>';
       html += '<span class="ql-item-status ' + statusCls + '">' + statusLabel + '</span>';
       html += '</div>';
     });

@@ -6382,7 +6382,14 @@ function queueSubmit() {
   .then(function(r) { return r.json(); })
   .then(function(d) {
     if (d.status === 'ok') {
-      queueShowSuccess();
+      if (d.duplicate) {
+        // Баг 7 fix: клиент уже в очереди — сообщаем вместо повторного "Вы в очереди!"
+        showToast('Вы уже в очереди на этот слот', 'info');
+        if (btn) { btn.disabled = false; btn.textContent = 'Записаться'; }
+        queueClose();
+      } else {
+        queueShowSuccess();
+      }
     } else {
       showToast('Ошибка: ' + (d.error || 'попробуйте позже'), 'error');
       if (btn) { btn.disabled = false; btn.textContent = 'Записаться'; }
@@ -6464,7 +6471,7 @@ function admQueueRender(items, container) {
       var statusLabel = item.status === 'notified' ? 'уведомлён' : item.status === 'declined' ? 'отказался' : 'ждёт';
       var statusCls   = item.status === 'notified' ? 'notified'  : item.status === 'declined' ? 'declined'  : 'waiting';
       html += '<div class="ql-item">';
-      html += '<div class="ql-item-pos">' + (idx + 1) + '</div>';
+      html += '<div class="ql-item-pos">' + item.position + '</div>';  // Баг 5 fix: реальная позиция из бэкенда
       html += '<div class="ql-item-info"><div class="ql-item-name">' + escapeHtml(item.name) + '</div>';
       html += '<div class="ql-item-contacts">' + escapeHtml(item.phone) + (item.telegram ? ' · ' + escapeHtml(item.telegram) : '') + '</div></div>';
       html += '<span class="ql-item-status ' + statusCls + '">' + statusLabel + '</span>';
@@ -6475,7 +6482,7 @@ function admQueueRender(items, container) {
     for (var w = 0; w < group.length; w++) { if (group[w].status === 'waiting') { firstWaiting = group[w]; break; } }
     if (firstWaiting) {
       html += '<div style="padding:10px 14px;border-top:1px solid rgba(201,168,76,.07)">';
-      html += '<button class="ql-notify-btn" onclick="admQueueNotify(\'' + escapeHtml(String(firstWaiting.rowIndex)) + '\')">Уведомить ' + escapeHtml(firstWaiting.name) + '</button>';
+      html += '<button class="ql-notify-btn" onclick="admQueueNotify(\'' + escapeHtml(String(firstWaiting.rowIndex)) + '\', this)">Уведомить ' + escapeHtml(firstWaiting.name) + '</button>';  // Баг 6 fix: передаём this
       html += '</div>';
     }
     html += '</div>';
@@ -6483,9 +6490,10 @@ function admQueueRender(items, container) {
   container.innerHTML = html;
 }
 
-function admQueueNotify(rowIndex) {
+function admQueueNotify(rowIndex, btnEl) {
   haptic('impact');
-  var btn = event && event.target ? event.target : null;
+  // Баг 6 fix: принимаем кнопку явно через параметр — event.target ненадёжен
+  var btn = btnEl || null;
   if (btn) { btn.disabled = true; btn.textContent = 'Отправляем...'; }
   var chatId = getChatId();
   fetchWithTimeout(CONFIG.GS, {

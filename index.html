@@ -331,7 +331,7 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 .queue-close-btn:active{background:rgba(201,168,76,0.25)}
 .queue-close-btn svg{width:14px;height:14px}
 .queue-ttl{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:0}
-.queue-sub{display:none}
+.queue-sub{font-size:12px;color:var(--gray);font-style:italic;margin-bottom:8px;line-height:1.4}
 .queue-info-card{display:flex;align-items:center;gap:8px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:13px;color:var(--gray);line-height:1.4}
 .queue-info-card span{color:var(--cream);font-weight:700}
 .queue-info-sep{width:3px;height:3px;border-radius:50%;background:#555;flex-shrink:0}
@@ -354,6 +354,16 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 /* QUEUE - SERVICE PILLS */
 .queue-svc-wrap{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
 .queue-svc-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:2px;display:block}
+.queue-cb-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.09);cursor:pointer;-webkit-tap-highlight-color:rgba(201,168,76,0.1);touch-action:manipulation}
+.queue-cb-row:last-child{border-bottom:none}
+.queue-cb-left{display:flex;align-items:center;gap:8px}
+.queue-cb-box{width:16px;height:16px;border:1.5px solid rgba(201,168,76,0.45);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.queue-cb-box.on{background:var(--gold);border-color:var(--gold)}
+.queue-cb-tick{width:8px;height:5px;border-left:2px solid #1a1a14;border-bottom:2px solid #1a1a14;transform:rotate(-45deg) translate(1px,-1px);opacity:0;transition:opacity .1s}
+.queue-cb-box.on .queue-cb-tick{opacity:1}
+.queue-cb-nm{font-size:13px;color:var(--cream);line-height:1.3}
+.queue-cb-pr{font-size:11px;color:var(--gold);font-weight:700;white-space:nowrap;margin-left:4px}
+.queue-cb-row.invalid-svc .queue-cb-box{border-color:#a04040}
 .queue-pill{display:flex;align-items:center;justify-content:space-between;background:rgba(201,168,76,0.06);border:1.5px solid rgba(201,168,76,0.28);border-radius:8px;padding:7px 10px;cursor:pointer;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:rgba(201,168,76,0.18);touch-action:manipulation}
 .queue-pill:active{background:rgba(201,168,76,0.14)}
 .queue-pill.selected{border-color:var(--gold);background:rgba(201,168,76,0.13)}
@@ -6329,34 +6339,44 @@ function queueOpenModal(slot) {
     '<div class="queue-ttl">Мастер сейчас занят</div>' +
     '<div class="queue-close-btn" onclick="queueClose()"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.7)" stroke-width="2" stroke-linecap="round"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg></div>' +
     '</div>' +
+    '<div class="queue-sub">Оставьте контакты — мы перезвоним, как только мастер освободится.</div>' +
     '<div class="queue-info-card">' +
     '<span>✂ ' + escapeHtml(masterName) + '</span>' +
     '<div class="queue-info-sep"></div>' +
     '<span style="color:var(--cream);font-weight:700">' + slot + '</span><span style="color:var(--gray)">, ' + dateStr + '</span>' +
     '</div>' +
-    // ── УСЛУГИ ──
+    // ── УСЛУГИ — квадратные чекбоксы ──
     '<div class="queue-svc-wrap">' +
     '<span class="queue-svc-lbl">Услуга</span>' +
-    '<div class="queue-pill" id="qpill-hair" onclick="queuePillToggle(\'hair\')">' +
-      '<div class="queue-pill-left">' +
-        '<div class="queue-pill-dot"><div class="queue-pill-dot-inner"></div></div>' +
-        '<span class="queue-pill-nm">' + escapeHtml(hairName) + '</span>' +
+    '<div class="queue-cb-row" id="qcb-hair" onclick="queueCbToggle(\'hair\')">' +
+      '<div class="queue-cb-left">' +
+        '<div class="queue-cb-box" id="qcb-box-hair"><div class="queue-cb-tick"></div></div>' +
+        '<span class="queue-cb-nm">Удлинённая стрижка</span>' +
       '</div>' +
-      '<span class="queue-pill-pr">' + fmtP(hairPrice) + '</span>' +
+      '<span class="queue-cb-pr">1300 ₽</span>' +
     '</div>' +
-    '<div class="queue-pill" id="qpill-beard" onclick="queuePillToggle(\'beard\')">' +
-      '<div class="queue-pill-left">' +
-        '<div class="queue-pill-dot"><div class="queue-pill-dot-inner"></div></div>' +
-        '<span class="queue-pill-nm">' + escapeHtml(beardName) + '</span>' +
+    '<div class="queue-cb-row" id="qcb-beard" onclick="queueCbToggle(\'beard\')">' +
+      '<div class="queue-cb-left">' +
+        '<div class="queue-cb-box" id="qcb-box-beard"><div class="queue-cb-tick"></div></div>' +
+        '<span class="queue-cb-nm">Оформление бороды</span>' +
       '</div>' +
-      '<span class="queue-pill-pr">' + fmtP(beardPrice) + '</span>' +
+      '<span class="queue-cb-pr">800 ₽</span>' +
+    '</div>' +
+    '<div class="queue-cb-row" id="qcb-tint" onclick="queueCbToggle(\'tint\')">' +
+      '<div class="queue-cb-left">' +
+        '<div class="queue-cb-box" id="qcb-box-tint"><div class="queue-cb-tick"></div></div>' +
+        '<span class="queue-cb-nm">Тонировка</span>' +
+      '</div>' +
+      '<span class="queue-cb-pr">1000 ₽</span>' +
+    '</div>' +
+    '<div class="queue-cb-row" id="qcb-royal" onclick="queueCbToggle(\'royal\')">' +
+      '<div class="queue-cb-left">' +
+        '<div class="queue-cb-box" id="qcb-box-royal"><div class="queue-cb-tick"></div></div>' +
+        '<span class="queue-cb-nm">Кор. бритьё + скрабирование</span>' +
+      '</div>' +
+      '<span class="queue-cb-pr">1000 ₽</span>' +
     '</div>' +
     '</div>' +
-    // ── АККОРДЕОН "Хотите ещё?" ──
-    '<button class="queue-price-toggle" id="qPriceToggle" onclick="queuePriceToggle()">' +
-      'Хотите ещё? <i class="qtgl-arrow">▾</i>' +
-    '</button>' +
-    '<div class="queue-price-body" id="qPriceBody">' + priceHtml + '</div>' +
     // ── ПОЛЯ ФОРМЫ ──
     '<div class="queue-fg">' +
     '<label class="queue-lbl">Ваше имя</label>' +
@@ -6384,38 +6404,35 @@ function queueOpenModal(slot) {
   }, 300);
 }
 
-// Переключить pill-услугу в очереди
-function queuePillToggle(key) {
+// Переключить квадратный чекбокс услуги
+function queueCbToggle(key) {
   haptic('select');
-  var pill = document.getElementById('qpill-' + key);
-  if (!pill) return;
-  pill.classList.toggle('selected');
-  // Снять invalid-svc при любом выборе
-  var pills = document.querySelectorAll('.queue-pill');
-  var hasSelected = false;
-  for (var i = 0; i < pills.length; i++) {
-    if (pills[i].classList.contains('selected')) { hasSelected = true; }
-    pills[i].classList.remove('invalid-svc');
-  }
+  var row = document.getElementById('qcb-' + key);
+  var box = document.getElementById('qcb-box-' + key);
+  if (!row || !box) return;
+  var on = row.classList.toggle('selected');
+  box.classList.toggle('on', on);
+  // Снять ошибку с всех при любом нажатии
+  var rows = document.querySelectorAll('.queue-cb-row');
+  for (var i = 0; i < rows.length; i++) rows[i].classList.remove('invalid-svc');
 }
 
-// Аккордеон полного прайса
-function queuePriceToggle() {
-  var btn = document.getElementById('qPriceToggle');
-  var body = document.getElementById('qPriceBody');
-  if (!btn || !body) return;
-  var open = body.classList.toggle('open');
-  btn.classList.toggle('open', open);
-  haptic('select');
-}
-
-// Собрать выбранные услуги в строку
+// Собрать выбранные услуги
 function queueGetServices() {
   var map = {
-    hair:  document.getElementById('qpill-hair')  ? (document.getElementById('qpill-hair').querySelector('.queue-pill-nm')  || {}).textContent : '',
-    beard: document.getElementById('qpill-beard') ? (document.getElementById('qpill-beard').querySelector('.queue-pill-nm') || {}).textContent : ''
+    hair:  'Удлинённая стрижка',
+    beard: 'Оформление бороды',
+    tint:  'Тонировка',
+    royal: 'Королевское бритьё + скрабирование'
   };
-  var keys = ['hair', 'beard'];
+  var keys = ['hair', 'beard', 'tint', 'royal'];
+  var selected = [];
+  for (var i = 0; i < keys.length; i++) {
+    var row = document.getElementById('qcb-' + keys[i]);
+    if (row && row.classList.contains('selected')) selected.push(map[keys[i]]);
+  }
+  return selected;
+}
   var selected = [];
   for (var i = 0; i < keys.length; i++) {
     var pill = document.getElementById('qpill-' + keys[i]);
@@ -6449,7 +6466,7 @@ function queueSubmit() {
   var selectedSvcs = queueGetServices();
   var valid = true;
   if (selectedSvcs.length === 0) {
-    var pills = document.querySelectorAll('.queue-pill');
+    var pills = document.querySelectorAll('.queue-cb-row');
     for (var pi = 0; pi < pills.length; pi++) pills[pi].classList.add('invalid-svc');
     haptic('error');
     valid = false;
@@ -6538,8 +6555,7 @@ window.queueOpenModal  = queueOpenModal;
 window.queueClose      = queueClose;
 window.queueCloseOnOverlay = queueCloseOnOverlay;
 window.queueSubmit     = queueSubmit;
-window.queuePillToggle = queuePillToggle;
-window.queuePriceToggle = queuePriceToggle;
+window.queueCbToggle   = queueCbToggle;
 
 /* ════════════════════════════════════════════════════════════
    АДМИН-ПАНЕЛЬ: ОЧЕРЕДЬ ОЖИДАНИЯ

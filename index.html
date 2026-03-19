@@ -3191,11 +3191,11 @@ function bkSubmit() {
   btn.disabled = true; btn.textContent = ''; btn.style.display = 'none';
   ge('bkSpinner').classList.add('show');
   isSubmitting = true;
-  function bkReset() {
+  var bkResetLocal = function() {
     isSubmitting = false; btn.disabled = false;
     btn.textContent = 'Записаться'; btn.style.display = '';
     ge('bkSpinner').classList.remove('show');
-  }
+  };
 
   const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   const tgUsername = tgUser && tgUser.username ? '@'+tgUser.username : '';
@@ -3218,24 +3218,24 @@ function bkSubmit() {
       // success path
 
       if (d.error==='slot_taken'||d.error==='slot_unavailable') {
-        bkReset();
+        bkResetLocal();
         showToast('⚠️ ' + (d.message||'Это время уже занято. Выберите другое.'), 'error', 4000);
         loadAllMastersData(); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
       if (d.error==='dayoff') {
-        bkReset();
+        bkResetLocal();
         showToast('⚠️ ' + (d.message||'Выбранный день — выходной для мастера'), 'error', 4000);
         loadAllMastersData(); S.date=''; S.slot=''; calRender(); clearTime(); updateBar(); bkValidate(); return;
       }
       if (d.status==='double_booking') {
-        bkReset();
+        bkResetLocal();
         showToast('⚠️ У вас уже есть запись на это время!', 'error'); S.slot=''; renderTimeGrid(); updateBar(); bkValidate(); return;
       }
       if (d.status==='rate_limit') {
-        bkReset();
+        bkResetLocal();
         showToast('⚠️ ' + d.error, 'error'); return;
       }
-      if (d.error)                 { bkReset(); showToast('Ошибка: ' + d.error, 'error'); return; }
+      if (d.error)                 { bkResetLocal(); showToast('Ошибка: ' + d.error, 'error'); return; }
 
       // Успех
       isSubmitting = false;
@@ -3271,7 +3271,7 @@ function bkSubmit() {
     })
     .catch(e => {
       console.error('bkSubmit:', e);
-      bkReset();
+      bkResetLocal();
       showToast('Ошибка соединения. Проверьте интернет и попробуйте ещё раз.', 'error');
     });
 }
@@ -6438,13 +6438,6 @@ function queueGetServices() {
   for (var i = 0; i < keys.length; i++) {
     var row = document.getElementById('qcb-' + keys[i]);
     if (row && row.classList.contains('selected')) selected.push(map[keys[i]]);
-  }
-  return selected;
-}
-  var selected = [];
-  for (var i = 0; i < keys.length; i++) {
-    var pill = document.getElementById('qpill-' + keys[i]);
-    if (pill && pill.classList.contains('selected')) selected.push(map[keys[i]]);
   }
   return selected;
 }

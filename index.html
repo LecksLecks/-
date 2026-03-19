@@ -2413,6 +2413,10 @@ function loadInitDataFallback() {
           applyInitData(d);
           saveInitCache(d);
           if (IS_ADMIN) setTimeout(function(){ admBadgeStart(); }, 500);
+          // FIX-PREFILL: профиль мог прийти позже слотов — заполняем форму явно
+          if (d.clientProfile && d.clientProfile.complete) {
+            if (typeof obPrefillBookingFields === 'function') obPrefillBookingFields();
+          }
         }
       })
       .catch(function(e){ console.warn('getUserInfo fallback failed:', e); });
@@ -6249,7 +6253,7 @@ function queueOpenModal(slot) {
     prefillName = [u.first_name, u.last_name].filter(Boolean).join(' ');
   }
   if (_clientProfile && _clientProfile.phone) {
-    prefillPhone = _clientProfile.phone;
+    prefillPhone = typeof formatPhone === 'function' ? formatPhone(_clientProfile.phone) : _clientProfile.phone;
   }
 
   var html =
@@ -6854,7 +6858,7 @@ function obPrefillBookingFields() {
     bkName.value = _clientProfile.name;
   }
   if (bkPhone && _clientProfile.phone && !bkPhone.value) {
-    bkPhone.value = _clientProfile.phone;
+    bkPhone.value = typeof formatPhone === 'function' ? formatPhone(_clientProfile.phone) : _clientProfile.phone;
     bkPhone.dispatchEvent(new Event('input'));
   }
   bkValidate();
@@ -6890,7 +6894,11 @@ function obCheckOnboarding(d) {
     if (val && val !== '') {
       // CloudStorage помнит — восстанавливаем localStorage и не показываем
       try { localStorage.setItem('bs_ob_done', '1'); } catch(e){}
-      obPrefillBookingFields();
+      // FIX-PREFILL: вызываем только если профиль уже пришёл с бэкенда
+      // (если нет — он заполнится когда getInitData/getUserInfo вернут clientProfile)
+      if (_clientProfile) {
+        obPrefillBookingFields();
+      }
       return;
     }
     _tgCloudGet(_obSkippedKey, function(val2) {

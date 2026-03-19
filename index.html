@@ -3656,7 +3656,9 @@ function renderBookingCard(b, nowMin, todayStr) {
   var total      = parseFloat(b.total) || 0;
 
   // v6.7-FIX-4: передаём полный набор полей через data-атрибуты — POST с bookingId+date+time+master
-  var cancelBtn = (safeId && minsLeft >= 0)
+  // FIX-STATUS: не показываем кнопки отмены/переноса для завершённых и уже отменённых записей
+  var isActionable = safeId && minsLeft >= 0 && b.status !== 'completed' && b.status !== 'cancelled';
+  var cancelBtn = isActionable
     ? '<button class="adm-booking-cancel"' +
         ' data-id="'     + safeId     + '"' +
         ' data-name="'   + safeName   + '"' +
@@ -3666,7 +3668,7 @@ function renderBookingCard(b, nowMin, todayStr) {
         ' data-masterid="'+ safeMasterId +'"' +
         ' onclick="admQuickCancel(this)">✕ Отменить</button>'
     : '';
-  var rescBtn   = (safeId && minsLeft >= 0) ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
+  var rescBtn   = isActionable ? '<button class="adm-booking-resc" onclick="rescOpen(\''+safeId+'\',\''+safeName+'\',\''+safeMaster+'\',\''+safeDate+'\')">↔ Перенести</button>' : '';
   var noteBtn   = safeId ? '<button class="adm-note-btn" onclick="admToggleNote(\''+safeId+'\')" title="Заметка">📝</button>' : '';
   var doneBtn   = (safeId && b.status !== 'completed' && b.status !== 'cancelled')
     ? '<button class="adm-booking-done" onclick="admMarkDone(\''+safeId+'\',this)">✓ Выполнено</button>' : '';

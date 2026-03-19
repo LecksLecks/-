@@ -2335,6 +2335,11 @@ function applyInitData(d) {
   if (d.masters && d.masters.length > 0) MASTERS = d.masters;
   if (d.prices && Object.keys(d.prices).length > 0) PRICES = d.prices;
   if (d.ratings) MASTER_RATINGS = d.ratings;
+  // PATCH-03: слоты из бэкенда (Settings → workStart/workEnd/slotDuration)
+  if (d.slots && Array.isArray(d.slots) && d.slots.length > 0) {
+    SLOTS.length = 0;
+    d.slots.forEach(function(s) { SLOTS.push(s); });
+  }
   renderMasters(); renderPrices(); renderMsGrid();
 
   // Применяем роль
@@ -5032,14 +5037,18 @@ function clNoteSave(noteId) {
   if (btns) btns.innerHTML = '<span style="font-size:11px;color:rgba(201,168,76,.5)">Сохранение...</span>';
 
   var chatId = getChatId();
-  var url = CONFIG.GS + '?action=saveClientNote' +
-    '&clientPhone=' + encodeURIComponent(phone) +
-    '&clientChatId=' + encodeURIComponent(clientChatId) +
-    '&note=' + encodeURIComponent(text) +
-    '&chatId=' + encodeURIComponent(chatId) +
-    (getInitData() ? '&initData=' + getInitData() : '');
-
-  fetchWithTimeout(url)
+  fetchWithTimeout(CONFIG.GS, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify({
+      action: 'saveClientNote',
+      clientPhone: phone,
+      clientChatId: clientChatId,
+      note: text,
+      chatId: chatId,
+      initData: tg ? (tg.initData || '') : ''
+    })
+  })
     .then(function(r) { return r.json(); })
     .then(function(d) {
       if (d.error) {
@@ -5481,7 +5490,8 @@ function admQuickCancel(btn) {
         time:      time,
         master:    master,
         masterId:  masterId,
-        chatId:    chatId
+        chatId:    chatId,
+        initData:  tg ? (tg.initData || '') : ''
       })
     })
       .then(function(r){ return r.json(); })
@@ -5497,7 +5507,16 @@ function admMarkDone(bookingId, btn) {
   haptic('medium');
   if (btn) { btn.disabled = true; btn.textContent = '...'; }
 
-  fetchWithTimeout(CONFIG.GS + '?action=markBookingDone&bookingId=' + encodeURIComponent(bookingId) + '&chatId=' + encodeURIComponent(getChatId()) + (getInitData() ? '&initData=' + getInitData() : ''))
+  fetchWithTimeout(CONFIG.GS, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify({
+      action: 'markBookingDone',
+      bookingId: bookingId,
+      chatId: getChatId(),
+      initData: tg ? (tg.initData || '') : ''
+    })
+  })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error) {
@@ -5546,8 +5565,17 @@ function admSaveNote(bookingId, btn) {
   haptic('medium');
   if (btn) { btn.disabled = true; btn.textContent = 'Сохраняем...'; }
 
-  fetchWithTimeout(CONFIG.GS + '?action=saveBookingNote&bookingId=' + encodeURIComponent(bookingId) +
-    '&note=' + encodeURIComponent(note) + '&chatId=' + encodeURIComponent(getChatId()))
+  fetchWithTimeout(CONFIG.GS, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify({
+      action: 'saveBookingNote',
+      bookingId: bookingId,
+      note: note,
+      chatId: getChatId(),
+      initData: tg ? (tg.initData || '') : ''
+    })
+  })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.error) {
@@ -5661,7 +5689,8 @@ function admPriceSave(bookingId, oldTotal) {
       action: 'updateBookingTotal',
       bookingId: bookingId,
       newTotal: newTotal,
-      chatId: chatId
+      chatId: chatId,
+      initData: tg ? (tg.initData || '') : ''
     })
   })
   .then(function(r) { return r.json(); })

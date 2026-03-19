@@ -352,18 +352,19 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* v12: БАННЕР СТАТУСА ОЧЕРЕДИ ДЛЯ КЛИЕНТА */
 /* QUEUE - SERVICE PILLS */
-.queue-svc-wrap{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
-.queue-svc-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:2px;display:block}
-.queue-cb-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.09);cursor:pointer;-webkit-tap-highlight-color:rgba(201,168,76,0.1);touch-action:manipulation}
-.queue-cb-row:last-child{border-bottom:none}
-.queue-cb-left{display:flex;align-items:center;gap:8px}
-.queue-cb-box{width:16px;height:16px;border:1.5px solid rgba(201,168,76,0.45);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.queue-svc-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.queue-svc-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:4px;display:block}
+.queue-cb-row{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;background:rgba(201,168,76,0.05);border:1.5px solid rgba(201,168,76,0.15);border-radius:10px;cursor:pointer;-webkit-tap-highlight-color:rgba(201,168,76,0.1);touch-action:manipulation;transition:border-color .15s,background .15s}
+.queue-cb-row.selected{border-color:rgba(201,168,76,0.6);background:rgba(201,168,76,0.1)}
+.queue-cb-left{display:flex;align-items:center;gap:11px}
+.queue-cb-box{width:22px;height:22px;border:2px solid rgba(201,168,76,0.45);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .queue-cb-box.on{background:var(--gold);border-color:var(--gold)}
-.queue-cb-tick{width:8px;height:5px;border-left:2px solid #1a1a14;border-bottom:2px solid #1a1a14;transform:rotate(-45deg) translate(1px,-1px);opacity:0;transition:opacity .1s}
+.queue-cb-tick{width:10px;height:6px;border-left:2.5px solid #1a1a14;border-bottom:2.5px solid #1a1a14;transform:rotate(-45deg) translate(1px,-1px);opacity:0;transition:opacity .1s}
 .queue-cb-box.on .queue-cb-tick{opacity:1}
-.queue-cb-nm{font-size:13px;color:var(--cream);line-height:1.3}
-.queue-cb-pr{font-size:11px;color:var(--gold);font-weight:700;white-space:nowrap;margin-left:4px}
+.queue-cb-nm{font-size:14px;color:var(--cream);line-height:1.3}
+.queue-cb-pr{font-size:13px;color:var(--gold);font-weight:700;white-space:nowrap;margin-left:4px}
 .queue-cb-row.invalid-svc .queue-cb-box{border-color:#a04040}
+.queue-cb-row.invalid-svc{border-color:rgba(160,64,64,0.5)}
 .queue-pill{display:flex;align-items:center;justify-content:space-between;background:rgba(201,168,76,0.06);border:1.5px solid rgba(201,168,76,0.28);border-radius:8px;padding:7px 10px;cursor:pointer;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:rgba(201,168,76,0.18);touch-action:manipulation}
 .queue-pill:active{background:rgba(201,168,76,0.14)}
 .queue-pill.selected{border-color:var(--gold);background:rgba(201,168,76,0.13)}

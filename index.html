@@ -324,24 +324,25 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* ОЧЕРЕДЬ ОЖИДАНИЯ */
 .queue-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3000;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
-.queue-modal{background:#0d0b07;border:1px solid rgba(201,168,76,0.54);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;animation:slideUp .3s ease}
-.queue-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.queue-icon{width:48px;height:48px;border-radius:50%;background:rgba(201,168,76,0.22);border:1px solid rgba(201,168,76,0.45);display:flex;align-items:center;justify-content:center;font-size:25px}
-.queue-close-btn{width:48px;height:48px;border-radius:10px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.queue-modal{background:#0d0b07;border:1px solid rgba(201,168,76,0.54);border-radius:20px 20px 0 0;padding:16px;width:100%;max-width:480px;animation:slideUp .3s ease}
+.queue-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.queue-icon{width:32px;height:32px;border-radius:8px;background:rgba(201,168,76,0.14);border:1px solid rgba(201,168,76,0.35);display:flex;align-items:center;justify-content:center;font-size:16px}
+.queue-close-btn{width:32px;height:32px;border-radius:8px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0}
 .queue-close-btn:active{background:rgba(201,168,76,0.25)}
-.queue-close-btn svg{width:18px;height:18px}
-.queue-ttl{font-family:'Playfair Display',serif;font-size:35px;font-weight:700;color:var(--cream);margin-bottom:6px}
-.queue-sub{font-size:22px;color:var(--gray);line-height:1.7;margin-bottom:16px}
-.queue-info-card{background:rgba(201,168,76,0.09);border:1px solid rgba(201,168,76,0.22);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:22px;color:var(--gray);line-height:1.7}
+.queue-close-btn svg{width:14px;height:14px}
+.queue-ttl{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:0}
+.queue-sub{display:none}
+.queue-info-card{display:flex;align-items:center;gap:8px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:13px;color:var(--gray);line-height:1.4}
 .queue-info-card span{color:var(--cream);font-weight:700}
-.queue-fg{margin-bottom:12px}
-.queue-lbl{font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;display:block}
-.queue-inp{width:100%;background:rgba(201,168,76,0.07);border:2px solid rgba(201,168,76,0.32);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:28px;padding:12px;outline:none;border-radius:8px;box-sizing:border-box}
+.queue-info-sep{width:3px;height:3px;border-radius:50%;background:#555;flex-shrink:0}
+.queue-fg{margin-bottom:8px}
+.queue-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:4px;display:block}
+.queue-inp{width:100%;background:rgba(201,168,76,0.07);border:1.5px solid rgba(201,168,76,0.32);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:18px;padding:8px 10px;outline:none;border-radius:8px;box-sizing:border-box}
 .queue-inp:focus{border-color:rgba(201,168,76,0.65)}
 .queue-inp::placeholder{color:rgba(138,125,107,0.7)}
 .queue-inp.invalid{border-color:#a04040}
-.queue-btns{display:flex;gap:10px;margin-top:4px}
-.queue-btn-confirm{width:100%;background:var(--gold);color:var(--black);border:none;padding:14px;font-size:18px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;border-radius:8px;transition:opacity .15s}
+.queue-btns{display:flex;gap:10px;margin-top:2px}
+.queue-btn-confirm{width:100%;background:var(--gold);color:var(--black);border:none;padding:11px;font-size:13px;letter-spacing:3px;text-transform:uppercase;font-weight:700;cursor:pointer;font-family:'Cormorant Garamond',serif;border-radius:8px;transition:opacity .15s}
 .queue-btn-confirm:active{opacity:.8}
 .queue-success{text-align:center;padding:10px 0 4px}
 .queue-success-ico{font-size:50px;margin-bottom:10px}
@@ -351,18 +352,18 @@ button{font-family:'Cormorant Garamond',serif;-webkit-tap-highlight-color:rgba(2
 
 /* v12: БАННЕР СТАТУСА ОЧЕРЕДИ ДЛЯ КЛИЕНТА */
 /* QUEUE - SERVICE PILLS */
-.queue-svc-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.queue-svc-lbl{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:4px;display:block}
-.queue-pill{display:flex;align-items:center;justify-content:space-between;background:rgba(201,168,76,0.06);border:1.5px solid rgba(201,168,76,0.28);border-radius:10px;padding:10px 14px;cursor:pointer;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:rgba(201,168,76,0.18);touch-action:manipulation}
+.queue-svc-wrap{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.queue-svc-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:2px;display:block}
+.queue-pill{display:flex;align-items:center;justify-content:space-between;background:rgba(201,168,76,0.06);border:1.5px solid rgba(201,168,76,0.28);border-radius:8px;padding:7px 10px;cursor:pointer;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:rgba(201,168,76,0.18);touch-action:manipulation}
 .queue-pill:active{background:rgba(201,168,76,0.14)}
 .queue-pill.selected{border-color:var(--gold);background:rgba(201,168,76,0.13)}
-.queue-pill-left{display:flex;align-items:center;gap:10px}
-.queue-pill-dot{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(201,168,76,0.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.queue-pill-left{display:flex;align-items:center;gap:8px}
+.queue-pill-dot{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(201,168,76,0.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .queue-pill.selected .queue-pill-dot{background:var(--gold);border-color:var(--gold)}
-.queue-pill-dot-inner{width:8px;height:8px;border-radius:50%;background:#1a1a14;opacity:0;transition:opacity .15s}
+.queue-pill-dot-inner{width:6px;height:6px;border-radius:50%;background:#1a1a14;opacity:0;transition:opacity .15s}
 .queue-pill.selected .queue-pill-dot-inner{opacity:1}
-.queue-pill-nm{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cream)}
-.queue-pill-pr{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold)}
+.queue-pill-nm{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--cream)}
+.queue-pill-pr{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--gold)}
 .queue-pill.invalid-svc{border-color:#a04040}
 /* QUEUE - ACCORDION PRICE */
 .queue-price-toggle{display:inline-flex;align-items:center;gap:6px;font-size:15px;color:var(--gold);cursor:pointer;margin-bottom:0;padding:6px 0;text-decoration:underline;text-underline-offset:3px;-webkit-tap-highlight-color:rgba(201,168,76,0.18);touch-action:manipulation;background:none;border:none;font-family:'Cormorant Garamond',serif}
@@ -6325,14 +6326,13 @@ function queueOpenModal(slot) {
     '<div class="queue-overlay" id="queueOverlay" onclick="queueCloseOnOverlay(event)">' +
     '<div class="queue-modal">' +
     '<div class="queue-header">' +
-    '<div class="queue-icon">⏳</div>' +
+    '<div class="queue-ttl">Мастер сейчас занят</div>' +
     '<div class="queue-close-btn" onclick="queueClose()"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(201,168,76,0.7)" stroke-width="2" stroke-linecap="round"><line x1="7" y1="7" x2="17" y2="17"/><line x1="17" y1="7" x2="7" y2="17"/></svg></div>' +
     '</div>' +
-    '<div class="queue-ttl">Мастер сейчас занят</div>' +
-    '<div class="queue-sub">Как только освободится — мы сразу вам перезвоним. Оставьте контакты и мы поставим вас в очередь.</div>' +
     '<div class="queue-info-card">' +
-    '✂️ Мастер: <span>' + escapeHtml(masterName) + '</span><br>' +
-    '🕐 Слот: <span>' + slot + ', ' + dateStr + '</span>' +
+    '<span>✂ ' + escapeHtml(masterName) + '</span>' +
+    '<div class="queue-info-sep"></div>' +
+    '<span style="color:var(--cream);font-weight:700">' + slot + '</span><span style="color:var(--gray)">, ' + dateStr + '</span>' +
     '</div>' +
     // ── УСЛУГИ ──
     '<div class="queue-svc-wrap">' +
